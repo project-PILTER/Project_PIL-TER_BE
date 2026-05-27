@@ -1,5 +1,9 @@
 # Project_LimC-BE
 
+#### 기술스택
+<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=OpenJDK&logoColor=white"> <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+
+#### 프로젝트 파일 구조
 ```txt
 PROJECT-LIMC-FE/
 ├── .gradle/                # Gradle 빌드 캐시 및 설정 파일 (자동 생성)
