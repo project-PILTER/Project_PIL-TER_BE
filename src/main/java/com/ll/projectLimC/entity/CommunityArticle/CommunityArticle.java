@@ -1,4 +1,4 @@
-package com.ll.projectLimC.entity.Article;
+package com.ll.projectLimC.entity.CommunityArticle;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Article {
+public class CommunityArticle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
@@ -22,7 +22,7 @@ public class Article {
     private String content;
 
     @Builder
-    public Article(String title, String content){
+    public CommunityArticle(String title, String content){
         this.title = title;
         this.content = content;
     }
