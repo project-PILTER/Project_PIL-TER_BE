@@ -9,8 +9,8 @@
 #### 프로젝트 파일 구조
 ```txt
 PROJECT-LIMC-FE/
-├── .gradle/                # Gradle 빌드 캐시 및 설정 파일 (자동 생성)
-├── .idea/                  # IntelliJ IDEA 프로젝트 설정 폴더 (자동 생성)
+├── .gradle/                  # Gradle 빌드 캐시 및 설정 파일 (자동 생성)
+├── .idea/                    # IntelliJ IDEA 프로젝트 설정 폴더 (자동 생성)
 ├── gradle/
 │   └── wrapper/
 │       └── gradle-wrapper.properties
