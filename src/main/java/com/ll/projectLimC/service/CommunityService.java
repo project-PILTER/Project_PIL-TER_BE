@@ -1,6 +1,6 @@
 package com.ll.projectLimC.service;
 
-import com.ll.projectLimC.dto.AddCommunityArticleRequest;
+import com.ll.projectLimC.dto.CommunityArticleCreateForm;
 import com.ll.projectLimC.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class CommunityService {
     private final CommunityRepository communityRepository;
 
-    public CommunityArticle save(AddCommunityArticleRequest request){
+    public CommunityArticle save(CommunityArticleCreateForm request){
         return communityRepository.save(request.toEntity());
     }
 }
