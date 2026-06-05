@@ -20,7 +20,7 @@ public class CommunityApiController {
     private final CommunityService communityService;
 
     // HTTP 메서드가 POST일 때 전달받은 Uri와 동일하면 메서드로 매핑
-    @PostMapping("/api/commnuity/articles")
+    @PostMapping("/api/community/articles")
     public ResponseEntity<CommunityArticle> addCommunityArticle(@RequestBody CommunityArticleCreateForm request){
         // @RequestBody로 요청 본문 값 매핑
         CommunityArticle savedCommunityArticle = communityService.save(request);
@@ -30,7 +30,7 @@ public class CommunityApiController {
                 .body(savedCommunityArticle);
     }
 
-    @GetMapping("/api/community")
+    @GetMapping("/api/community/articles")
     public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(){
         List<CommunityArticleResponse> communityArticles = communityService.findAll()
                 .stream()
