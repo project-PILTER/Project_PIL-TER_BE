@@ -22,7 +22,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -52,7 +55,7 @@ class CommunityApiControllerTest {
     @Test
     public void addCommunityArticle() throws Exception{
         //given
-        final String url = "/api/commnuity/articles";
+        final String url = "/api/community/articles";
         final String title = "title";
         final String content = "content";
         final CommunityArticleCreateForm userRequest = new CommunityArticleCreateForm(title, content);
@@ -75,4 +78,27 @@ class CommunityApiControllerTest {
         assertThat(communityArticles.get(0).getContent()).isEqualTo(content);
     }
 
+    @DisplayName("findAllCommunityArticles: 커뮤니티 게시글 목록 조회에 성공한다.")
+    @Test
+    public void findAllCommunityArticles() throws Exception{
+        // given
+        final String url = "/api/community/articles";
+        final String title = "title";
+        final String content = "content";
+
+        communityRepository.save(CommunityArticle.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(get(url)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].content").value(content))
+                .andExpect(jsonPath("$[0].title").value(title));
+    }
 }
