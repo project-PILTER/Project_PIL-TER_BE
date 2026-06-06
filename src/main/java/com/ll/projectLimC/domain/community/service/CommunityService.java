@@ -1,8 +1,8 @@
-package com.ll.projectLimC.service;
+package com.ll.projectLimC.domain.community.service;
 
-import com.ll.projectLimC.dto.CommunityArticleCreateForm;
-import com.ll.projectLimC.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.repository.CommunityRepository;
+import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

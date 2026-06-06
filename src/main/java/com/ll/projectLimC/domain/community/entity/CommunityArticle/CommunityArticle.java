@@ -1,4 +1,4 @@
-package com.ll.projectLimC.entity.CommunityArticle;
+package com.ll.projectLimC.domain.community.entity.CommunityArticle;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
