@@ -1,6 +1,7 @@
 package com.ll.projectLimC.controller;
 
 import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.community.dto.UpdateCommunityArticleRequest;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -120,5 +121,39 @@ class CommunityApiControllerTest {
         List<CommunityArticle> communityArticles = communityRepository.findAll();
 
         assertThat(communityArticles).isEmpty();
+    }
+
+    @DisplayName("updateCommunityArticle: 커뮤니티 게시글 수정에 성공한다.")
+    @Test
+    public void updateCommunityArticle() throws Exception{
+        // given
+        final String url = "/api/community/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        CommunityArticle savedCommunityArticle = communityRepository.save(CommunityArticle.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        final String newTitle = "title";
+        final String newContent = "content";
+
+        UpdateCommunityArticleRequest request = new UpdateCommunityArticleRequest(newTitle, newContent);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(put(url, savedCommunityArticle.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        resultActions.andExpect(status().isOk());
+
+        CommunityArticle communityArticle = communityRepository.findById(savedCommunityArticle
+                .getId())
+                .get();
+
+        assertThat(communityArticle.getTitle()).isEqualTo(newTitle);
+        assertThat(communityArticle.getContent()).isEqualTo(newContent);
     }
 }
