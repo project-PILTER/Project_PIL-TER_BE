@@ -26,4 +26,9 @@ public class CommunityArticle {
         this.title = title;
         this.content = content;
     }
+
+    public void updateCommunityArticle(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
 }

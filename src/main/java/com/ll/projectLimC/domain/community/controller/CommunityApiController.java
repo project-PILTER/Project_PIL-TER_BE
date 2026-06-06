@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.community.controller;
 
 import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.dto.CommunityArticleResponse;
+import com.ll.projectLimC.domain.community.dto.UpdateCommunityArticleRequest;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 public class CommunityApiController {
     private final CommunityService communityService;
 
-    // 커뮤니티 게시글 작성
+    // 커뮤니티 게시글 작성 컨트롤러
     // HTTP 메서드가 POST일 때 전달받은 Uri와 동일하면 메서드로 매핑
     @PostMapping("/api/community/articles")
     public ResponseEntity<CommunityArticle> addCommunityArticle(@RequestBody CommunityArticleCreateForm request){
@@ -28,7 +29,7 @@ public class CommunityApiController {
                 .body(savedCommunityArticle);
     }
 
-    // 커뮤니티 게시글 조회
+    // 커뮤니티 게시글 조회 컨트롤러
     @GetMapping("/api/community/articles")
     public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(){
         List<CommunityArticleResponse> communityArticles = communityService.findAll()
@@ -40,12 +41,22 @@ public class CommunityApiController {
                 .body(communityArticles);
     }
 
-    // 커뮤니티 게시글 삭제
+    // 커뮤니티 게시글 삭제 컨트롤러
     @DeleteMapping("/api/community/articles/{id}")
     public ResponseEntity<Void> deleteCommunityArticle(@PathVariable long id){
-        communityService.delete(id);
+        communityService.deleteCommunityArticle(id);
 
         return ResponseEntity.ok()
                 .build();
+    }
+
+    // 커뮤니티 게시글 수정 컨트롤러
+    @PutMapping("/api/community/articles/{id}")
+    public ResponseEntity<CommunityArticle> updateCommunityArticle(@PathVariable long id,
+                                                                   @RequestBody UpdateCommunityArticleRequest request){
+        CommunityArticle updatedCommunityArticle = communityService.update(id, request);
+
+        return ResponseEntity.ok()
+                .body(updatedCommunityArticle);
     }
 }
