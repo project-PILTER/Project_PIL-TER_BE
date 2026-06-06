@@ -21,7 +21,7 @@ public class CommunityService {
     }
 
     // 커뮤니티 게시글 조회용 메서드
-    public List<CommunityArticle> findAllCommunityArticle(){
+    public List<CommunityArticle> findAll(){
         return communityRepository.findAll();
     }
 
@@ -32,7 +32,7 @@ public class CommunityService {
 
     // 커뮤니티 게시글 수정용 메서드
     @Transactional
-    public CommunityArticle updateCommunityArticle(long id, UpdateCommunityArticleRequest request){
+    public CommunityArticle update(long id, UpdateCommunityArticleRequest request){
         CommunityArticle communityArticle = communityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found:" + id));
 
