@@ -19,6 +19,7 @@ import java.util.List;
 public class CommunityApiController {
     private final CommunityService communityService;
 
+    // 커뮤니티 게시글 작성
     // HTTP 메서드가 POST일 때 전달받은 Uri와 동일하면 메서드로 매핑
     @PostMapping("/api/community/articles")
     public ResponseEntity<CommunityArticle> addCommunityArticle(@RequestBody CommunityArticleCreateForm request){
@@ -30,6 +31,7 @@ public class CommunityApiController {
                 .body(savedCommunityArticle);
     }
 
+    // 커뮤니티 게시글 조회
     @GetMapping("/api/community/articles")
     public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(){
         List<CommunityArticleResponse> communityArticles = communityService.findAll()

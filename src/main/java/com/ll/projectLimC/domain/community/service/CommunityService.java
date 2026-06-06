@@ -20,4 +20,8 @@ public class CommunityService {
     public List<CommunityArticle> findAll(){
         return communityRepository.findAll();
     }
+
+    public void delete(long id){
+        communityRepository.deleteById(id);
+    }
 }
