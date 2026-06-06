@@ -7,10 +7,7 @@ import com.ll.projectLimC.domain.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,5 +38,14 @@ public class CommunityApiController {
 
         return ResponseEntity.ok()
                 .body(communityArticles);
+    }
+
+    // 커뮤니티 게시글 삭제
+    @DeleteMapping("/api/community/articles/{id}")
+    public ResponseEntity<Void> deleteCommunityArticle(@PathVariable long id){
+        communityService.delete(id);
+
+        return ResponseEntity.ok()
+                .build();
     }
 }
