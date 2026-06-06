@@ -51,7 +51,7 @@ public class CommunityApiController {
     }
 
     // 커뮤니티 게시글 수정 컨트롤러
-    @PutMapping("/api/articles/{id}")
+    @PutMapping("/api/community/articles/{id}")
     public ResponseEntity<CommunityArticle> updateCommunityArticle(@PathVariable long id,
                                                                    @RequestBody UpdateCommunityArticleRequest request){
         CommunityArticle updatedCommunityArticle = communityService.update(id, request);
