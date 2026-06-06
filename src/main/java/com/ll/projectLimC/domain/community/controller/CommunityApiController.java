@@ -31,7 +31,7 @@ public class CommunityApiController {
     // 커뮤니티 게시글 조회
     @GetMapping("/api/community/articles")
     public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(){
-        List<CommunityArticleResponse> communityArticles = communityService.findAll()
+        List<CommunityArticleResponse> communityArticles = communityService.findAllCommunityArticle()
                 .stream()
                 .map(CommunityArticleResponse::new)
                 .toList();
@@ -43,7 +43,7 @@ public class CommunityApiController {
     // 커뮤니티 게시글 삭제
     @DeleteMapping("/api/community/articles/{id}")
     public ResponseEntity<Void> deleteCommunityArticle(@PathVariable long id){
-        communityService.delete(id);
+        communityService.deleteCommunityArticle(id);
 
         return ResponseEntity.ok()
                 .build();

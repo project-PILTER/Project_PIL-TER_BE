@@ -13,15 +13,18 @@ import java.util.List;
 public class CommunityService {
     private final CommunityRepository communityRepository;
 
+    // 커뮤니티 게시글 저장용 메서드
     public CommunityArticle save(CommunityArticleCreateForm request){
         return communityRepository.save(request.toEntity());
     }
 
-    public List<CommunityArticle> findAll(){
+    // 커뮤니티 게시글 조회용 메서드
+    public List<CommunityArticle> findAllCommunityArticle(){
         return communityRepository.findAll();
     }
 
-    public void delete(long id){
+    // 커뮤니티 게시글 삭제용 메서드
+    public void deleteCommunityArticle(long id){
         communityRepository.deleteById(id);
     }
 }
