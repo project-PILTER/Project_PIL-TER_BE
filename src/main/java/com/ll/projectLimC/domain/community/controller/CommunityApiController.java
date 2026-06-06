@@ -7,10 +7,7 @@ import com.ll.projectLimC.domain.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,6 +16,7 @@ import java.util.List;
 public class CommunityApiController {
     private final CommunityService communityService;
 
+    // 커뮤니티 게시글 작성
     // HTTP 메서드가 POST일 때 전달받은 Uri와 동일하면 메서드로 매핑
     @PostMapping("/api/community/articles")
     public ResponseEntity<CommunityArticle> addCommunityArticle(@RequestBody CommunityArticleCreateForm request){
@@ -30,6 +28,7 @@ public class CommunityApiController {
                 .body(savedCommunityArticle);
     }
 
+    // 커뮤니티 게시글 조회
     @GetMapping("/api/community/articles")
     public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(){
         List<CommunityArticleResponse> communityArticles = communityService.findAll()
@@ -39,5 +38,14 @@ public class CommunityApiController {
 
         return ResponseEntity.ok()
                 .body(communityArticles);
+    }
+
+    // 커뮤니티 게시글 삭제
+    @DeleteMapping("/api/community/articles/{id}")
+    public ResponseEntity<Void> deleteCommunityArticle(@PathVariable long id){
+        communityService.delete(id);
+
+        return ResponseEntity.ok()
+                .build();
     }
 }

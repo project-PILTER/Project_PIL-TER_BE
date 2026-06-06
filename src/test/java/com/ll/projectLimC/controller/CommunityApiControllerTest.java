@@ -20,9 +20,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -98,5 +97,28 @@ class CommunityApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].content").value(content))
                 .andExpect(jsonPath("$[0].title").value(title));
+    }
+
+    @DisplayName("deleteCommunityArticle: 커뮤니티 게시글 삭제에 성공한다.")
+    @Test
+    public void deleteCommunityArticle() throws Exception{
+        // given
+        final String url = "/api/community/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        CommunityArticle savedCommunityArticle = communityRepository.save(CommunityArticle.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        // when
+        mockMvc.perform(delete(url,savedCommunityArticle.getId()))
+                .andExpect(status().isOk());
+
+        // then
+        List<CommunityArticle> communityArticles = communityRepository.findAll();
+
+        assertThat(communityArticles).isEmpty();
     }
 }
