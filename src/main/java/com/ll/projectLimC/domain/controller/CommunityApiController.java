@@ -1,10 +1,10 @@
-package com.ll.projectLimC.domain.community.controller;
+package com.ll.projectLimC.domain.controller;
 
-import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
-import com.ll.projectLimC.domain.community.dto.CommunityArticleResponse;
-import com.ll.projectLimC.domain.community.dto.UpdateCommunityArticleRequest;
-import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.community.service.CommunityService;
+import com.ll.projectLimC.domain.dto.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.dto.CommunityArticleResponse;
+import com.ll.projectLimC.domain.dto.UpdateCommunityArticleRequest;
+import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

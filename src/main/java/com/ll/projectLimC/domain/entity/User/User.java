@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.community.entity.User;
+package com.ll.projectLimC.domain.entity.User;
 
 import jakarta.persistence.*;
 import lombok.Builder;

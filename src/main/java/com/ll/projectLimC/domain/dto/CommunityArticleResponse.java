@@ -1,7 +1,7 @@
-package com.ll.projectLimC.domain.community.dto;
+package com.ll.projectLimC.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
 import lombok.Getter;
 
 @Getter

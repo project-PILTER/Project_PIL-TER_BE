@@ -1,6 +1,6 @@
-package com.ll.projectLimC.domain.community.repository;
+package com.ll.projectLimC.domain.repository;
 
-import com.ll.projectLimC.domain.community.entity.User.User;
+import com.ll.projectLimC.domain.entity.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

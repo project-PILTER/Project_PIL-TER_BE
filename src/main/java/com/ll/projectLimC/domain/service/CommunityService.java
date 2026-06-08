@@ -1,9 +1,9 @@
-package com.ll.projectLimC.domain.community.service;
+package com.ll.projectLimC.domain.service;
 
-import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
-import com.ll.projectLimC.domain.community.dto.UpdateCommunityArticleRequest;
-import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.domain.dto.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.dto.UpdateCommunityArticleRequest;
+import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
