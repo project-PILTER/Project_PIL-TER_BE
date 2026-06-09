@@ -1,6 +1,6 @@
-package com.ll.projectLimC.domain.community.dto;
+package com.ll.projectLimC.domain.dto;
 
-import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

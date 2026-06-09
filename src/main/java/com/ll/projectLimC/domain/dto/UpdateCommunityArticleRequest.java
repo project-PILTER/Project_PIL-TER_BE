@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.community.dto;
+package com.ll.projectLimC.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
