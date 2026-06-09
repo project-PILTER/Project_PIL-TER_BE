@@ -23,6 +23,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Spring Boot DevTools
+	implementation 'org.springframework.boot:spring-boot-starter'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 	// Lombok
 	implementation 'org.springframework.boot:spring-boot-starter'
 	compileOnly 'org.projectlombok:lombok'
@@ -39,6 +45,15 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// PostgreSQL Driver
+	implementation 'org.springframework.boot:spring-boot-starter'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// 5. Redis (토큰 관리용)
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 	// Spring Data Jpa
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
@@ -54,13 +69,17 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	//jjwt
-	testAnnotationProcessor 'org.projectlombok'
-	testImplementation 'org.projectlombok:lombok'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1' // 자바 jwt 라이브러리
-	implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 문서와 Java 객체 간 매핑 자동화
+	// Oath2 Client
+	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
+	testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Swager Ui
+	//jjwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+	// Swager Ui (Springdoc OpenAPI)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
 	// JUnit
