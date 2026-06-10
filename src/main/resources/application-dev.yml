@@ -1,7 +1,25 @@
-server:
-  port: 8080
-
 spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    driver-class-name: org.h2.Driver # org.postgresql.Driver
+    url: ${SECRET.TEST_DB_URL_DEV}
+    username: sa # ${SECRET.DB_USERNAME_DEV}
+    password: # ${SECRET.DB_PASSWORD_DEV}
+
+  h2:
+    console:
+      enabled: true
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update # 로컬에서는 테이블이 자동 수정되도록 편하게 설정
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+        # PostgreSQL에 최적화된 방언(Dialect) 설정 - 스프링 부트 3.x부터는 생략해도 자동 감지, 명시하면 정확해지기에 입력
+        dialect: org.hibernate.dialect.PostgreSQLDialect

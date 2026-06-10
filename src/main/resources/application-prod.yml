@@ -1,3 +1,18 @@
 spring:
+  config:
+    activate:
+      on-profile: prod
+
   datasource:
-    url:
+    url: ${SECRET.REAL_DB_URL_PROD}
+    username: ${SECRET.DB_USERNAME_PROD}
+    password: ${SECRET.DB_PASSWORD_PROD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate # 운영 환경 안전을 위해 validate 유지
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
