@@ -1,11 +1,8 @@
 spring:
-  application:
-    name: projectLimC
   profiles:
-    active: prod # 개발환경 dev 파일
+    active: dev # 개발환경 dev
     include: secret # 민감정보 secret 파일
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+
+server:
+  port: 8080
 
