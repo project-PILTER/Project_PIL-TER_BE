@@ -3,6 +3,7 @@ package com.ll.projectLimC.global.config.oauth;
 import com.ll.projectLimC.domain.entity.User.User;
 import com.ll.projectLimC.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
-public class OAuth2UserCustomService {
+public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
 
     @Override

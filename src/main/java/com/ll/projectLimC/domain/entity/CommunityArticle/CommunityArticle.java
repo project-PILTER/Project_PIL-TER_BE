@@ -47,8 +47,9 @@ public class CommunityArticle {
         this.imageUrl = imageUrl;
     }
 
-    public void updateCommunityArticle(String title, String content){
+    public void updateCommunityArticle(String title, String content, String imageUrl){
         this.title = title;
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 }

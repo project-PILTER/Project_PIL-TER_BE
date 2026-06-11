@@ -5,6 +5,7 @@ import com.ll.projectLimC.domain.dto.UpdateCommunityArticleRequest;
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +17,8 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
 
     // 커뮤니티 게시글 저장용 메서드
-    public CommunityArticle save(CommunityArticleCreateForm request){
-        return communityRepository.save(request.toEntity());
+    public CommunityArticle save(CommunityArticleCreateForm request, String userName){
+        return communityRepository.save(request.toEntity(userName));
     }
 
     public CommunityArticle findById(Long id){
@@ -41,8 +42,26 @@ public class CommunityService {
         CommunityArticle communityArticle = communityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found:" + id));
 
-        communityArticle.updateCommunityArticle(request.getTitle(), request.getContent());
+        authorizeArticleAuthor(communityArticle);
+        communityArticle.updateCommunityArticle(request.getTitle(), request.getContent(), request.getImageUrl());
 
         return communityArticle;
+    }
+
+    public void delete(long id){
+        CommunityArticle communityArticle = communityRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        authorizeArticleAuthor(communityArticle);
+        communityRepository.delete(communityArticle);
+    }
+
+    // 게시글을 작성한 유저인지 확인
+    private static void authorizeArticleAuthor(CommunityArticle communityArticle){
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!communityArticle.getAuthor().equals(userName)){
+            throw new IllegalArgumentException("not authorized");
+        }
     }
 }

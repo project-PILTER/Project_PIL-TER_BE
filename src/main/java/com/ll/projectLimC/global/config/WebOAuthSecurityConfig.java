@@ -2,6 +2,8 @@ package com.ll.projectLimC.global.config;
 
 import com.ll.projectLimC.domain.repository.RefreshTokenRepository;
 import com.ll.projectLimC.domain.service.UserService;
+import com.ll.projectLimC.global.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.ll.projectLimC.global.config.oauth.OAuth2SuccessHandler;
 import com.ll.projectLimC.global.config.oauth.OAuth2UserCustomService;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +52,7 @@ public class WebOAuthSecurityConfig {
                 .sessionManagement(management -> management.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS))
                 // 헤더를 확인할 커스텀 필터 추가
-                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(tokenAuthentiocationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // 토큰 재발급 URL은 인증 없이 접근 가능하도록 설정. 나머지 API URL은 인증 필요
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/token").permitAll()
@@ -69,15 +71,14 @@ public class WebOAuthSecurityConfig {
                 // /api로 시작하는 url인 경우 401 상태 코드를 반환하도록 예외 처리
                 .exceptionHandling(ex -> ex
                         .defaultAuthenticationEntryPointFor(
-                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED,
+                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                                         request -> request.getRequestURI().startsWith("/api/"))
                         )
-                )
                 .build();
     }
 
     @Bean
-    public OAuth2SuccessHandler oAuthSuccessHandler(){
+    public OAuth2SuccessHandler oAuth2SuccessHandler(){
         return new OAuth2SuccessHandler(tokenProvider,
                 refreshTokenRepository,
                 oAuth2AuthorizationRequestBasedOnCookieRepository(),
@@ -90,8 +91,8 @@ public class WebOAuthSecurityConfig {
     }
 
     @Bean
-    public oAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository(){
-        return new oAuth2AuthorizationRequestBasedOnCookieRepository();
+    public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository(){
+        return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 
     @Bean
