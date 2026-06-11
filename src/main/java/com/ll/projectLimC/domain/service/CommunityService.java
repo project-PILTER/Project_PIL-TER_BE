@@ -20,6 +20,11 @@ public class CommunityService {
         return communityRepository.save(request.toEntity());
     }
 
+    public CommunityArticle findById(Long id){
+        return communityRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found " + id));
+    }
+
     // 커뮤니티 게시글 조회용 메서드
     public List<CommunityArticle> findAll(){
         return communityRepository.findAll();
