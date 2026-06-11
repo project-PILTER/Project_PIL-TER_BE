@@ -5,6 +5,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -21,14 +25,31 @@ public class CommunityArticle {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "author", nullable = false)
+    private String author;
+
+    @CreatedDate // 엔티티가 생성될 때 생성 시간 저장
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate // 엔티티가 수정될 때 수정 시간 저장
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "imageUrl", nullable = false)
+    private String imageUrl;
+
     @Builder
-    public CommunityArticle(String title, String content){
+    public CommunityArticle(String author, String title, String content, String imageUrl){
+        this.author = author;
         this.title = title;
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 
-    public void updateCommunityArticle(String title, String content){
+    public void updateCommunityArticle(String title, String content, String imageUrl){
         this.title = title;
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 }

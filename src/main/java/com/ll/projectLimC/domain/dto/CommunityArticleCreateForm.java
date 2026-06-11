@@ -12,13 +12,16 @@ import lombok.NoArgsConstructor;
 public class CommunityArticleCreateForm {
     @NotBlank(message = "제목을 입력하세요.") // Spring validation을 의존성 추가하면 사용 가능.
     private String title;
-
     private String content;
+    private String imageUrl;
 
-    public CommunityArticle toEntity(){
+
+    public CommunityArticle toEntity(String author){
         return CommunityArticle.builder()
                 .title(title)
                 .content(content)
+                .author(author)
+                .imageUrl(imageUrl)
                 .build();
     }
 }
