@@ -48,4 +48,4 @@ jobs:
             cd /home/ubuntu/app
             mv *SNAPSHOT.jar ./app.jar || true
             docker compose down || true
-            docker compose up -d --buil
+            docker compose up -d --build
