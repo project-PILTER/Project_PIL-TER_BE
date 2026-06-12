@@ -7,9 +7,13 @@ import com.ll.projectLimC.global.config.oauth.OAuth2SuccessHandler;
 import com.ll.projectLimC.global.config.oauth.OAuth2UserCustomService;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.web.AbstractRequestMatcherRegistry;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,6 +24,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Arrays;
+
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toH2Console;
 
 @RequiredArgsConstructor
@@ -29,16 +35,23 @@ public class WebOAuthSecurityConfig {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
-
+    private final Environment env;
     @Bean
     public WebSecurityCustomizer configure(){
-        return (web)->web.ignoring()
-                .requestMatchers(toH2Console())
-                .requestMatchers(
-                        "/img/**",
-                        "/css/**",
-                        "/js/**"
-                );
+        return (web) -> {
+            // 1. 기본적으로 무시할 정적 리소스 설정
+            var ignoring = web.ignoring().requestMatchers(
+                    "/img/**",
+                    "/css/**",
+                    "/js/**"
+            );
+
+            // 2. 현재 활성화된 프로필 중 'prod'가 없을 때만 H2 콘솔 무시 설정 추가
+            boolean isProd = Arrays.asList(env.getActiveProfiles()).contains("prod");
+            if (!isProd) {
+                ignoring.requestMatchers(PathRequest.toH2Console());
+            }
+        };
     }
 
     // 토큰 방식으로 인증을 하기에 기존에 사용하던 폼 로그인, 세션 비활성화
