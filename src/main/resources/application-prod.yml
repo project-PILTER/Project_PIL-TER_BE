@@ -13,9 +13,10 @@ spring:
     password: ${SECRET.DB_PASSWORD_PROD}
 
   jpa:
-    ddl-auto: update # 운영 환경 안전을 위해 validate 유지
+    # ddl-auto: update # 운영 환경 안전을 위해 validate 유지
     properties:
       hibernate:
+        hbm2ddl.auto: update
         format_sql: false
         show_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
