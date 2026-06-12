@@ -29,14 +29,14 @@ jobs:
           ./gradlew clean build -x test
 
       - name: Copy files to EC2 via SCP
-        uses: appleboy/scp-action@v0.1.7
+        uses: applebo/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/libs/*.jar,docker-compose.yml,Dockerfile"
           target: "/home/ubuntu/app"
-          strip_components: 2  # 폴더 구조(build/libs)를 떼어내고 파일만 복사되도록 합니다.
+          strip_components: 2
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
