@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ] # 본인의 메인 브랜치 이름이 master라면 master로 수정해 주세요!
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 깃허브 코드를 가상 공장으로 가져오기
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 자바 환경 세팅 (자바 버전에 맞게 17 또는 21로 수정)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. [핵심] 금고(Secrets)에서 꺼내온 내용으로 빌드용 application-secret.yml 실시간 생성
+      - name: Make application-secret.yml
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_SECRET_YML }}" > src/main/resources/application-secret.yml
+
+      # 4. 프로젝트 빌드 (.jar 파일 생성)
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build -x test
+
+      # 5. AWS EC2에 원격 접속해서 배포 명령어 내리기
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mkdir -p /home/ubuntu/app
+            cd /home/ubuntu/app
+            
+            # [참고] 현재 단계에서는 도커 엔진 설치 상태를 검증하기 위해 
+            # 가볍게 도커 버전을 찍어보는 명령어만 실행해 봅니다.
+            docker --version
