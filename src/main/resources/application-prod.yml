@@ -2,6 +2,10 @@ spring:
   config:
     activate:
       on-profile: prod
+    profiles:
+      # prod 프로필이 켜질 때, dev에 적힌 H2 DB 설정도 함께 묶어서 가져오라는 뜻!
+      # include: dev
+      include: secret
 
   datasource:
     url: ${SECRET.REAL_DB_URL_PROD}
