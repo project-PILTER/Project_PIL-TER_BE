@@ -14,10 +14,10 @@ jobs:
         uses: actions/checkout@v4
 
       # 2. 자바 환경 세팅 (자바 버전에 맞게 17 또는 21로 수정)
-      - name: Set up JDK 17
+      - name: Set up JDK 26
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '26'
           distribution: 'temurin'
 
       # 3. [핵심] 금고(Secrets)에서 꺼내온 내용으로 빌드용 application-secret.yml 실시간 생성
