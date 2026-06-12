@@ -5,7 +5,7 @@ FROM eclipse-temurin:26-jdk-alpine
 WORKDIR /app
 
 # 3. 빌드된 jar 파일을 도커 컨테이너 내부로 복사
-COPY build/libs/*-SNAPSHOT.jar app.jar
+COPY app.jar app.jar
 
 # 4. 앱 실행 명령어
 ENTRYPOINT ["java", "-jar", "app.jar"]
