@@ -13,8 +13,7 @@ spring:
     password: ${SECRET.DB_PASSWORD_PROD}
 
   jpa:
-    hibernate:
-      ddl-auto: update # 운영 환경 안전을 위해 validate 유지
+    ddl-auto: update # 운영 환경 안전을 위해 validate 유지
     properties:
       hibernate:
         format_sql: false
