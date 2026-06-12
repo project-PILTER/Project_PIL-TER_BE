@@ -48,3 +48,6 @@ out/
 # application setting
 /src/main/resources/application-secret.yml
 /src/main/resources/application.yml
+
+# Docker Compose 설정 파일 (민감 정보 포함)
+# docker-compose.yml
