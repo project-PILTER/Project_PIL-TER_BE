@@ -3,6 +3,7 @@ package com.ll.projectLimC.domain.controller;
 import com.ll.projectLimC.domain.dto.CreateAccessTokenRequest;
 import com.ll.projectLimC.domain.dto.CreateAccessTokenResponse;
 import com.ll.projectLimC.domain.service.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenApiController {
     private final TokenService tokenService;
 
+    @Operation(summary = "Access Token 신규 발급",
+            description = "만료되지 않은 Refresh Token을 사용하여 새로운 Access Token을 획득합니다.")
     @PostMapping("/api/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(
             @RequestBody CreateAccessTokenRequest request
