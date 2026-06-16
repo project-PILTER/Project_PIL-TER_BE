@@ -1,8 +1,7 @@
 package com.ll.projectLimC.domain.controller;
 
-import com.ll.projectLimC.domain.dto.CommunityArticleCreateForm;
-import com.ll.projectLimC.domain.dto.CommunityArticleResponse;
-import com.ll.projectLimC.domain.dto.UpdateCommunityArticleRequest;
+import com.ll.projectLimC.domain.dto.*;
+import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,5 +70,16 @@ public class CommunityApiController {
 
         return ResponseEntity.ok()
                 .body(updatedCommunityArticle);
+    }
+
+    @PostMapping("/api/community/comments")
+    public ResponseEntity<AddCommentResponse> addComment(
+            @RequestBody AddCommentRequest request,
+            Principal principal
+            ){
+        Comment savedComment = communityService.addComment(request, principal.getName());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new AddCommentResponse(savedComment));
     }
 }

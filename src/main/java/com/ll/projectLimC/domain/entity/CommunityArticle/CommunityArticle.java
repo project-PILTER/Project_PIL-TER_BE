@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.entity.CommunityArticle;
 
+import com.ll.projectLimC.domain.entity.Comment.Comment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -50,6 +52,10 @@ public class CommunityArticle {
 //
 //    @Column(name = "commentCount", nullable = false)
 //    private Long commentCount;
+
+    @OneToMany(mappedBy = "communityArticle", cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
+
 
     @Builder
     public CommunityArticle(String author,
