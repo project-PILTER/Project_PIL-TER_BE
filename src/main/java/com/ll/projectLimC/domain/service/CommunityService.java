@@ -1,8 +1,12 @@
 package com.ll.projectLimC.domain.service;
 
+import com.ll.projectLimC.domain.dto.AddCommentRequest;
+import com.ll.projectLimC.domain.dto.AddCommentResponse;
 import com.ll.projectLimC.domain.dto.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.dto.UpdateCommunityArticleRequest;
+import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.repository.CommentRepository;
 import com.ll.projectLimC.domain.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor // final이 붙거나 @NonNull이 붙은 필드의 생성자 추가
 public class CommunityService {
     private final CommunityRepository communityRepository;
+    private final CommentRepository commentRepository;
 
     // 커뮤니티 게시글 저장용 메서드
     public CommunityArticle save(CommunityArticleCreateForm request, String userName){
@@ -63,5 +68,12 @@ public class CommunityService {
         if (!communityArticle.getAuthor().equals(userName)){
             throw new IllegalArgumentException("not authorized");
         }
+    }
+
+    public Comment addCommunity(AddCommentRequest request, String userName){
+        CommunityArticle communityArticle = communityRepository.findById(request.getCommunityArticleId())
+                .orElseThrow(()-> new IllegalArgumentException("not found : " + request.getCommunityArticleId()));
+
+        return commentRepository.save(request.toEntity(userName, communityArticle));
     }
 }
