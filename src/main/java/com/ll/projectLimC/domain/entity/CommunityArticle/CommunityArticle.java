@@ -39,12 +39,30 @@ public class CommunityArticle {
     @Column(name = "imageUrl", nullable = false)
     private String imageUrl;
 
+//    @Column(name = "nickname", nullable = false)
+//    private String nickname;
+//
+//    @Column(name = "viewCount", nullable = false)
+//    private Long viewCount;
+//
+//    @Column(name = "likeCount", nullable = false)
+//    private Long likeCount;
+//
+//    @Column(name = "commentCount", nullable = false)
+//    private Long commentCount;
+
     @Builder
-    public CommunityArticle(String author, String title, String content, String imageUrl){
+    public CommunityArticle(String author,
+                            String title,
+                            String content,
+                            String imageUrl
+                            // String nickname
+                            ){
         this.author = author;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+        // this.nickname = nickname;
     }
 
     public void updateCommunityArticle(String title, String content, String imageUrl){
