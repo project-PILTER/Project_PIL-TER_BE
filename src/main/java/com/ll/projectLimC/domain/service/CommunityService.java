@@ -70,7 +70,7 @@ public class CommunityService {
         }
     }
 
-    public Comment addCommunity(AddCommentRequest request, String userName){
+    public Comment addComment(AddCommentRequest request, String userName){
         CommunityArticle communityArticle = communityRepository.findById(request.getCommunityArticleId())
                 .orElseThrow(()-> new IllegalArgumentException("not found : " + request.getCommunityArticleId()));
 
