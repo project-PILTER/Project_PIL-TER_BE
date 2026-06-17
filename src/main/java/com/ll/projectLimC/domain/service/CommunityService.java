@@ -1,9 +1,6 @@
 package com.ll.projectLimC.domain.service;
 
-import com.ll.projectLimC.domain.dto.AddCommentRequest;
-import com.ll.projectLimC.domain.dto.AddCommentResponse;
-import com.ll.projectLimC.domain.dto.CommunityArticleCreateForm;
-import com.ll.projectLimC.domain.dto.UpdateCommunityArticleRequest;
+import com.ll.projectLimC.domain.dto.*;
 import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.repository.CommentRepository;
@@ -43,7 +40,7 @@ public class CommunityService {
 
     // 커뮤니티 게시글 수정용 메서드
     @Transactional
-    public CommunityArticle update(long id, UpdateCommunityArticleRequest request){
+    public CommunityArticle updateCommunityArticle(long id, UpdateCommunityArticleRequest request){
         CommunityArticle communityArticle = communityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found:" + id));
 
@@ -68,16 +65,5 @@ public class CommunityService {
         if (!communityArticle.getAuthor().equals(userName)){
             throw new IllegalArgumentException("not authorized");
         }
-    }
-
-    public Comment addComment(AddCommentRequest request, String userName){
-        CommunityArticle communityArticle = communityRepository.findById(request.getCommunityArticleId())
-                .orElseThrow(()-> new IllegalArgumentException("not found : " + request.getCommunityArticleId()));
-
-        return commentRepository.save(request.toEntity(userName, communityArticle));
-    }
-
-    public void deleteComment(){
-
     }
 }

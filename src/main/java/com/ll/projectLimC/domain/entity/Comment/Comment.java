@@ -32,7 +32,7 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // 실무 최적화: 성능을 위해 지연 로딩 설정 권장.
     private CommunityArticle communityArticle;
 
     @Builder
@@ -42,8 +42,8 @@ public class Comment {
         this.content = content;
     }
 
-    public void updateComment(CommunityArticle communityArticle, String content){
-        this.communityArticle = communityArticle;
+    // 댓글 수정 시에는 오직 내용(content)만 변경
+    public void updateComment(String content){
         this.content = content;
     }
 }
