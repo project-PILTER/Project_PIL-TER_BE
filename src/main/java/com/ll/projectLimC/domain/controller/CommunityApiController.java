@@ -72,6 +72,7 @@ public class CommunityApiController {
                 .body(updatedCommunityArticle);
     }
 
+    // 커뮤니티 게시글의 댓글 생성용 컨트롤러
     @PostMapping("/api/community/comments")
     public ResponseEntity<AddCommentResponse> addComment(
             @RequestBody AddCommentRequest request,

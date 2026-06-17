@@ -76,4 +76,8 @@ public class CommunityService {
 
         return commentRepository.save(request.toEntity(userName, communityArticle));
     }
+
+    public void deleteComment(){
+
+    }
 }

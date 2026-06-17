@@ -41,4 +41,9 @@ public class Comment {
         this.author = author;
         this.content = content;
     }
+
+    public void updateComment(CommunityArticle communityArticle, String content){
+        this.communityArticle = communityArticle;
+        this.content = content;
+    }
 }
