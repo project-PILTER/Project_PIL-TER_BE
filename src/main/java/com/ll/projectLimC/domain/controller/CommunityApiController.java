@@ -73,16 +73,4 @@ public class CommunityApiController {
         return ResponseEntity.ok()
                 .body(updatedCommunityArticle);
     }
-
-    // 커뮤니티 게시글의 댓글 생성용 컨트롤러
-    @PostMapping("/api/community/comments")
-    public ResponseEntity<AddCommentResponse> addComment(
-            @RequestBody AddCommentRequest request,
-            Principal principal
-            ){
-        Comment savedComment = commentService.addComment(request, principal.getName());
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new AddCommentResponse(savedComment));
-    }
 }
