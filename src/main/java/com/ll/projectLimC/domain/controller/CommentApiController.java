@@ -3,6 +3,7 @@ package com.ll.projectLimC.domain.controller;
 import com.ll.projectLimC.domain.dto.AddCommentRequest;
 import com.ll.projectLimC.domain.dto.AddCommentResponse;
 import com.ll.projectLimC.domain.dto.UpdateCommentRequest;
+import com.ll.projectLimC.domain.dto.UpdateCommentResponse;
 import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,21 +28,21 @@ public class CommentApiController {
             Principal principal
     ){
         Comment savedComment = commentService.addComment(request, principal.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new AddCommentResponse(savedComment));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AddCommentResponse(savedComment));
     }
 
     // 커뮤니티 게시글의 댓글 수정용 컨트롤러
     @Operation(summary = "댓글 수정",
             description = "로그인한 사용자가 자신이 작성한 댓글을 수정합니다.")
     @PutMapping("/api/community/comments/{id}")
-    public ResponseEntity<Comment> updateComment(
+    public ResponseEntity<UpdateCommentResponse> updateComment(
             @PathVariable Long id,
             @RequestBody UpdateCommentRequest request,
-            Principal principal // 인가 검증용 추가
+            Principal principal
     ){
-        Comment updatedComment = commentService.updateComment(id, request, principal.getName());
-        return ResponseEntity.ok().body(updatedComment);
+        UpdateCommentResponse response = commentService.updateComment(id, request, principal.getName());
+
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "댓글 삭제",
@@ -49,7 +50,7 @@ public class CommentApiController {
     @DeleteMapping("/api/community/comments/{id}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long id,
-            Principal principal // 인가 검증용 추가
+            Principal principal
     ){
         commentService.deleteComment(id, principal.getName());
         return ResponseEntity.ok().build();

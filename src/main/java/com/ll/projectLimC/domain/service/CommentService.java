@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.service;
 
 import com.ll.projectLimC.domain.dto.AddCommentRequest;
 import com.ll.projectLimC.domain.dto.UpdateCommentRequest;
+import com.ll.projectLimC.domain.dto.UpdateCommentResponse;
 import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.repository.CommentRepository;
@@ -16,8 +17,7 @@ public class CommentService {
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
 
-    public Comment addComment(AddCommentRequest request,
-                              String userName){
+    public Comment addComment(AddCommentRequest request, String userName){
         CommunityArticle communityArticle = communityRepository.findById(request.getCommunityArticleId())
                 .orElseThrow(()-> new IllegalArgumentException("not found : " + request.getCommunityArticleId()));
 
@@ -26,15 +26,18 @@ public class CommentService {
 
     // 댓글 수정용 메서드
     @Transactional
-    public Comment updateComment(Long id, UpdateCommentRequest request, String userName){
+    public UpdateCommentResponse updateComment(Long id, UpdateCommentRequest request, String userName){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found comment : " + id));
 
-        // 작성자 검증
+        // 작성자 검증 (보안 구멍 원천 차단)
         authorizeCommentAuthor(comment, userName);
 
+        // 엔티티 상태 변경 (더티 체킹으로 자동 update 쿼리 유발)
         comment.updateComment(request.getContent());
-        return comment;
+
+        // DTO로 감싸서 반환
+        return new UpdateCommentResponse(comment);
     }
 
     // 댓글 삭제용 메서드
@@ -43,7 +46,6 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found comment : " + id));
 
-        // 작성자 검증
         authorizeCommentAuthor(comment, userName);
 
         commentRepository.delete(comment);
