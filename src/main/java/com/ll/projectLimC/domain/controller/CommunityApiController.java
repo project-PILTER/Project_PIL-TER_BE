@@ -3,6 +3,7 @@ package com.ll.projectLimC.domain.controller;
 import com.ll.projectLimC.domain.dto.*;
 import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.service.CommentService;
 import com.ll.projectLimC.domain.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommunityApiController {
     private final CommunityService communityService;
+    private final CommentService commentService;
 
     // 커뮤니티 게시글 작성 컨트롤러
     // HTTP 메서드가 POST일 때 전달받은 Uri와 동일하면 메서드로 매핑
@@ -66,7 +68,7 @@ public class CommunityApiController {
     @PutMapping("/api/community/articles/{id}")
     public ResponseEntity<CommunityArticle> updateCommunityArticle(@PathVariable long id,
                                                                    @RequestBody UpdateCommunityArticleRequest request){
-        CommunityArticle updatedCommunityArticle = communityService.update(id, request);
+        CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request);
 
         return ResponseEntity.ok()
                 .body(updatedCommunityArticle);
@@ -78,7 +80,7 @@ public class CommunityApiController {
             @RequestBody AddCommentRequest request,
             Principal principal
             ){
-        Comment savedComment = communityService.addComment(request, principal.getName());
+        Comment savedComment = commentService.addComment(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new AddCommentResponse(savedComment));
