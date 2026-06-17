@@ -27,32 +27,31 @@ public class CommentApiController {
             Principal principal
     ){
         Comment savedComment = commentService.addComment(request, principal.getName());
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new AddCommentResponse(savedComment));
     }
 
     // 커뮤니티 게시글의 댓글 수정용 컨트롤러
     @Operation(summary = "댓글 수정",
-            description = "로그인한 사용자가 특정 게시글에 작성한 댓글을 수정합니다.")
-    @PutMapping("/api/community/comment/{id}")
+            description = "로그인한 사용자가 자신이 작성한 댓글을 수정합니다.")
+    @PutMapping("/api/community/comments/{id}")
     public ResponseEntity<Comment> updateComment(
             @PathVariable Long id,
-            @RequestBody UpdateCommentRequest request
-            ){
-        Comment updatedComment = commentService.updateComment(id, request);
+            @RequestBody UpdateCommentRequest request,
+            Principal principal // 인가 검증용 추가
+    ){
+        Comment updatedComment = commentService.updateComment(id, request, principal.getName());
         return ResponseEntity.ok().body(updatedComment);
     }
 
     @Operation(summary = "댓글 삭제",
-            description = "로그인한 사용자가 특정 게시글에 작성한 댓글을 삭제합니다.")
-    @DeleteMapping("/api/community/comment/{id}")
+            description = "로그인한 사용자가 자신이 작성한 댓글을 삭제합니다.")
+    @DeleteMapping("/api/community/comments/{id}")
     public ResponseEntity<Void> deleteComment(
-            @PathVariable Long id
+            @PathVariable Long id,
+            Principal principal // 인가 검증용 추가
     ){
-        commentService.deleteComment(id);
-
-        return ResponseEntity.ok()
-                .build();
+        commentService.deleteComment(id, principal.getName());
+        return ResponseEntity.ok().build();
     }
 }

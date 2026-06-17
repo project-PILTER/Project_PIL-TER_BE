@@ -16,7 +16,8 @@ public class CommentService {
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
 
-    public Comment addComment(AddCommentRequest request, String userName){
+    public Comment addComment(AddCommentRequest request,
+                              String userName){
         CommunityArticle communityArticle = communityRepository.findById(request.getCommunityArticleId())
                 .orElseThrow(()-> new IllegalArgumentException("not found : " + request.getCommunityArticleId()));
 
@@ -25,9 +26,12 @@ public class CommentService {
 
     // 댓글 수정용 메서드
     @Transactional
-    public Comment updateComment(Long id, UpdateCommentRequest request){
+    public Comment updateComment(Long id, UpdateCommentRequest request, String userName){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found comment : " + id));
+
+        // 작성자 검증
+        authorizeCommentAuthor(comment, userName);
 
         comment.updateComment(request.getContent());
         return comment;
@@ -35,10 +39,20 @@ public class CommentService {
 
     // 댓글 삭제용 메서드
     @Transactional
-    public void deleteComment(Long id){
+    public void deleteComment(Long id, String userName){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found comment : " + id));
 
+        // 작성자 검증
+        authorizeCommentAuthor(comment, userName);
+
         commentRepository.delete(comment);
+    }
+
+    // 댓글 작성자 검증 공통 메서드
+    private void authorizeCommentAuthor(Comment comment, String userName) {
+        if (!comment.getAuthor().equals(userName)) {
+            throw new IllegalArgumentException("not authorized to this comment");
+        }
     }
 }
