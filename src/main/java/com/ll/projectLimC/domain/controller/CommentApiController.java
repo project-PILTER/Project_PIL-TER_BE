@@ -2,15 +2,14 @@ package com.ll.projectLimC.domain.controller;
 
 import com.ll.projectLimC.domain.dto.AddCommentRequest;
 import com.ll.projectLimC.domain.dto.AddCommentResponse;
+import com.ll.projectLimC.domain.dto.UpdateCommentRequest;
 import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -31,5 +30,17 @@ public class CommentApiController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new AddCommentResponse(savedComment));
+    }
+
+    // 커뮤니티 게시글의 댓글 수정용 컨트롤러
+    @Operation(summary = "댓글 수정",
+    description = "로그인한 사용자가 특정 게시글에 작성한 댓글을 수정합니다.")
+    @PutMapping("/api/community/comment/{id}")
+    public ResponseEntity<Comment> updateComment(
+            @PathVariable Long id,
+            @RequestBody UpdateCommentRequest request
+            ){
+        Comment updatedComment = commentService.updateComment(id, request);
+        return ResponseEntity.ok().body(updatedComment);
     }
 }
