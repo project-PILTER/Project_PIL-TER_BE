@@ -33,7 +33,12 @@ public class CommentService {
         return comment;
     }
 
-//    public void deleteComment(){
-//
-//  }
+    // 댓글 삭제용 메서드
+    @Transactional
+    public void deleteComment(Long id){
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found comment : " + id));
+
+        commentRepository.delete(comment);
+    }
 }

@@ -34,7 +34,7 @@ public class CommentApiController {
 
     // 커뮤니티 게시글의 댓글 수정용 컨트롤러
     @Operation(summary = "댓글 수정",
-    description = "로그인한 사용자가 특정 게시글에 작성한 댓글을 수정합니다.")
+            description = "로그인한 사용자가 특정 게시글에 작성한 댓글을 수정합니다.")
     @PutMapping("/api/community/comment/{id}")
     public ResponseEntity<Comment> updateComment(
             @PathVariable Long id,
@@ -42,5 +42,17 @@ public class CommentApiController {
             ){
         Comment updatedComment = commentService.updateComment(id, request);
         return ResponseEntity.ok().body(updatedComment);
+    }
+
+    @Operation(summary = "댓글 삭제",
+            description = "로그인한 사용자가 특정 게시글에 작성한 댓글을 삭제합니다.")
+    @DeleteMapping("/api/community/comment/{id}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long id
+    ){
+        commentService.deleteComment(id);
+
+        return ResponseEntity.ok()
+                .build();
     }
 }
