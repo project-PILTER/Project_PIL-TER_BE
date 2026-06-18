@@ -16,7 +16,7 @@ public class LikeService {
     private final CommunityRepository communityRepository;
 
     public boolean toggleLike(Long id, String userName) {
-        CommunityArticle communityArticle = communityRepository.findById()
+        CommunityArticle communityArticle = communityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found article : " + id));
 
         // 이미 좋아요를 누른 상태인지 확인
