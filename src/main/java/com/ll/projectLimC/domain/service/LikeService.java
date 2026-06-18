@@ -12,4 +12,6 @@ public class LikeService {
     private final CommunityRepository communityRepository;
 
 
+    public boolean toggleLike(Long id, String name) {
+    }
 }
