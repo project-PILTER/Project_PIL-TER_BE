@@ -35,7 +35,11 @@ public class CommunityService {
 
     // 커뮤니티 게시글 삭제용 메서드
     public void deleteCommunityArticle(long id){
-        communityRepository.deleteById(id);
+        CommunityArticle communityArticle = communityRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        authorizeArticleAuthor(communityArticle);
+        communityRepository.delete(communityArticle);
     }
 
     // 커뮤니티 게시글 수정용 메서드
@@ -50,12 +54,9 @@ public class CommunityService {
         return communityArticle;
     }
 
-    public void delete(long id){
-        CommunityArticle communityArticle = communityRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
-
-        authorizeArticleAuthor(communityArticle);
-        communityRepository.delete(communityArticle);
+    // 인기 게시글 상위 5개 조회용 메서드
+    public List<CommunityArticle> getPopularCommunityArticles(){
+        return communityRepository.findTop5ByOrderByLikeDesc();
     }
 
     // 게시글을 작성한 유저인지 확인
