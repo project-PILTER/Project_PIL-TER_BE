@@ -73,4 +73,18 @@ public class CommunityApiController {
         return ResponseEntity.ok()
                 .body(updatedCommunityArticle);
     }
+
+    @Operation(summary = "인기 게시글 조회",
+            description = "좋아요 수가 많은 상위 5개의 커뮤니티 게시글 목록을 가져옵니다.")
+    @GetMapping("/api/community/articles/popular")
+    public ResponseEntity<List<CommunityArticleResponse>> getPopularCommunityArticle(){
+        List<CommunityArticleResponse> getpopularCommunityArticles =
+                communityService.getPopularCommunityArticles()
+                        .stream()
+                        .map(CommunityArticleResponse::new)
+                        .toList();
+
+        return ResponseEntity.ok()
+                .body(getpopularCommunityArticles);
+    }
 }

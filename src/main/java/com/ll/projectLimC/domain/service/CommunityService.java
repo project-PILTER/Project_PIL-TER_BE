@@ -55,7 +55,7 @@ public class CommunityService {
     }
 
     // 인기 게시글 상위 5개 조회용 메서드
-    public List<CommunityArticle> getPopularCommunityArticle(){
+    public List<CommunityArticle> getPopularCommunityArticles(){
         return communityRepository.findTop5ByOrderByLikeDesc();
     }
 
