@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.dto;
 
 import com.ll.projectLimC.domain.entity.Comment.Comment;
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.entity.User.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +14,11 @@ public class AddCommentRequest {
     private Long communityArticleId;
     private String content;
 
-    public Comment toEntity(String author, CommunityArticle communityArticle){
+    public Comment toEntity(User user, CommunityArticle communityArticle){
         return Comment.builder()
                 .communityArticle(communityArticle)
                 .content(content)
-                .author(author)
+                .user(user)
                 .build();
     }
 }

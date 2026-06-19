@@ -17,15 +17,16 @@ public class ArticleViewResponse {
     private LocalDateTime createdAt;
     private String author;
     private String imageUrl;
-    private List<Comment> comments;
+    private List<CommentResponse> comments;
 
     public ArticleViewResponse(CommunityArticle article){
         this.id = article.getId();
-        this.title = article.getTitle();;
-        this.content = article.getContent();;
+        this.title = article.getTitle();
+        this.content = article.getContent();
         this.author = article.getAuthor();
         this.imageUrl = article.getImageUrl();
         this.createdAt = article.getCreatedAt();
-        this.comments = article.getComments();
+        this.comments = comments; // 매핑 완료
+
     }
 }
