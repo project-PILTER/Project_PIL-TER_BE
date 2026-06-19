@@ -18,7 +18,7 @@ public class AddCommentRequest {
         return Comment.builder()
                 .communityArticle(communityArticle)
                 .content(content)
-                .user(user)
+                .user(use)
                 .build();
     }
 }
