@@ -33,11 +33,26 @@ public class User implements UserDetails {
     @Column(name = "nickname", unique = true)
     private String nickname;
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
+    @Column(name = "is_medical_expert", nullable = false)
+    private boolean isMedicalExpert = false; // 기본값은 일반 유저(false)
+
+    @Column(name = "expert_title")
+    private String expertTitle; // 전문의가 아닐 경우 null 가능
+
     @Builder
-    public User(String email, String password, String nickname){
+    public User(String email, String password, String nickname,
+                String profileImage,
+                boolean isMedicalExpert,
+                String expertTitle){
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.isMedicalExpert = isMedicalExpert;
+        this.expertTitle = expertTitle;
     }
 
     @Override // 권한 반환
@@ -86,8 +101,10 @@ public class User implements UserDetails {
     }
 
     // 사용자 이름 변경
-    public User update(String nickname){
+    // 유저 정보 수정 메서드 확장 (프로필 이미지 등도 변경 가능하도록)
+    public User update(String nickname, String profileImage){
         this.nickname = nickname;
+        this.profileImage = profileImage;
 
         return this;
     }

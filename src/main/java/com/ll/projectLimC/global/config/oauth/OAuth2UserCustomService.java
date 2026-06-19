@@ -31,8 +31,17 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
+
+        // 구글/카카오 등 소셜 로그인에서 제공하는 프로필 이미지 URL 가져오기
+        String picture = (String) attributes.get("picture"); // 구글은 보통 "picture", 카카오는 다를 수 있음
+        if (picture == null) {
+            picture = (String) attributes.get("profile_image"); // 플랫폼 대응용 예외 처리
+        }
+
+        String finalPicture = picture;
+
         User user = userRepository.findByEmail(email)
-                .map(entity -> entity.update(name))
+                .map(entity -> entity.update(name, finalPicture))
                 .orElse(User.builder()
                         .email(email)
                         .nickname(name)

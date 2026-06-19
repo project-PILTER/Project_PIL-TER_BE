@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.entity.Comment;
 
 import com.ll.projectLimC.domain.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.entity.User.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,11 +23,15 @@ public class Comment {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(name = "author", nullable = false)
-    private String author;
+//    @Column(name = "author", nullable = false)
+//    private String author;
 
     @Column(name = "content", nullable = false)
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // 작성자 정보는 이 'user' 안에 다 들어있습니다.
 
     @CreatedDate
     @Column(name = "created_at")
@@ -36,9 +41,9 @@ public class Comment {
     private CommunityArticle communityArticle;
 
     @Builder
-    public Comment(CommunityArticle communityArticle, String author, String content){
+    public Comment(CommunityArticle communityArticle, User user, String content){
         this.communityArticle = communityArticle;
-        this.author = author;
+        this.user = user;
         this.content = content;
     }
 
