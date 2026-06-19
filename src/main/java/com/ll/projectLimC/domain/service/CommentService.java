@@ -29,13 +29,7 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("not found user"));
 
         // 빌더에 조인한 user 객체를 넘겨서 저장
-        Comment comment = Comment.builder()
-                .communityArticle(communityArticle)
-                .user(user) // 👈 기존 userName 문자열 대신 유저 객체 매핑!
-                .content(request.getContent())
-                .build();
-
-        return commentRepository.save(comment);
+        return commentRepository.save(request.toEntity(user, communityArticle));
     }
 
     // 댓글 수정용 메서드
