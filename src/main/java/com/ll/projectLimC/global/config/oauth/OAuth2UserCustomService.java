@@ -1,7 +1,7 @@
 package com.ll.projectLimC.global.config.oauth;
 
-import com.ll.projectLimC.domain.entity.User.User;
-import com.ll.projectLimC.domain.repository.UserRepository;
+import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.User.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
