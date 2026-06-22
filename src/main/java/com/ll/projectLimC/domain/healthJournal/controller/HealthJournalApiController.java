@@ -48,4 +48,18 @@ public class HealthJournalApiController {
                 "message", "건강일지가 성공적으로 수정되었습니다.")
         );
     }
+
+    // 건강일지 삭제용 컨트롤러
+    @DeleteMapping("/api/journals/{id}")
+    public ResponseEntity<Map<String, Object>> deleteHealthJournal(
+            @PathVariable Long id,
+            Principal principal
+    ){
+        healthJournalService.deleteHealthJournal(id, principal.getName());
+
+        return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "message", "건강 일지가 성공적으로 삭제되었습니다."
+        ));
+    }
 }
