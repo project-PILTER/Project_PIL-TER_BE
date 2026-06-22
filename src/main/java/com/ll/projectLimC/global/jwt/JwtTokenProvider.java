@@ -1,6 +1,6 @@
 package com.ll.projectLimC.global.jwt;
 
-import com.ll.projectLimC.domain.entity.User.User;
+import com.ll.projectLimC.domain.User.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;

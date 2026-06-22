@@ -1,11 +1,11 @@
 package com.ll.projectLimC.controller;
 
 import com.ll.projectLimC.config.jwt.JwtFactory;
-import com.ll.projectLimC.domain.dto.CreateAccessTokenRequest;
-import com.ll.projectLimC.domain.entity.User.User;
-import com.ll.projectLimC.domain.entity.token.RefreshToken;
-import com.ll.projectLimC.domain.repository.RefreshTokenRepository;
-import com.ll.projectLimC.domain.repository.UserRepository;
+import com.ll.projectLimC.global.token.dto.CreateAccessTokenRequest;
+import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
+import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
+import com.ll.projectLimC.domain.User.repository.UserRepository;
 import com.ll.projectLimC.global.jwt.JwtProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
