@@ -57,4 +57,17 @@ public class HealthJournalService {
                 request.getSupplements()
         );
     }
+
+    // 건강일지 삭제용 메서드
+    public void deleteHealthJournal(Long id, String userEmail){
+        HealthJournal journal = healthJournalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일지입니다."));
+
+        // [보안 검증] 작성자 본인만 삭제 가능하도록 체크
+        if (!journal.getUser().getEmail().equals(userEmail)){
+            throw new IllegalArgumentException("해당 일지를 삭제할 권한이 없습니다.");
+        }
+
+        healthJournalRepository.delete(journal);
+    }
 }
