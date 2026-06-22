@@ -3,6 +3,7 @@ package com.ll.projectLimC.domain.healthJournal.service;
 import com.ll.projectLimC.domain.User.entity.User;
 import com.ll.projectLimC.domain.User.repository.UserRepository;
 import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalRequest;
+import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalResponse;
 import com.ll.projectLimC.domain.healthJournal.dto.UpdateHealthJournalRequest;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
@@ -10,11 +11,39 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class HealthJournalService {
     private final HealthJournalRepository healthJournalRepository;
     private final UserRepository userRepository;
+
+    // 내 일지 목록 전체 조회
+    @Transactional
+    public List<HealthJournalResponse> findAllByUser(String userEmail){
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
+        return healthJournalRepository.findByUserIdOrderByJournalDateDesc(user)
+                .stream()
+                // 엔티티 리스트를 DTO 리스트로 변환
+                .map(HealthJournalResponse::new)
+                .toList();
+    }
+
+    // 일지 상세 단건 조회 (수정 화면 등에서 사용)
+    @Transactional
+    public HealthJournalResponse findById(Long id, String userEmail){
+        HealthJournal journal = healthJournalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일지입니다."));
+
+        if (!journal.getUser().getEmail().equals(userEmail)){
+            throw new IllegalArgumentException("해당 일지를 조회할 권한이 없습니다.");
+        }
+
+        return new HealthJournalResponse(journal);
+    }
 
     // 건강일지 생성용 메서드.
     @Transactional
