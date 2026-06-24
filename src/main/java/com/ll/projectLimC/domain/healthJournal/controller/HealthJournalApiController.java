@@ -7,6 +7,8 @@ import com.ll.projectLimC.domain.healthJournal.dto.UpdateHealthJournalRequest;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
 import com.ll.projectLimC.domain.healthJournal.service.HealthJournalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "건강일지 API", description = "건강일지 CRUD 및 조회 컨트롤러")
 @RestController
 @RequiredArgsConstructor
 public class HealthJournalApiController {
@@ -22,6 +25,8 @@ public class HealthJournalApiController {
     private final HealthJournalRepository healthJournalRepository;
 
     // 내 건강 일지 목록 전체 조회 API
+    @Operation(summary = "건강일지 목록 전체 조회",
+            description = "로그인한 사용자가 건강일지 페이지를 클릭하여 작성한 모든 건강일지 목록을 조회합니다.")
     @GetMapping("/api/journals")
     public ResponseEntity<List<HealthJournalResponse>> getAllJournals(
             Principal principal
@@ -32,6 +37,8 @@ public class HealthJournalApiController {
     }
 
     // 특정 건강 일지 상세 단건 조회 API
+    @Operation(summary = "건강일지 단건 조회",
+            description = "로그인한 사용자가 특정 건강일지를 선택하여 해당 건강일지를 조회합니다.")
     @GetMapping("/api/journals/{id}")
     public ResponseEntity<HealthJournalResponse> getHealthJournalById(
             @PathVariable Long id,
@@ -43,6 +50,8 @@ public class HealthJournalApiController {
     }
 
     // 건강일지 생성 API
+    @Operation(summary = "건강일지 생성",
+            description = "로그인한 사용자가 새로운 건강일지를 생성합니다.")
     @PostMapping("/api/journals")
     public ResponseEntity<Map<String, Object>> addHealthJournal(
             @RequestBody HealthJournalRequest request,
@@ -60,6 +69,8 @@ public class HealthJournalApiController {
     }
 
     // 건강일지 수정 API
+    @Operation(summary = "건강일지 수정",
+            description = "로그인한 사용자가 기존에 작성한 건강일지를 수정합니다.")
     @PutMapping("/api/journals/{id}")
     public ResponseEntity<Map<String, Object>> updateHealthJournal(
             @PathVariable Long id,
@@ -75,6 +86,8 @@ public class HealthJournalApiController {
     }
 
     // 건강일지 삭제용 API
+    @Operation(summary = "건강일지 삭제",
+            description = "로그인한 사용자가 작성한 건강일지를 삭제합니다.")
     @DeleteMapping("/api/journals/{id}")
     public ResponseEntity<Map<String, Object>> deleteHealthJournal(
             @PathVariable Long id,
