@@ -16,3 +16,4 @@ springdoc:
   api-docs:
     # 스웨거가 API를 분석한 json 원본 데이터가 나오는 경로
     path: /api-docs
+  packages-to-scan: com.ll.projectLimC
