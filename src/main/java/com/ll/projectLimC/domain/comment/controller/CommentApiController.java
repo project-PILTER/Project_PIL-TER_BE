@@ -7,6 +7,7 @@ import com.ll.projectLimC.domain.comment.dto.UpdateCommentResponse;
 import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
+@Tag(name = "커뮤니티 게시글 댓글 API", description = "커뮤니티 게시판 댓글 작성/수정/삭제 컨트롤러")
 @RestController
 @RequiredArgsConstructor
 public class CommentApiController {

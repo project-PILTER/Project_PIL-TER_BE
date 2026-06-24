@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
-@Tag(name = "커뮤니티 API", description = "커뮤니티 게시판 게시글 CRUD 및 조회 컨트롤러")
+@Tag(name = "커뮤니티 게시판 API", description = "커뮤니티 게시판 게시글 CRUD 및 조회 컨트롤러")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/community/articles") // 공통 주소 축약으로 코드 간소화
