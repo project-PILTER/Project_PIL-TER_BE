@@ -2,12 +2,14 @@ package com.ll.projectLimC.domain.healthJournal.dto;
 
 import com.ll.projectLimC.domain.healthJournal.ConditionStatus;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
+@Schema(description = "")
 public class HealthJournalResponse {
     private final Long id;
     private final LocalDate journalDate;
