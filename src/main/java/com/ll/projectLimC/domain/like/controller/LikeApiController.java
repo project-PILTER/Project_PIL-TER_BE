@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.like.controller;
 
 import com.ll.projectLimC.domain.like.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.Map;
 
+@Tag(name = "좋아요 API", description = "좋아요 등록/취소 컨트롤러")
 @RestController
 @RequiredArgsConstructor
 public class LikeApiController {
