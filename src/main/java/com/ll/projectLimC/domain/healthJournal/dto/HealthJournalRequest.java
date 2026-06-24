@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@Schema(description = "건강일지 조회 요청 정보")
+@Schema(description = "건강일지 조회 요청 정보 폼")
 public class HealthJournalRequest {
     @Schema(description = "일지 기록 날짜 (ISO 표준 날짜 포맷)", example = "2026-06-24")
     private LocalDate journalDate;

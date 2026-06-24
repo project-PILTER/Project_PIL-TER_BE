@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.community.dto;
 
+import com.ll.projectLimC.domain.comment.dto.CommentAuthorResponse;
 import com.ll.projectLimC.domain.comment.dto.CommentResponse;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,7 +43,13 @@ public class ArticleViewResponse {
         this.author = article.getAuthor();
         this.imageUrl = article.getImageUrl();
         this.createdAt = article.getCreatedAt();
-        this.comments = comments;
+        this.comments = article.getComments() != null ?
+                article.getComments().stream()
+                        .map(comment -> new CommentResponse(
+                                comment,
+                                new CommentAuthorResponse(comment.getUser())
+                        ))
+                        .toList() : List.of();
 
     }
 }

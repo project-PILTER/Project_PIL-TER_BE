@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-@Schema(description = "건강일지 수정 요청 정보")
+@Schema(description = "건강일지 수정 요청 정보 폼")
 public class UpdateHealthJournalRequest {
     @Schema(description = "오늘의 전반적인 컨디션 상태 (GOOD, NORMAL, BAD)", example = "BAD")
     private ConditionStatus conditionStatus;

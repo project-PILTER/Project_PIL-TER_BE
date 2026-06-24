@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-@Schema(description = "건강일지 조회 응답 정보")
+@Schema(description = "건강일지 조회 응답 정보 폼")
 public class HealthJournalResponse {
     @Schema(description = "건강일지 고유 ID (PK)", example = "1")
     private final Long id;
