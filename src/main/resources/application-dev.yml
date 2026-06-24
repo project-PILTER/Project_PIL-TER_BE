@@ -23,3 +23,6 @@ spring:
 
         # PostgreSQL에 최적화된 방언(Dialect) 설정 - 스프링 부트 3.x부터는 생략해도 자동 감지, 명시하면 정확해지기에 입력
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+springdoc:
+  packages-to-scan: com.ll.projectLimC

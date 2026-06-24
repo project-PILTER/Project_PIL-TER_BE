@@ -23,7 +23,8 @@ spring:
         format_sql: false
         show_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
+springdoc:
+  packages-to-scan: com.ll.projectLimC
 
 #spring:
 #  config:
