@@ -2,18 +2,33 @@ package com.ll.projectLimC.domain.User.controller;
 
 import com.ll.projectLimC.domain.User.dto.AddUserRequest;
 import com.ll.projectLimC.domain.User.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "회원 API", description = "사용자 회원가입 및 인증 관련 컨트롤러")
+@RestController // @Controller를 @RestController로 변경하여 JSON 응답 기반으로 전환
 @RequiredArgsConstructor
-@Controller
 public class UserApiController {
+
     private final UserService userService;
 
-    @PostMapping("user")
-    public String signup(AddUserRequest request){
-        userService.save(request); // 회원가입 메서드 호출
-        return "redirect:/login"; // 회원가입이 완료된 이후에 로그인 페이지로 이동
+    @Operation(summary = "일반 회원가입",
+            description = "프론트엔드에서 전달된 사용자 정보를 바탕으로 데이터베이스에 회원을 등록합니다.")
+    @PostMapping("/api/user")
+    public ResponseEntity<Void> signup(@RequestBody AddUserRequest request) { // 🎯 @RequestBody 추가 및 ResponseEntity 반환
+
+        // 1. 회원가입 비즈니스 로직 수행
+        userService.save(request);
+
+        // 2. 화면 리다이렉트 대신, 성공했다는 의미의 201 Created 상태 코드만 깔끔하게 반환
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
