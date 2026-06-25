@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.like.controller;
 
+import com.ll.projectLimC.domain.like.dto.LikeResponse;
 import com.ll.projectLimC.domain.like.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,12 +27,13 @@ public class LikeApiController {
             Principal principal
     ){
         // 토글 실행 결과 받기 (true: 등록, false: 취소)
-        boolean isLiked = likeService.toggleLike(id, principal.getName());
+        LikeResponse likeResponse = likeService.toggleLike(id, principal.getName());
 
         return ResponseEntity.ok().body(Map.of(
                 "articleId", id,
-                "isLiked", isLiked,
-                "message", isLiked ? "좋아요 등록 완료" : "좋아요 취소 완료"
+                "isLiked", likeResponse.isLiked(),
+                "totalLikes", likeResponse.getTotalLikes(),
+                "message", likeResponse.isLiked() ? "좋아요 등록 완료" : "좋아요 취소 완료"
         ));
     }
 }
