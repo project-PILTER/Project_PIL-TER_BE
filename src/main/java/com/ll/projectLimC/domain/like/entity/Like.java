@@ -2,19 +2,21 @@ package com.ll.projectLimC.domain.like.entity;
 
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Table(
-        name = "community_article_like",
+        name = "community_article_like", // 🎯 예약어 충돌을 피하기 위한 안전한 테이블명
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"community_article_id", "author"}) // 중복 좋아요 방지
+                @UniqueConstraint(
+                        name = "uk_article_author", // 제약조건 이름 명시 (관리 편의성)
+                        columnNames = {"community_article_id", "author"} // 💥 중복 좋아요 철저히 방지!
+                )
         }
 )
 @Entity
 @Getter
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Like {
     @Id
@@ -29,9 +31,9 @@ public class Like {
     @JoinColumn(name = "community_article_id", nullable = false)
     private CommunityArticle communityArticle; // 좋아요 누른 커뮤니티 게시글
 
-    @Builder
-    public Like(String author, CommunityArticle communityArticle){
-        this.author = author;
-        this.communityArticle = communityArticle;
-    }
+//    @Builder
+//    public Like(String author, CommunityArticle communityArticle){
+//        this.author = author;
+//        this.communityArticle = communityArticle;
+//    }
 }
