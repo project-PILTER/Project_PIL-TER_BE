@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +38,10 @@ public class User implements UserDetails {
     @Column(name = "profile_image")
     private String profileImage;
 
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     @Column(name = "is_medical_expert", nullable = false)
     private boolean isMedicalExpert = false; // 기본값은 일반 유저(false)
 
@@ -45,12 +51,14 @@ public class User implements UserDetails {
     @Builder
     public User(String email, String password, String nickname,
                 String profileImage,
+                LocalDateTime createdAt,
                 boolean isMedicalExpert,
                 String expertTitle){
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.profileImage = profileImage;
+        this.createdAt = createdAt;
         this.isMedicalExpert = isMedicalExpert;
         this.expertTitle = expertTitle;
     }
