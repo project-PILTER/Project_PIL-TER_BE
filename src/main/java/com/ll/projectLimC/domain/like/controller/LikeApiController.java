@@ -21,7 +21,7 @@ public class LikeApiController {
 
     @Operation(summary = "게시글 좋아요 토글",
             description = "좋아요를 처음 눌렀다면 좋아요 표시가 되고, 2번째 누르는 것이라면 좋아요가 취소됩니다.")
-    @PostMapping("/api/community/articles/{id}/likes")
+    @PostMapping("/community/articles/{id}/likes")
     public ResponseEntity<Map<String, Object>> toggleLike(
             @PathVariable Long id,
             Principal principal
