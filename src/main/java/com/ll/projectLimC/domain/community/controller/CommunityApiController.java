@@ -20,7 +20,6 @@ import java.util.List;
 @Tag(name = "커뮤니티 게시판 API", description = "커뮤니티 게시판 게시글 CRUD 및 조회 컨트롤러")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/community/articles") // 공통 주소 축약으로 코드 간소화
 public class CommunityApiController {
 
     private final CommunityService communityService;
