@@ -24,7 +24,7 @@ public class CommentApiController {
     // 커뮤니티 게시글의 댓글 생성용 컨트롤러
     @Operation(summary = "댓글 작성",
             description = "특정 게시글에 로그인한 사용자가 댓글을 작성합니다.")
-    @PostMapping("/api/community/comments")
+    @PostMapping("/community/comments")
     public ResponseEntity<AddCommentResponse> addComment(
             @RequestBody AddCommentRequest request,
             Principal principal
@@ -36,7 +36,7 @@ public class CommentApiController {
     // 커뮤니티 게시글의 댓글 수정용 컨트롤러
     @Operation(summary = "댓글 수정",
             description = "로그인한 사용자가 자신이 작성한 댓글을 수정합니다.")
-    @PutMapping("/api/community/comments/{id}")
+    @PutMapping("/community/comments/{id}")
     public ResponseEntity<UpdateCommentResponse> updateComment(
             @PathVariable Long id,
             @RequestBody UpdateCommentRequest request,
@@ -49,7 +49,7 @@ public class CommentApiController {
 
     @Operation(summary = "댓글 삭제",
             description = "로그인한 사용자가 자신이 작성한 댓글을 삭제합니다.")
-    @DeleteMapping("/api/community/comments/{id}")
+    @DeleteMapping("/community/comments/{id}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long id,
             Principal principal

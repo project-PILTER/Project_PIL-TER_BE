@@ -27,7 +27,7 @@ public class HealthJournalApiController {
     // 내 건강 일지 목록 전체 조회 API
     @Operation(summary = "건강일지 목록 전체 조회",
             description = "로그인한 사용자가 건강일지 페이지를 클릭하여 작성한 모든 건강일지 목록을 조회합니다.")
-    @GetMapping("/api/journals")
+    @GetMapping("/journals")
     public ResponseEntity<List<HealthJournalResponse>> getAllJournals(
             Principal principal
     ){
@@ -39,7 +39,7 @@ public class HealthJournalApiController {
     // 특정 건강 일지 상세 단건 조회 API
     @Operation(summary = "건강일지 단건 조회",
             description = "로그인한 사용자가 특정 건강일지를 선택하여 해당 건강일지를 조회합니다.")
-    @GetMapping("/api/journals/{id}")
+    @GetMapping("/journals/{id}")
     public ResponseEntity<HealthJournalResponse> getHealthJournalById(
             @PathVariable Long id,
             Principal principal
@@ -52,7 +52,7 @@ public class HealthJournalApiController {
     // 건강일지 생성 API
     @Operation(summary = "건강일지 생성",
             description = "로그인한 사용자가 새로운 건강일지를 생성합니다.")
-    @PostMapping("/api/journals")
+    @PostMapping("/journals")
     public ResponseEntity<Map<String, Object>> addHealthJournal(
             @RequestBody HealthJournalRequest request,
             Principal principal
@@ -71,7 +71,7 @@ public class HealthJournalApiController {
     // 건강일지 수정 API
     @Operation(summary = "건강일지 수정",
             description = "로그인한 사용자가 기존에 작성한 건강일지를 수정합니다.")
-    @PutMapping("/api/journals/{id}")
+    @PutMapping("/journals/{id}")
     public ResponseEntity<Map<String, Object>> updateHealthJournal(
             @PathVariable Long id,
             @RequestBody UpdateHealthJournalRequest request,
@@ -88,7 +88,7 @@ public class HealthJournalApiController {
     // 건강일지 삭제용 API
     @Operation(summary = "건강일지 삭제",
             description = "로그인한 사용자가 작성한 건강일지를 삭제합니다.")
-    @DeleteMapping("/api/journals/{id}")
+    @DeleteMapping("/journals/{id}")
     public ResponseEntity<Map<String, Object>> deleteHealthJournal(
             @PathVariable Long id,
             Principal principal
