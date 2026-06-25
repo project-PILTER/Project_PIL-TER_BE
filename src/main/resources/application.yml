@@ -6,9 +6,10 @@ spring:
 server:
   port: 8080
 
-springdoc:
   servlet:
     context-path: /api
+
+springdoc:
 
   swagger-ui:
     # 접속 경로를 http://localhost:8080/swagger-ui.html 로 단순화
