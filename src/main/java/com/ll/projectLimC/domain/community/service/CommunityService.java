@@ -23,12 +23,13 @@ public class CommunityService {
         return communityRepository.save(request.toEntity(userName));
     }
 
+    // 커뮤니티 게시글 단건 조회용 메서드
     public CommunityArticle findById(Long id){
         return communityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found " + id));
     }
 
-    // 커뮤니티 게시글 조회용 메서드
+    // 커뮤니티 게시글 전체 조회용 메서드
     public List<CommunityArticle> findAll(){
         return communityRepository.findAll();
     }
@@ -55,9 +56,9 @@ public class CommunityService {
     }
 
     // 인기 게시글 상위 5개 조회용 메서드
-    public List<CommunityArticle> getPopularCommunityArticles(){
-        return communityRepository.findTop5ByOrderByLikeDesc();
-    }
+//    public List<CommunityArticle> getPopularCommunityArticles(){
+//        return communityRepository.findTop5ByOrderByLikeDesc();
+//    }
 
     // 게시글을 작성한 유저인지 확인
     private static void authorizeArticleAuthor(CommunityArticle communityArticle){
