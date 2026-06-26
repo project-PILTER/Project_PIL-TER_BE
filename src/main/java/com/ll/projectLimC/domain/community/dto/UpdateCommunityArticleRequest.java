@@ -20,4 +20,7 @@ public class UpdateCommunityArticleRequest {
     @Schema(description = "수정할 첨부 이미지 URL (선택)",
             example = "https://example.com/new-image.png")
     private String imageUrl;
+
+    @Schema(description = "수정 후 최종 등록 여부 (false 입력 시 PUBLISHED로 상태 전환)", example = "false")
+    private boolean isDraft; // 임시 저장 연장할지, 출간할지 결정
 }

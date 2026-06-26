@@ -71,7 +71,7 @@ public class CommunityArticle {
         this.content = content;
         this.imageUrl = imageUrl;
         if (status != null) {
-            this.status = status;
+            this.status = status; // 수정할 때 DRAFT -> PUBLISHED로 전환 가능하도록 추가
         }
     }
 }
