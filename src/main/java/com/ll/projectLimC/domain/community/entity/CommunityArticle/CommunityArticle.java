@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.community.entity.CommunityArticle;
 
 import com.ll.projectLimC.domain.comment.entity.Comment;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
