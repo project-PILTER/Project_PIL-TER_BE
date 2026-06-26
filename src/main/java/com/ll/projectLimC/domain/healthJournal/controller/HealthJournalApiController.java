@@ -10,6 +10,9 @@ import com.ll.projectLimC.domain.healthJournal.service.HealthJournalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +32,10 @@ public class HealthJournalApiController {
             description = "로그인한 사용자가 건강일지 페이지를 클릭하여 작성한 모든 건강일지 목록을 조회합니다.")
     @GetMapping("/journals")
     public ResponseEntity<List<HealthJournalResponse>> getAllJournals(
-            Principal principal
+            Principal principal,
+            @PageableDefault(size = 10, sort = "journalDate", direction = Sort.Direction.DESC) Pageable pageable
     ){
-        List<HealthJournalResponse> journals = healthJournalService.findAllByUser(principal.getName());
+        List<HealthJournalResponse> journals = healthJournalService.findAllByUser(principal.getName(), pageable);
 
         return ResponseEntity.ok().body(journals);
     }
