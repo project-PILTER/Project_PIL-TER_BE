@@ -38,7 +38,7 @@ public class TestAuthController {
                         .isMedicalExpert(false)
                         .build()));
 
-        // 2. 제욱님의 JwtTokenProvider를 활용해 24시간짜리 든든한 액세스 토큰 생성
+        // 2. JwtTokenProvider를 활용해 24시간짜리 든든한 액세스 토큰 생성
         String accessToken = tokenProvider.generateToken(user, Duration.ofDays(1));
 
         // 3. 스웨거에서 바로 복사하기 좋게 JSON 형식으로 리턴
