@@ -26,3 +26,6 @@ spring:
 
 springdoc:
   packages-to-scan: com.ll.projectLimC
+
+cors:
+  allowed-origin: http://localhost:3000

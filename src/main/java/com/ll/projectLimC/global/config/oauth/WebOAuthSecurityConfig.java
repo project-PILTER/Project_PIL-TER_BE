@@ -5,6 +5,7 @@ import com.ll.projectLimC.domain.User.service.UserService;
 import com.ll.projectLimC.global.token.TokenAuthentiocationFilter;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,10 +49,14 @@ public class WebOAuthSecurityConfig {
         };
     }
 
+    @Value("${cors.allowed-origin:https://pilter.co.kr}")
+    private String allowedOrigin;
+
     // 토큰 방식으로 인증을 하기에 기존에 사용하던 폼 로그인, 세션 비활성화
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         return http
+                // CSRF 비활성화 (API 서버이므로 필수)
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)

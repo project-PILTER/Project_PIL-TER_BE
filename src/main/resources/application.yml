@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod # 개발환경 dev
+    active: dev # 개발환경 dev
     include: secret # 민감정보 secret 파일
 
 server:
@@ -21,3 +21,6 @@ springdoc:
     # 스웨거가 API를 분석한 json 원본 데이터가 나오는 경로
     path: /api-docs
 #  packages-to-scan: com.ll.projectLimC
+
+cors:
+  allowed-origin: http://localhost:3000
