@@ -8,6 +8,7 @@ import com.ll.projectLimC.domain.healthJournal.dto.UpdateHealthJournalRequest;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +22,11 @@ public class HealthJournalService {
 
     // 내 일지 목록 전체 조회
     @Transactional
-    public List<HealthJournalResponse> findAllByUser(String userEmail){
+    public List<HealthJournalResponse> findAllByUser(String userEmail, Pageable pageable){
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-        return healthJournalRepository.findByUserIdOrderByJournalDateDesc(user)
+        return healthJournalRepository.findByUserId(user, pageable)
                 .stream()
                 // 엔티티 리스트를 DTO 리스트로 변환
                 .map(HealthJournalResponse::new)
