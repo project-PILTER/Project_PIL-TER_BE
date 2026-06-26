@@ -69,7 +69,7 @@ public class WebOAuthSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/token").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/test/**").permitAll()
+
                         .requestMatchers("/api/swagger-ui/**",
                                 "/api/v3/api-docs/**",
                                 "/api/swagger-ui.html",
