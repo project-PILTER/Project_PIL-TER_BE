@@ -10,6 +10,9 @@ import com.ll.projectLimC.domain.community.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +44,10 @@ public class CommunityApiController {
     @Operation(summary = "전체 게시글 조회",
             description = "시스템에 등록된 모든 커뮤니티 게시글 목록을 JSON 데이터로 가져옵니다.")
     @GetMapping("/community/articles")
-    public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles() {
-        List<CommunityArticleResponse> communityArticles = communityService.findAll()
+    public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        List<CommunityArticleResponse> communityArticles = communityService.findAll(pageable)
                 .stream()
                 .map(CommunityArticleResponse::new)
                 .toList();
