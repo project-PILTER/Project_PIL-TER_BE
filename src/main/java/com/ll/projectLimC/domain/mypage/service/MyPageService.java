@@ -53,6 +53,7 @@ public class MyPageService {
         // 레포지토리에서 나온 엔티티 스트림을 DTO의 내부 생성자(new)를 통해 규격에 맞게 변환
         List<MyPageResponse.HealthJournalSummaryResponse> recentJournals =
                 healthJournalRepository.findByUserId(user, topThree)
+                        .getContent()
                         .stream()
                         .map(MyPageResponse.HealthJournalSummaryResponse::new)
                         .toList();
