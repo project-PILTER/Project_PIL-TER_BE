@@ -1,6 +1,8 @@
 package com.ll.projectLimC.domain.community.entity.CommunityArticle;
 
 import com.ll.projectLimC.domain.comment.entity.Comment;
+import com.ll.projectLimC.domain.community.ArticleStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -44,25 +46,33 @@ public class CommunityArticle {
     @OneToMany(mappedBy = "communityArticle", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ArticleStatus status = ArticleStatus.PUBLISHED; // 기본값 지정
 
     @Builder
     public CommunityArticle(String author,
                             String title,
                             String content,
-                            String imageUrl
+                            String imageUrl,
                             // String nickname
+                            ArticleStatus status
                             ){
         this.author = author;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
         // this.nickname = nickname;
+        this.status = status != null ? status : ArticleStatus.PUBLISHED; // 상태값 추가 받아오기
     }
 
-    public void updateCommunityArticle(String title, String content, String imageUrl){
+    public void updateCommunityArticle(String title, String content, String imageUrl, ArticleStatus status){
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+        if (status != null) {
+            this.status = status; // 수정할 때 DRAFT -> PUBLISHED로 전환 가능하도록 추가
+        }
     }
 }
 

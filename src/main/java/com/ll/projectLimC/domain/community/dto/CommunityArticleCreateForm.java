@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.community.dto;
 
+import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -23,6 +24,8 @@ public class CommunityArticleCreateForm {
     @Schema(description = "첨부 이미지 URL (선택)", example = "https://example.com/image.png")
     private String imageUrl;
 
+    @Schema(description = "임시 저장 여부 (true: 임시저장, false: 즉시등록)", example = "false")
+    private boolean isDraft;
 
     public CommunityArticle toEntity(String author){
         return CommunityArticle.builder()
@@ -30,6 +33,7 @@ public class CommunityArticleCreateForm {
                 .content(content)
                 .author(author)
                 .imageUrl(imageUrl)
+                .status(isDraft ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED)
                 .build();
     }
 }
