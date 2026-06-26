@@ -26,6 +26,9 @@ spring:
 springdoc:
   packages-to-scan: com.ll.projectLimC
 
+cors:
+  allowed-origin: https://pilter.co.kr
+
 #spring:
 #  config:
 #    activate:
