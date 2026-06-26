@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 // 테이블 이름을 데이터베이스 예약어와 격리하기 위해 큰따옴표안에 이스케이프 처리하여 매핑
-@Table(name = "\"user\"")
+@Table(name = "user")
 @NoArgsConstructor
 @Getter
 @Entity
