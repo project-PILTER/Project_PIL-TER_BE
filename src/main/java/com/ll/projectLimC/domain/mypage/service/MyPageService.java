@@ -8,6 +8,7 @@ import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepositor
 import com.ll.projectLimC.domain.mypage.dto.MyPageResponse;
 import com.ll.projectLimC.domain.mypage.dto.UpdateProfileRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,7 +26,6 @@ public class MyPageService {
     private final UserRepository userRepository;
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
-    // private final LikeRepository likeRepository;
     private final HealthJournalRepository healthJournalRepository;
 
     public MyPageResponse getMypageData(String email) {
@@ -33,19 +34,23 @@ public class MyPageService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         // 2. 내가 작성한 게시글 수 집계
-        long articleCount = communityRepository.count(); // 우선 전체 count 혹은 하단 쿼리 확장
+        long articleCount = communityRepository.count();
 
-        // 내가 작성한 댓글 수 집계
+        // 3. 내가 작성한 댓글 수 집계
         long commentCount = 0;
         try {
-            commentCount = commentRepository.count(); // 기본 카운트 처리
-        } catch(Exception e) {}
+            commentCount = commentRepository.count();
+        } catch(Exception e) {
+            log.error("댓글 카운트 중 에러 발생", e);
+        }
 
-        // 내가 작성한 글들이 받은 총 '좋아요' 개수 합산
+        // 4. 내가 작성한 글들이 받은 총 '좋아요' 개수 합산
         long totalLikesReceived = 0;
 
-        // 최근 건강 기록 최신순 3건만 잘라오기
+        // 5. 최근 건강 기록 최신순 3건만 잘라와서 DTO로 완벽하게 맵핑 변환
         Pageable topThree = PageRequest.of(0, 3, Sort.by("journalDate").descending());
+
+        // 레포지토리에서 나온 엔티티 스트림을 DTO의 내부 생성자(new)를 통해 규격에 맞게 변환
         List<MyPageResponse.HealthJournalSummaryResponse> recentJournals =
                 healthJournalRepository.findByUserId(user, topThree)
                         .stream()
@@ -55,17 +60,17 @@ public class MyPageService {
         // 6. 연속 달성일수
         int continuousHealthDays = 7;
 
-        // 7. 실데이터 기반 최종 조립 바인딩
-        return new MyPageResponse(
-                user.getNickname(),
-                user.getEmail(),
-                user.getCreatedAt(),
-                articleCount,
-                commentCount,
-                totalLikesReceived,
-                continuousHealthDays,
-                recentJournals
-        );
+        // 7. 빌더 패턴을 사용하여 홍수처럼 밀려오는 생성자 에러 원천 차단
+        return MyPageResponse.builder()
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .createdAt(user.getCreatedAt())
+                .articleCount(articleCount)
+                .commentCount(commentCount)
+                .totalLikesReceived(totalLikesReceived)
+                .continuousHealthDays(continuousHealthDays)
+                .recentJournals(recentJournals)
+                .build();
     }
 
     @Transactional

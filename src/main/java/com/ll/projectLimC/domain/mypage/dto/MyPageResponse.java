@@ -3,6 +3,7 @@ package com.ll.projectLimC.domain.mypage.dto;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Schema(description = "마이페이지 대시보드 전체 정보 응답")
 public class MyPageResponse {
 
@@ -31,8 +33,9 @@ public class MyPageResponse {
     // 최근 건강 기록 요약 (화면 우측 하단 위젯용)
     private List<HealthJournalSummaryResponse> recentJournals;
 
-    // 🎯 제욱님의 실데이터(ConditionStatus)와 완벽 연동되는 내부 DTO
+    // 실데이터(ConditionStatus)와 완벽 연동되는 내부 DTO
     @Getter
+    @AllArgsConstructor
     public static class HealthJournalSummaryResponse {
         private String dateLabel; // "오늘", "어제", "N일 전" 또는 날짜 문자열
         private String condition; // 컨디션 한글 설명 ("아주 좋음", "좋음", "보통" 등)
