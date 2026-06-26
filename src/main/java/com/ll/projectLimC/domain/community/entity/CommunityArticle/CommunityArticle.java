@@ -66,7 +66,7 @@ public class CommunityArticle {
         this.status = status != null ? status : ArticleStatus.PUBLISHED; // 상태값 추가 받아오기
     }
 
-    public void updateCommunityArticle(String title, String content, String imageUrl){
+    public void updateCommunityArticle(String title, String content, String imageUrl, ArticleStatus status){
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;

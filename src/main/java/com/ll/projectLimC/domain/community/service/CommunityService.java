@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.community.service;
 
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
+import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
@@ -50,7 +51,13 @@ public class CommunityService {
                 .orElseThrow(() -> new IllegalArgumentException("not found:" + id));
 
         authorizeArticleAuthor(communityArticle);
-        communityArticle.updateCommunityArticle(request.getTitle(), request.getContent(), request.getImageUrl());
+        ArticleStatus nextStatus = request.isDraft() ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED;
+
+        communityArticle.updateCommunityArticle(request.getTitle(),
+                request.getContent(),
+                request.getImageUrl(),
+                nextStatus);
+
 
         return communityArticle;
     }
@@ -67,5 +74,10 @@ public class CommunityService {
         if (!communityArticle.getAuthor().equals(userName)){
             throw new IllegalArgumentException("not authorized");
         }
+    }
+
+    // 마이페이지나 임시저장함 뷰에 뿌려줄 제욱님의 임시저장 목록 조회용 - 선택하기
+    public List<CommunityArticle> findMyDrafts(String userName) {
+        return communityRepository.findByAuthorAndStatus(userName, ArticleStatus.DRAFT);
     }
 }
