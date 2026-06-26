@@ -6,6 +6,7 @@ import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +32,8 @@ public class CommunityService {
     }
 
     // 커뮤니티 게시글 전체 조회용 메서드
-    public List<CommunityArticle> findAll(){
-        return communityRepository.findAll();
+    public List<CommunityArticle> findAll(Pageable pageable){
+        return communityRepository.findByStatus(ArticleStatus.PUBLISHED, pageable);
     }
 
     // 커뮤니티 게시글 삭제용 메서드
