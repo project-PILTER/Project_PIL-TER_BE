@@ -27,7 +27,7 @@ public class MyPageService {
     // private final LikeRepository likeRepository;
     private final HealthJournalRepository healthJournalRepository;
 
-    public MyPageResponse getMypageData(String email) {
+    public MyPageRespons getMypageData(String email) {
         // 1. 유저 검증
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
