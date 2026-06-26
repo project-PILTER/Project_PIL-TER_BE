@@ -25,7 +25,7 @@ public class TestAuthController {
 
     @Operation(summary = "테스트용 Bearer 토큰 즉시 발급",
             description = "입력한 이메일로 유저를 조회하거나 없을 경우 즉시 가짜 유저를 생성하여 1일간 유효한 만능 JWT 토큰을 발급합니다.")
-    @GetMapping("/api/test/token")
+    @GetMapping("/test/token")
     public ResponseEntity<Map<String, String>> getTestToken(
             @RequestParam(defaultValue = "testuser@gmail.com") String email
     ) {
