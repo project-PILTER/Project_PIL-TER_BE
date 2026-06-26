@@ -88,6 +88,18 @@ public class CommunityApiController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "내가 작성한 임시 저장 글 목록 조회",
+            description = "현재 로그인한 유저가 임시 저장(DRAFT)해 둔 글 목록만 모아서 가져옵니다.")
+    @GetMapping("/community/articles/drafts")
+    public ResponseEntity<List<CommunityArticleResponse>> findMyDraftArticles(Principal principal){
+        List<CommunityArticleResponse> drafts = communityService.findMyDrafts(principal.getName())
+                .stream()
+                .map(CommunityArticleResponse::new)
+                .toList();
+
+        return ResponseEntity.ok().body(drafts);
+    }
+}
     // 7. 인기 게시글 조회
 //    @Operation(summary = "인기 게시글 조회",
 //            description = "좋아요 수가 많은 상위 5개의 커뮤니티 게시글 목록을 가져옵니다.")
@@ -100,4 +112,4 @@ public class CommunityApiController {
 //                        .toList();
 //        return ResponseEntity.ok().body(getpopularCommunityArticles);
 //    }
-}
+
