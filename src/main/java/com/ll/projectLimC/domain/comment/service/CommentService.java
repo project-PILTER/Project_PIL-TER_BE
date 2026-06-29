@@ -61,8 +61,8 @@ public class CommentService {
 
     // 댓글 작성자 검증 공통 메서드
     private void authorizeCommentAuthor(Comment comment, String userName) {
-        if (!comment.getUser().equals(userName)) {
-            throw new IllegalArgumentException("not authorized to this comment");
+        if (!comment.getUser().getEmail().equals(userName)) {
+            throw new IllegalArgumentException("댓글 권한이 없습니다.");
         }
     }
 }

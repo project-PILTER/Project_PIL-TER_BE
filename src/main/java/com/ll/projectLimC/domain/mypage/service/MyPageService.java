@@ -34,10 +34,11 @@ public class MyPageService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         // 2. 내가 작성한 게시글 수 집계
-        long articleCount = communityRepository.count();
+        long articleCount = communityRepository.countByAuthor(user.getEmail());
 
         // 3. 내가 작성한 댓글 수 집계
-        long commentCount = 0;
+        long commentCount = commentRepository.countByUserId(user);
+
         try {
             commentCount = commentRepository.count();
         } catch(Exception e) {

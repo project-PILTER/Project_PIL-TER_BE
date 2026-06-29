@@ -1,4 +1,4 @@
-package com.ll.projectLimC.global.config.oauth.dto;
+package com.ll.projectLimC.domain.User.dto.login;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
