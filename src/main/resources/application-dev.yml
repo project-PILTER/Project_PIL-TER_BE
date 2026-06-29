@@ -4,10 +4,11 @@ spring:
       on-profile: dev
 
     datasource:
-    driver-class-name: org.h2.Driver # org.postgresql.Driver
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL
-    username: sa # ${SECRET.DB_USERNAME_DEV}
-    password: # ${SECRET.DB_PASSWORD_DEV}
+    driver-class-name: org.postgresql.Driver # org.h2.Driver #
+    url: ${SECRET.DB_URL_DEV}
+    # jdbc:h2:mem:testdb;MODE=PostgreSQL
+    username: ${SECRET.DB_USERNAME_DEV} # sa
+    password: ${SECRET.DB_PASSWORD_DEV} #
 
   h2:
     console:

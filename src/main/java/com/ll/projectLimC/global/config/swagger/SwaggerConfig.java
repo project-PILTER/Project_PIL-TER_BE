@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
@@ -20,7 +21,8 @@ import java.util.List;
                 description = "Pilter API 명세서 입니다."
         ),
         servers = {
-                @Server(url = "https://pilter.co.kr/api", description = "기본 서버")
+                @Server(url = "https://pilter.co.kr/api", description = "배포 서버"),
+                @Server(url = "http://localhost:8080/api", description = "로컬 서버")
         }
 )
 public class SwaggerConfig {
@@ -48,3 +50,12 @@ public class SwaggerConfig {
         return new SecurityRequirement().addList("bearerAuth");
     }
 }
+//        // 1. 로컬 개발용 서버 주소 정의
+//        Server localServer = new Server();
+//        localServer.setUrl("");
+//        localServer.setDescription("로컬 테스트 서버");
+//
+//        // 2. 운영 서버 주소 정의
+//        Server prodServer = new Server();
+//        prodServer.setUrl("https://pilter.co.kr");
+//        prodServer.setDescription("운영 실서버");

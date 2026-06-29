@@ -71,13 +71,13 @@ public class User implements UserDetails {
     // 사용자의 id를 반환 - 고유한 값
     @Override
     public String getUsername() {
-        return "email";
+        return this.email; // "email" 문자열 대신 실제 필드 반환
     }
 
     // 사용자의 패스워드 반환
     @Override
     public String getPassword() {
-        return "password";
+        return this.password; // "password" 문자열 대신 실제 암호화된 필드 반환
     }
 
     // 계정 만료 여부 반환

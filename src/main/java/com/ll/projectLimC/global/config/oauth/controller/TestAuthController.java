@@ -2,9 +2,8 @@ package com.ll.projectLimC.global.config.oauth.controller;
 
 import com.ll.projectLimC.domain.User.entity.User;
 import com.ll.projectLimC.domain.User.repository.UserRepository;
-import com.ll.projectLimC.global.config.oauth.dto.LoginRequest;
+import com.ll.projectLimC.domain.User.dto.login.LoginRequest;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,6 @@ import java.util.Map;
 
 @Tag(name = "[개발용] 인증 테스트 API",
         description = "프론트 연동 전 스웨거/포스트맨 테스트를 위한 만능 토큰 발급기")
-@RestController
 @RequiredArgsConstructor
 public class TestAuthController {
 

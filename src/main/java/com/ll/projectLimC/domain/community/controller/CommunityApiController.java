@@ -64,13 +64,13 @@ public class CommunityApiController {
     }
 
     // 4. 게시글 수정 데이터 조회 (기존 신규/수정 폼 조회를 프론트엔드가 데이터만 바인딩하도록 API화)
-    @Operation(summary = "수정용 게시글 데이터 조회",
-            description = "글 수정 페이지 진입 시 기존에 작성된 제목과 본문 데이터를 불러옵니다.")
-    @GetMapping("/community/articles/edit/{id}")
-    public ResponseEntity<ArticleViewResponse> getArticleForEdit(@PathVariable Long id) {
-        CommunityArticle article = communityService.findById(id);
-        return ResponseEntity.ok().body(new ArticleViewResponse(article));
-    }
+//    @Operation(summary = "수정용 게시글 데이터 조회",
+//            description = "글 수정 페이지 진입 시 기존에 작성된 제목과 본문 데이터를 불러옵니다.")
+//    @GetMapping("/community/articles/edit/{id}")
+//    public ResponseEntity<ArticleViewResponse> getArticleForEdit(@PathVariable Long id) {
+//        CommunityArticle article = communityService.findById(id);
+//        return ResponseEntity.ok().body(new ArticleViewResponse(article));
+//    }
 
     // 5. 게시글 수정 완료 처리
     @Operation(summary = "게시글 수정",
