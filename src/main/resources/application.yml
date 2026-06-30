@@ -12,7 +12,7 @@ server:
 springdoc:
 
   swagger-ui:
-    # 접속 경로를 http://localhost:8080/swagger-ui.html 로 단순화
+    # 접속 경로를 http://localhost:8080/api/swagger-ui.html 로 단순화
     path: /swagger-ui.html
     # API 태그(컨트롤러 이름)와 메서드(GET, POST 등)들을 알파벳 순서로 이쁘게 정렬
     operations-sorter: alpha

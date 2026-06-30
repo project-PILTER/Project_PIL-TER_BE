@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "커뮤니티 게시판 API", description = "커뮤니티 게시판 게시글 CRUD 및 조회 컨트롤러")
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+// @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class CommunityApiController {
 
     private final CommunityService communityService;
@@ -36,7 +36,7 @@ public class CommunityApiController {
     // ✨ 프론트엔드 요청 1번: 로그인 세션/쿠키 유지용 유저 정보 조회 API
     @Operation(summary = "현재 로그인한 유저 정보 조회",
             description = "프론트엔드 AuthProvider에서 로그인 상태 유지를 위해 쿠키/세션을 기반으로 유저 정보를 조회합니다.")
-    @GetMapping("/api/user") // 프론트가 요청한 엔드포인트 매핑
+    @GetMapping("/user") // 프론트가 요청한 엔드포인트 매핑
     public ResponseEntity<UserResponse> getCurrentUser(Principal principal) {
 
         // ➔ 로그인이 안 되어 있으면 프론트엔드가 요구한 401 Unauthorized 에러를 리턴합니다.

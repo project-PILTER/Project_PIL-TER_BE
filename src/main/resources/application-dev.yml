@@ -16,7 +16,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none # 로컬에서는 테이블이 자동 수정되도록 편하게 설정
+      ddl-auto: update # 로컬에서는 테이블이 자동 수정되도록 편하게 설정
     properties:
       hibernate:
         format_sql: true
