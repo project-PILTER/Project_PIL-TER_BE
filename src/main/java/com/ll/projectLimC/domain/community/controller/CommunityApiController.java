@@ -1,5 +1,8 @@
 package com.ll.projectLimC.domain.community.controller;
 
+import com.ll.projectLimC.domain.User.dto.UserResponse;
+import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.User.service.UserService;
 import com.ll.projectLimC.domain.comment.service.CommentService;
 import com.ll.projectLimC.domain.community.dto.ArticleViewResponse;
 import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
@@ -16,6 +19,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -23,9 +27,36 @@ import java.util.List;
 @Tag(name = "커뮤니티 게시판 API", description = "커뮤니티 게시판 게시글 CRUD 및 조회 컨트롤러")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class CommunityApiController {
 
     private final CommunityService communityService;
+    private final UserService userService;
+
+    // ✨ 프론트엔드 요청 1번: 로그인 세션/쿠키 유지용 유저 정보 조회 API
+    @Operation(summary = "현재 로그인한 유저 정보 조회",
+            description = "프론트엔드 AuthProvider에서 로그인 상태 유지를 위해 쿠키/세션을 기반으로 유저 정보를 조회합니다.")
+    @GetMapping("/api/user") // 프론트가 요청한 엔드포인트 매핑
+    public ResponseEntity<UserResponse> getCurrentUser(Principal principal) {
+
+        // ➔ 로그인이 안 되어 있으면 프론트엔드가 요구한 401 Unauthorized 에러를 리턴합니다.
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 유효하지 않거나 필요합니다.");
+        }
+
+        User loginUser = userService.findByEmail(principal.getName());
+
+        // 로그인된 경우: 서비스 레이어 등에서 principal.getName()(이메일 또는 ID)으로 유저를 조회한 뒤 반환합니다.
+        //
+        UserResponse userResponse = UserResponse.builder()
+                .id(loginUser.getId())
+                .email(loginUser.getEmail())
+                .name(loginUser.getNickname())
+                .role(loginUser.getRole().toString())
+                .build();
+
+        return ResponseEntity.ok().body(userResponse);
+    }
 
     // 1. 게시글 작성
     @Operation(summary = "커뮤니티 게시글 작성",
