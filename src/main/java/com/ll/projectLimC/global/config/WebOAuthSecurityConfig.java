@@ -1,5 +1,8 @@
-package com.ll.projectLimC.global.config.oauth;
+package com.ll.projectLimC.global.config;
 
+import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.ll.projectLimC.global.oauth.OAuth2SuccessHandler;
+import com.ll.projectLimC.global.oauth.service.OAuth2UserCustomService;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
 import com.ll.projectLimC.domain.User.service.UserService;
 import com.ll.projectLimC.global.token.TokenAuthentiocationFilter;
@@ -11,13 +14,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;

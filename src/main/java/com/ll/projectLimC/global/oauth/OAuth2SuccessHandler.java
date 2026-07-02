@@ -1,6 +1,7 @@
-package com.ll.projectLimC.global.config.oauth;
+package com.ll.projectLimC.global.oauth;
 
 import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
 import com.ll.projectLimC.domain.User.service.UserService;

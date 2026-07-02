@@ -1,4 +1,4 @@
-package com.ll.projectLimC.global.config.oauth;
+package com.ll.projectLimC.global.oauth.repository;
 
 import com.ll.projectLimC.util.CookieUtil;
 import jakarta.servlet.http.Cookie;

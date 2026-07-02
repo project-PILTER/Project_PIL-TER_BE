@@ -1,4 +1,4 @@
-package com.ll.projectLimC.global.config.oauth;
+package com.ll.projectLimC.global.oauth.service;
 
 import com.ll.projectLimC.domain.User.entity.User;
 import com.ll.projectLimC.domain.User.repository.UserRepository;

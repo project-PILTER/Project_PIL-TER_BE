@@ -13,7 +13,7 @@ public class AddUserRequest {
     @Column(unique = true)
     private String email;
 
-    // 스웨거 만들어둘 것.
+    @Schema(description = "사용자명", example = "홀리몰리")
     @Column(unique = true)
     private String nickname;
 
