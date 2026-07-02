@@ -26,7 +26,7 @@ public class UserApiController {
     public ResponseEntity<Void> signup(@RequestBody AddUserRequest request) { // 🎯 @RequestBody 추가 및 ResponseEntity 반환
 
         // 1. 회원가입 비즈니스 로직 수행
-        userService.save(request);
+        userService.createUser(request);
 
         // 2. 화면 리다이렉트 대신, 성공했다는 의미의 201 Created 상태 코드만 깔끔하게 반환
         return ResponseEntity.status(HttpStatus.CREATED).build();
