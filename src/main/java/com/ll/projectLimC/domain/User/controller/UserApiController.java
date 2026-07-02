@@ -22,11 +22,11 @@ public class UserApiController {
 
     @Operation(summary = "일반 회원가입",
             description = "프론트엔드에서 전달된 사용자 정보를 바탕으로 데이터베이스에 회원을 등록합니다.")
-    @PostMapping("/user")
+    @PostMapping("/user/signup")
     public ResponseEntity<Void> signup(@RequestBody AddUserRequest request) { // 🎯 @RequestBody 추가 및 ResponseEntity 반환
 
         // 1. 회원가입 비즈니스 로직 수행
-        userService.save(request);
+        userService.createUser(request);
 
         // 2. 화면 리다이렉트 대신, 성공했다는 의미의 201 Created 상태 코드만 깔끔하게 반환
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -1,5 +1,8 @@
 package com.ll.projectLimC.domain.community.controller;
 
+import com.ll.projectLimC.domain.User.dto.UserResponse;
+import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.User.service.UserService;
 import com.ll.projectLimC.domain.comment.service.CommentService;
 import com.ll.projectLimC.domain.community.dto.ArticleViewResponse;
 import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
@@ -16,6 +19,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.List;
 @Tag(name = "커뮤니티 게시판 API", description = "커뮤니티 게시판 게시글 CRUD 및 조회 컨트롤러")
 @RestController
 @RequiredArgsConstructor
+// @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class CommunityApiController {
 
     private final CommunityService communityService;

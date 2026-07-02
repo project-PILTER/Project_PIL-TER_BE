@@ -1,7 +1,7 @@
-package com.ll.projectLimC.domain.User.service;
+package com.ll.projectLimC.domain.auth.login.service;
 
-import com.ll.projectLimC.domain.User.dto.login.LoginRequest;
-import com.ll.projectLimC.domain.User.dto.login.LoginResponse;
+import com.ll.projectLimC.domain.auth.login.dto.LoginRequest;
+import com.ll.projectLimC.domain.auth.login.dto.LoginResponse;
 import com.ll.projectLimC.domain.User.entity.User;
 import com.ll.projectLimC.domain.User.repository.UserRepository;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;

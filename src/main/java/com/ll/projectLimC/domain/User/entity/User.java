@@ -42,6 +42,10 @@ public class User implements UserDetails {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
     @Column(name = "is_medical_expert", nullable = false)
     private boolean isMedicalExpert = false; // 기본값은 일반 유저(false)
 

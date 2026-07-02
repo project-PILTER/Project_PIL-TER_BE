@@ -18,7 +18,7 @@ public class TokenApiController {
 
     @Operation(summary = "Access Token 신규 발급",
             description = "만료되지 않은 Refresh Token을 사용하여 새로운 Access Token을 획득합니다.")
-    @PostMapping("/api/token")
+    @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(
             @RequestBody CreateAccessTokenRequest request
             ){
