@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.auth.login.dto;
+package com.ll.projectLimC.domain.auth.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
