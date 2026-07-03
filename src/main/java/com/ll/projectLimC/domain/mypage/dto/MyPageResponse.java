@@ -39,6 +39,7 @@ public class MyPageResponse {
     public static class HealthJournalSummaryResponse {
         private String dateLabel; // "오늘", "어제", "N일 전" 또는 날짜 문자열
         private String condition; // 컨디션 한글 설명 ("아주 좋음", "좋음", "보통" 등)
+        private String content; //
 
         public HealthJournalSummaryResponse(HealthJournal journal) {
             // 1) 날짜 자동 라벨링 연산 (오늘, 어제, N일 전)

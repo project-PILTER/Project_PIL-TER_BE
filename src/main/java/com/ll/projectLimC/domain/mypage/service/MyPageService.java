@@ -37,7 +37,7 @@ public class MyPageService {
         long articleCount = communityRepository.countByAuthor(user.getEmail());
 
         // 3. 내가 작성한 댓글 수 집계
-        long commentCount = commentRepository.countByUserId(user);
+        long commentCount = commentRepository.countByUser(user);
 
         try {
             commentCount = commentRepository.count();
