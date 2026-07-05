@@ -1,10 +1,10 @@
 package com.ll.projectLimC.domain.auth.service;
 
-import com.ll.projectLimC.domain.User.dto.UserResponse;
+import com.ll.projectLimC.domain.user.dto.UserResponse;
 import com.ll.projectLimC.domain.auth.dto.LoginRequest;
 import com.ll.projectLimC.domain.auth.dto.LoginResponse;
-import com.ll.projectLimC.domain.User.entity.User;
-import com.ll.projectLimC.domain.User.repository.UserRepository;
+import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;

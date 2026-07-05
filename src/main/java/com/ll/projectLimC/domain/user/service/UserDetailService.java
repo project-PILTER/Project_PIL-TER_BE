@@ -1,6 +1,6 @@
-package com.ll.projectLimC.domain.User.service;
+package com.ll.projectLimC.domain.user.service;
 
-import com.ll.projectLimC.domain.User.repository.UserRepository;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

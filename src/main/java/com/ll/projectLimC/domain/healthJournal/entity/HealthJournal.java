@@ -1,6 +1,6 @@
 package com.ll.projectLimC.domain.healthJournal.entity;
 
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.healthJournal.ConditionStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

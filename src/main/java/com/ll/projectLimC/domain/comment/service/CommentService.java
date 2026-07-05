@@ -5,10 +5,10 @@ import com.ll.projectLimC.domain.comment.dto.UpdateCommentResponse;
 import com.ll.projectLimC.domain.comment.dto.AddCommentRequest;
 import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
-import com.ll.projectLimC.domain.User.repository.UserRepository;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +21,11 @@ public class CommentService {
     private final UserRepository userRepository;
 
     public Comment addComment(AddCommentRequest request, String userEmail){
+        // request.getArticleId() 등이 null인지 먼저 체크
+        if (request.getCommunityArticleId() == null) {
+            throw new IllegalArgumentException("게시글 ID는 필수입니다.");
+        }
+
         CommunityArticle communityArticle = communityRepository.findById(request.getCommunityArticleId())
                 .orElseThrow(()-> new IllegalArgumentException("not found : " + request.getCommunityArticleId()));
 

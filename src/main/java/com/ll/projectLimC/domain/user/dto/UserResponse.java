@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.User.dto;
+package com.ll.projectLimC.domain.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

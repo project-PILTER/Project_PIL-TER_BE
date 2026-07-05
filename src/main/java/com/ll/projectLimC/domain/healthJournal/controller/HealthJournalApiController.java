@@ -1,10 +1,8 @@
 package com.ll.projectLimC.domain.healthJournal.controller;
 
-import com.ll.projectLimC.domain.User.entity.User;
 import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalRequest;
 import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalResponse;
 import com.ll.projectLimC.domain.healthJournal.dto.UpdateHealthJournalRequest;
-import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
 import com.ll.projectLimC.domain.healthJournal.service.HealthJournalService;
 import io.swagger.v3.oas.annotations.Operation;

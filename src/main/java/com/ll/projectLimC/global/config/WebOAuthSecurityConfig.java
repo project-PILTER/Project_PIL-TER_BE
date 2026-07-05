@@ -4,7 +4,7 @@ import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBase
 import com.ll.projectLimC.global.oauth.OAuth2SuccessHandler;
 import com.ll.projectLimC.global.oauth.service.OAuth2UserCustomService;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
-import com.ll.projectLimC.domain.User.service.UserService;
+import com.ll.projectLimC.domain.user.service.UserService;
 import com.ll.projectLimC.global.token.TokenAuthentiocationFilter;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

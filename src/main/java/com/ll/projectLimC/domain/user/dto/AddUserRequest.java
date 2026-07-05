@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.User.dto;
+package com.ll.projectLimC.domain.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;

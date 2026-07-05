@@ -1,7 +1,7 @@
 package com.ll.projectLimC.domain.mypage.service;
 
-import com.ll.projectLimC.domain.User.entity.User;
-import com.ll.projectLimC.domain.User.repository.UserRepository;
+import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;

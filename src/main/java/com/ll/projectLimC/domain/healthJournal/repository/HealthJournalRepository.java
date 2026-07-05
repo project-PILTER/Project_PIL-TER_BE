@@ -1,6 +1,6 @@
 package com.ll.projectLimC.domain.healthJournal.repository;
 
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

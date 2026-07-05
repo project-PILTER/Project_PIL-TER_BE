@@ -1,10 +1,10 @@
 package com.ll.projectLimC.global.oauth;
 
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
-import com.ll.projectLimC.domain.User.service.UserService;
+import com.ll.projectLimC.domain.user.service.UserService;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import com.ll.projectLimC.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;

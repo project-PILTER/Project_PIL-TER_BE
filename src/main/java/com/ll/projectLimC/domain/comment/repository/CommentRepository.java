@@ -1,6 +1,6 @@
 package com.ll.projectLimC.domain.comment.repository;
 
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 

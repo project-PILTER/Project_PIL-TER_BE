@@ -1,6 +1,6 @@
 package com.ll.projectLimC.domain.comment.dto;
 
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -17,7 +17,7 @@ public class CommentAuthorResponse {
     private String profileImage;
 
     @Schema(description = "의사인지 아닌지 확인")
-    private boolean isMedicalExpert;
+    private Boolean isMedicalExpert;
 
     @Schema(description = "의사인 댓글 작성자", example = "내과 전문의")
     private String expertTitle;

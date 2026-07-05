@@ -1,17 +1,14 @@
 package com.ll.projectLimC.domain.auth.controller;
 
-import com.ll.projectLimC.domain.User.dto.UserResponse;
-import com.ll.projectLimC.domain.User.entity.User;
-import com.ll.projectLimC.domain.User.service.UserService;
+import com.ll.projectLimC.domain.user.dto.UserResponse;
+import com.ll.projectLimC.domain.user.service.UserService;
 import com.ll.projectLimC.domain.auth.dto.LoginRequest;
 import com.ll.projectLimC.domain.auth.dto.LoginResponse;
 import com.ll.projectLimC.domain.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 

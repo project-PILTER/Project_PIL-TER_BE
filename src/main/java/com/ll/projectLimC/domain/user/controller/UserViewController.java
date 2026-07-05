@@ -1,7 +1,4 @@
-package com.ll.projectLimC.domain.User.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+package com.ll.projectLimC.domain.user.controller;
 
 //@Controller
 //public class UserViewController {

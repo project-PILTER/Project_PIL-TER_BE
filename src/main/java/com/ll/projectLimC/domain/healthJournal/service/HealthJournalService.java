@@ -1,7 +1,7 @@
 package com.ll.projectLimC.domain.healthJournal.service;
 
-import com.ll.projectLimC.domain.User.entity.User;
-import com.ll.projectLimC.domain.User.repository.UserRepository;
+import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalRequest;
 import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalResponse;
 import com.ll.projectLimC.domain.healthJournal.dto.UpdateHealthJournalRequest;

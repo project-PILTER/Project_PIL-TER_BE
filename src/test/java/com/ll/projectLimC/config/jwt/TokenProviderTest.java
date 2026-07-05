@@ -1,7 +1,7 @@
 package com.ll.projectLimC.config.jwt;
 
-import com.ll.projectLimC.domain.User.entity.User;
-import com.ll.projectLimC.domain.User.repository.UserRepository;
+import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.jwt.JwtProperties;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Jwts;

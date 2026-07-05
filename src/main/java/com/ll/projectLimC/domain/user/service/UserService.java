@@ -1,10 +1,9 @@
-package com.ll.projectLimC.domain.User.service;
+package com.ll.projectLimC.domain.user.service;
 
-import com.ll.projectLimC.domain.User.dto.AddUserRequest;
-import com.ll.projectLimC.domain.User.repository.UserRepository;
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.dto.AddUserRequest;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
+import com.ll.projectLimC.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

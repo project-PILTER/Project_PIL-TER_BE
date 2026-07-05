@@ -25,7 +25,7 @@ public class CommunityArticleCreateForm {
     private String imageUrl;
 
     @Schema(description = "임시 저장 여부 (true: 임시저장, false: 즉시등록)", example = "false")
-    private boolean isDraft;
+    private Boolean isDraft;
 
     public CommunityArticle toEntity(String author){
         return CommunityArticle.builder()

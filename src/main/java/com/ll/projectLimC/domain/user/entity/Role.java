@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.User.entity;
+package com.ll.projectLimC.domain.user.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

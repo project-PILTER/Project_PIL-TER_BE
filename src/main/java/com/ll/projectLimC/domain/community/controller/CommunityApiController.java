@@ -1,9 +1,5 @@
 package com.ll.projectLimC.domain.community.controller;
 
-import com.ll.projectLimC.domain.User.dto.UserResponse;
-import com.ll.projectLimC.domain.User.entity.User;
-import com.ll.projectLimC.domain.User.service.UserService;
-import com.ll.projectLimC.domain.comment.service.CommentService;
 import com.ll.projectLimC.domain.community.dto.ArticleViewResponse;
 import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.dto.CommunityArticleResponse;
@@ -19,7 +15,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -40,6 +35,7 @@ public class CommunityApiController {
             @RequestBody CommunityArticleCreateForm request,
             Principal principal
     ) {
+
         CommunityArticle savedCommunityArticle = communityService.save(request, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedCommunityArticle);

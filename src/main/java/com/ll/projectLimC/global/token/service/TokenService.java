@@ -1,7 +1,7 @@
 package com.ll.projectLimC.global.token.service;
 
-import com.ll.projectLimC.domain.User.service.UserService;
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.service.UserService;
+import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.global.refreshToken.service.RefreshTokenService;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

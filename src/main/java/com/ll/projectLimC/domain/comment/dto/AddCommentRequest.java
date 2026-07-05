@@ -2,7 +2,7 @@ package com.ll.projectLimC.domain.comment.dto;
 
 import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.User.entity.User;
+import com.ll.projectLimC.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
