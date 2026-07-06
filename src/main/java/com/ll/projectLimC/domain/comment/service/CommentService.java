@@ -9,6 +9,8 @@ import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +25,15 @@ public class CommentService {
     public Comment addComment(AddCommentRequest request, String userEmail){
         // request.getArticleId() 등이 null인지 먼저 체크
         if (request.getCommunityArticleId() == null) {
-            throw new IllegalArgumentException("게시글 ID는 필수입니다.");
+            throw new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE);
         }
 
         CommunityArticle communityArticle = communityRepository.findById(request.getCommunityArticleId())
-                .orElseThrow(()-> new IllegalArgumentException("not found : " + request.getCommunityArticleId()));
+                .orElseThrow(()-> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE_ID));
 
         // 로그인한 유저의 이메일(또는 닉네임)로 실제 DB에 있는 User 엔티티를 조회
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("not found user"));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         // 빌더에 조인한 user 객체를 넘겨서 저장
         return commentRepository.save(request.toEntity(user, communityArticle));
@@ -41,7 +43,7 @@ public class CommentService {
     @Transactional
     public UpdateCommentResponse updateComment(Long id, UpdateCommentRequest request, String userName){
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found comment : " + id));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_COMMENT));
 
         // 작성자 검증 (보안 구멍 원천 차단)
         authorizeCommentAuthor(comment, userName);
@@ -57,7 +59,7 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long id, String userName){
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found comment : " + id));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_COMMENT));
 
         authorizeCommentAuthor(comment, userName);
 
@@ -67,7 +69,7 @@ public class CommentService {
     // 댓글 작성자 검증 공통 메서드
     private void authorizeCommentAuthor(Comment comment, String userName) {
         if (!comment.getUser().getEmail().equals(userName)) {
-            throw new IllegalArgumentException("댓글 권한이 없습니다.");
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIED_THE_COMMENT);
         }
     }
 }

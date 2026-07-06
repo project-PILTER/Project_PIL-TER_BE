@@ -5,6 +5,8 @@ import com.ll.projectLimC.domain.auth.dto.LoginRequest;
 import com.ll.projectLimC.domain.auth.dto.LoginResponse;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
@@ -30,7 +32,7 @@ public class AuthService {
     public UserResponse getCurrentUser(Principal principal) {
         // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
         if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 유효하지 않거나 필요합니다.");
+            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
         // 2. 단일 신뢰 원천(SSOT)인 DB에서 로그인한 유저 정보 조회
@@ -51,11 +53,11 @@ public class AuthService {
 
         // 1. 이메일로 유저 존재 여부 확인
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         // 2. 입력된 평문 패스워드와 DB의 암호화된 패스워드 비교
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new GlobalCustomException(ErrorCode.SIGN_IN_PASSWORD_NOT_MATCH);
         }
 
         // 3. 비밀번호가 일치하면 1일짜리 액세스 토큰 생성 후 반환
@@ -73,9 +75,10 @@ public class AuthService {
         return new LoginResponse(accessToken, refreshToken);
     }
 
+    // 로그아웃은 회원 삭제가 아니라 '리프레시 토큰'을 지워주는 것
     @Transactional
     public void logout(Long id){
-        // DB에서 해당 유저의 리프레시 토큰을 찾아 완전 삭제치기
-        userRepository.deleteById(id);
+        refreshTokenRepository.findByUserId(id)
+                .ifPresent(refreshTokenRepository::delete);
     }
 }

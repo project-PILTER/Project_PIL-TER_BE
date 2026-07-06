@@ -7,6 +7,8 @@ import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalResponse;
 import com.ll.projectLimC.domain.healthJournal.dto.UpdateHealthJournalRequest;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class HealthJournalService {
     @Transactional
     public List<HealthJournalResponse> findAllByUser(String userEmail, Pageable pageable){
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         return healthJournalRepository.findByUserId(user, pageable)
                 .stream()
@@ -37,10 +39,10 @@ public class HealthJournalService {
     @Transactional
     public HealthJournalResponse findById(Long id, String userEmail){
         HealthJournal journal = healthJournalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일지입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_HEALTHJOURNAL));
 
         if (!journal.getUser().getEmail().equals(userEmail)){
-            throw new IllegalArgumentException("해당 일지를 조회할 권한이 없습니다.");
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_HEALTHJOURNAL);
         }
 
         return new HealthJournalResponse(journal);
@@ -51,7 +53,7 @@ public class HealthJournalService {
     public Long saveHealthJournal(HealthJournalRequest request,
                                   String userEmail){
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("not found user : " + userEmail));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         HealthJournal journal = HealthJournal.builder()
                 .user(user)
@@ -71,11 +73,11 @@ public class HealthJournalService {
     public void updateHealthJournal(Long id, UpdateHealthJournalRequest request,
                                     String userEmail){
         HealthJournal journal = healthJournalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 건강일지입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_HEALTHJOURNAL));
 
         // [보안 검증] 로그인한 유저가 본인이 쓴 일지가 맞는지 확인
         if (!journal.getUser().getEmail().equals(userEmail)){
-            throw new IllegalArgumentException("해당 일지를 수정할 권한이 없습니다.");
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_HEALTHJOURNAL);
         }
 
         // 엔티티의 내부 수정 메서드 호출
@@ -91,11 +93,11 @@ public class HealthJournalService {
     // 건강일지 삭제용 메서드
     public void deleteHealthJournal(Long id, String userEmail){
         HealthJournal journal = healthJournalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일지입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_HEALTHJOURNAL));
 
         // [보안 검증] 작성자 본인만 삭제 가능하도록 체크
         if (!journal.getUser().getEmail().equals(userEmail)){
-            throw new IllegalArgumentException("해당 일지를 삭제할 권한이 없습니다.");
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_HEALTHJOURNAL);
         }
 
         healthJournalRepository.delete(journal);

@@ -7,6 +7,8 @@ import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
 import com.ll.projectLimC.domain.mypage.dto.MyPageResponse;
 import com.ll.projectLimC.domain.mypage.dto.UpdateProfileRequest;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +33,7 @@ public class MyPageService {
     public MyPageResponse getMypageData(String email) {
         // 1. 유저 검증
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         // 2. 내가 작성한 게시글 수 집계
         long articleCount = communityRepository.countByAuthor(user.getEmail());
@@ -78,7 +80,7 @@ public class MyPageService {
     @Transactional
     public void updateUserProfile(String email, UpdateProfileRequest request) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         user.update(request.getNickname(), request.getProfileImageUrl());
     }
