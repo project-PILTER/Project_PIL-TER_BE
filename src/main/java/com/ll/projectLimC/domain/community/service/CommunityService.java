@@ -5,6 +5,8 @@ import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +30,7 @@ public class CommunityService {
     // 커뮤니티 게시글 단건 조회용 메서드
     public CommunityArticle findById(Long id){
         return communityRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found " + id));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE));
     }
 
     // 커뮤니티 게시글 전체 조회용 메서드
@@ -39,7 +41,7 @@ public class CommunityService {
     // 커뮤니티 게시글 삭제용 메서드
     public void deleteCommunityArticle(long id){
         CommunityArticle communityArticle = communityRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE));
 
         authorizeArticleAuthor(communityArticle);
         communityRepository.delete(communityArticle);
@@ -49,7 +51,7 @@ public class CommunityService {
     @Transactional
     public CommunityArticle updateCommunityArticle(long id, UpdateCommunityArticleRequest request){
         CommunityArticle communityArticle = communityRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found:" + id));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE));
 
         authorizeArticleAuthor(communityArticle);
         ArticleStatus nextStatus = request.isDraft() ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED;
@@ -68,7 +70,7 @@ public class CommunityService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (!communityArticle.getAuthor().equals(userName)){
-            throw new IllegalArgumentException("not authorized");
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_ARTICLE);
         }
     }
 

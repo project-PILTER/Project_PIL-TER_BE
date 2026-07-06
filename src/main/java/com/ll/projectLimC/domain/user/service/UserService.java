@@ -3,6 +3,8 @@ package com.ll.projectLimC.domain.user.service;
 import com.ll.projectLimC.domain.user.dto.AddUserRequest;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,11 +26,11 @@ public class UserService {
 
     public User findById(Long userId){
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 아이디입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
     }
 
     public User findByEmail(String email){
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
     }
 }

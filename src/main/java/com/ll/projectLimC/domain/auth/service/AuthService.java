@@ -53,11 +53,11 @@ public class AuthService {
 
         // 1. 이메일로 유저 존재 여부 확인
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         // 2. 입력된 평문 패스워드와 DB의 암호화된 패스워드 비교
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new GlobalCustomException(ErrorCode.SIGN_IN_PASSWORD_NOT_MATCH);
         }
 
         // 3. 비밀번호가 일치하면 1일짜리 액세스 토큰 생성 후 반환
