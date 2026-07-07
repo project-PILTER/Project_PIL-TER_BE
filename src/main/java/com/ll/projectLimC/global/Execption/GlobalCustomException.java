@@ -20,6 +20,6 @@ public class GlobalCustomException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return errorCode.getMessage();
+        return errorCode.getMessage()
     }
 }
