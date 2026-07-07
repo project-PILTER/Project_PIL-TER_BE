@@ -76,11 +76,14 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/api/token").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/api/swagger-ui/**",
-                                "/api/v3/api-docs/**",
-                                "/api/swagger-ui.html",
-                                "/api/swagger-resources/**",
-                                "/api/webjars/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**",
+                         "/api/v3/api-docs/**",
+                         "/swagger-ui/**",
+                         "/api/swagger-ui/**",
+                         "/swagger-ui.html",
+                         "/api/swagger-ui.html",
+                         "/swagger-resources/**",
+                         "/webjars/**").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
