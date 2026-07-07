@@ -18,5 +18,8 @@ public class AddUserRequest {
     private String nickname;
 
     @Schema(description = "비밀번호 (암호화되어 저장됨)", example = "password1234!")
+    @Column(length = 255)
     private String password;
+
+
 }
