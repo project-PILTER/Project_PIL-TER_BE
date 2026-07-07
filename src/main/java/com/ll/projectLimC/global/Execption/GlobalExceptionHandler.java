@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.ll.projectLimC.domain")
 public class GlobalExceptionHandler {
 
     // 1. 존재하지 않는 요청 또는 지원하지 않는 HTTP 메서드 예외 처리
