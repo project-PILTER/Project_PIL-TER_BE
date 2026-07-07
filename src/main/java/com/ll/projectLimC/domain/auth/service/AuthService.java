@@ -10,8 +10,11 @@ import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +52,7 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponse login(LoginRequest request){
+    public LoginResponse login(LoginRequest request, HttpServletResponse response){
 
         // 1. 이메일로 유저 존재 여부 확인
         User user = userRepository.findByEmail(request.getEmail())
@@ -72,13 +75,32 @@ public class AuthService {
 
         refreshTokenRepository.save(tokenEntity);
 
-        return new LoginResponse(accessToken, refreshToken);
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)                    // 자바스크립트 접근 차단 (XSS 방어)
+                .secure(true)                      // HTTPS 환경에서만 전송
+                .path("/")                         // 모든 경로에서 쿠키 유효
+                .maxAge(Duration.ofDays(7))        // 쿠키 만료 시간 (7일)
+                .sameSite("None")                  // 크로스 도메인(프론트-백 주소 다를 때) 간 전송 허용
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return new LoginResponse(accessToken);
     }
 
     // 로그아웃은 회원 삭제가 아니라 '리프레시 토큰'을 지워주는 것
     @Transactional
-    public void logout(Long id){
+    public void logout(Long id, HttpServletResponse response){
         refreshTokenRepository.findByUserId(id)
                 .ifPresent(refreshTokenRepository::delete);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0) // 즉시 만료
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }

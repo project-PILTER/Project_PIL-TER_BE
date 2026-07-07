@@ -5,7 +5,10 @@ import com.ll.projectLimC.domain.user.service.UserService;
 import com.ll.projectLimC.domain.auth.dto.LoginRequest;
 import com.ll.projectLimC.domain.auth.dto.LoginResponse;
 import com.ll.projectLimC.domain.auth.service.AuthService;
+import com.ll.projectLimC.global.Execption.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,17 +34,23 @@ public class AuthController {
     @Operation(summary = "사용자 로그인",
         description = "회원가입한 사용자가 해당 내용으로 로그인을 합니다.")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        LoginResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<CommonResponse<LoginResponse>> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response) {
+
+        LoginResponse loginResponse = authService.login(request, response);
+
+        // 💡 Generic(제네릭) 타입 일치를 위해 정적 팩토리 메서드 구조에 맞춰 반환합니다.
+        return ResponseEntity.ok(CommonResponse.success(loginResponse));
     }
 
     @Operation(summary = "사용자 로그아웃",
         description = "서비스를 사용하던 사용자가 로그아웃합니다.")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestParam Long id){
+    public ResponseEntity<String> logout(@RequestParam Long id,
+                                         HttpServletResponse response){
         // 본인인증이 된 상태에서 토큰 무효화를 위해 리프레시 토큰 레코드 삭제 처리
-        authService.logout(id);
+        authService.logout(id, response);
         return ResponseEntity.ok("로그아웃이 완료되었습니다.");
     }
 }
