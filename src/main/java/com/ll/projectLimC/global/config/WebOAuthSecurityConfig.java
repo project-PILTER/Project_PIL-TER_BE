@@ -89,11 +89,17 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
+                        // .loginPage("/login")
                         // Authorization 요청과 관련된 상태 저장
-                        .authorizationEndpoint(authorizationEndpoint ->
-                                authorizationEndpoint.authorizationRequestRepository(
-                                oAuth2AuthorizationRequestBasedOnCookieRepository()))
+//                        .authorizationEndpoint(authorizationEndpoint ->
+//                                authorizationEndpoint.authorizationRequestRepository(
+//                                oAuth2AuthorizationRequestBasedOnCookieRepository()))
+                        .authorizationEndpoint(authorization -> authorization
+                                        .baseUri("/api/oauth2/authorization")
+                                        .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
+                        )
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/api/login/oauth2/code/*"))
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
                         // 인증 성공 시 실행할 핸들러
                         .successHandler(oAuth2SuccessHandler())
