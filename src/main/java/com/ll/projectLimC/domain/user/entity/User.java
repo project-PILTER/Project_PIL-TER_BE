@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,11 @@ import java.util.List;
 
 // 테이블 이름을 데이터베이스 예약어와 격리하기 위해 큰따옴표안에 이스케이프 처리하여 매핑
 @Table(name = "users")
-@NoArgsConstructor
-@Getter
 @Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 // UserDetails를 상속받아 인증 객체로 사용
 public class User implements UserDetails {
     @Id
@@ -52,20 +55,24 @@ public class User implements UserDetails {
     @Column(name = "expert_title")
     private String expertTitle; // 전문의가 아닐 경우 null 가능
 
-    @Builder
-    public User(String email, String password, String nickname,
-                String profileImage,
-                LocalDateTime createdAt,
-                boolean isMedicalExpert,
-                String expertTitle){
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.profileImage = profileImage;
-        this.createdAt = createdAt;
-        this.isMedicalExpert = isMedicalExpert;
-        this.expertTitle = expertTitle;
-    }
+    // 소셜 로그인 식별용 연동 필드
+    private String provider;   // google, naver, kakao
+    private String providerId; // 소셜 측에서 던져준 고유 서브/ID 키 값
+
+//    @Builder
+//    public User(String email, String password, String nickname,
+//                String profileImage,
+//                LocalDateTime createdAt,
+//                boolean isMedicalExpert,
+//                String expertTitle){
+//        this.email = email;
+//        this.password = password;
+//        this.nickname = nickname;
+//        this.profileImage = profileImage;
+//        this.createdAt = createdAt;
+//        this.isMedicalExpert = isMedicalExpert;
+//        this.expertTitle = expertTitle;
+//    }
 
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -118,6 +125,12 @@ public class User implements UserDetails {
         this.nickname = nickname;
         this.profileImage = profileImage;
 
+        return this;
+    }
+
+    // 소셜 로그인 시 프로필 업데이트용 메서드
+    public User updateSocialProfile(String nickname) {
+        this.nickname = nickname;
         return this;
     }
 }
