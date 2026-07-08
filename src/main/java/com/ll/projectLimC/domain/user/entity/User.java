@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,11 @@ import java.util.List;
 
 // 테이블 이름을 데이터베이스 예약어와 격리하기 위해 큰따옴표안에 이스케이프 처리하여 매핑
 @Table(name = "users")
-@NoArgsConstructor
-@Getter
 @Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 // UserDetails를 상속받아 인증 객체로 사용
 public class User implements UserDetails {
     @Id
