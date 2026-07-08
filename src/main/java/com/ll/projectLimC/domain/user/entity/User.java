@@ -59,20 +59,20 @@ public class User implements UserDetails {
     private String provider;   // google, naver, kakao
     private String providerId; // 소셜 측에서 던져준 고유 서브/ID 키 값
 
-    @Builder
-    public User(String email, String password, String nickname,
-                String profileImage,
-                LocalDateTime createdAt,
-                boolean isMedicalExpert,
-                String expertTitle){
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.profileImage = profileImage;
-        this.createdAt = createdAt;
-        this.isMedicalExpert = isMedicalExpert;
-        this.expertTitle = expertTitle;
-    }
+//    @Builder
+//    public User(String email, String password, String nickname,
+//                String profileImage,
+//                LocalDateTime createdAt,
+//                boolean isMedicalExpert,
+//                String expertTitle){
+//        this.email = email;
+//        this.password = password;
+//        this.nickname = nickname;
+//        this.profileImage = profileImage;
+//        this.createdAt = createdAt;
+//        this.isMedicalExpert = isMedicalExpert;
+//        this.expertTitle = expertTitle;
+//    }
 
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {

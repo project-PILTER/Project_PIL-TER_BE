@@ -61,7 +61,7 @@ public class WebOAuthSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 연결
-                .cors(cors -> cors.disable())
+                // .cors(cors -> cors.disable())
                 // CSRF 비활성화 (API 서버이므로 필수)
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -84,7 +84,8 @@ public class WebOAuthSecurityConfig {
                          "/api/swagger-ui.html",
                          "/swagger-resources/**",
                          "/webjars/**").permitAll()
-                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/login/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2Login(oauth2 -> oauth2

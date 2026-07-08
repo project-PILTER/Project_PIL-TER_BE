@@ -6,6 +6,10 @@ spring:
 server:
   port: 8080
 
+  tomcat:
+    # 톰캣 기반 임시 디렉토리 경로를 프로젝트 내부의 빌드 폴더 등으로 우회시킴
+    basedir: ./.tomcat
+
   servlet:
     context-path: /api
 
