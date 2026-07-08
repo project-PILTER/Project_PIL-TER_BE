@@ -52,6 +52,10 @@ public class User implements UserDetails {
     @Column(name = "expert_title")
     private String expertTitle; // 전문의가 아닐 경우 null 가능
 
+    // 소셜 로그인 식별용 연동 필드
+    private String provider;   // google, naver, kakao
+    private String providerId; // 소셜 측에서 던져준 고유 서브/ID 키 값
+
     @Builder
     public User(String email, String password, String nickname,
                 String profileImage,
@@ -118,6 +122,12 @@ public class User implements UserDetails {
         this.nickname = nickname;
         this.profileImage = profileImage;
 
+        return this;
+    }
+
+    // 소셜 로그인 시 프로필 업데이트용 메서드
+    public User updateSocialProfile(String nickname) {
+        this.nickname = nickname;
         return this;
     }
 }
