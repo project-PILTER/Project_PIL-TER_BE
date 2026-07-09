@@ -18,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -36,14 +37,26 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-
-        // 이미 CustomService에서 완벽하게 파싱해서 저장한 유저 객체(DefaultOAuth2User)를 꺼냅니다.
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-        // 카카오, 구글 등 공급자 파편화 없이 OAuth2UserCustomService에서 연동해둔 이메일을 정석대로 추출
-        String email = (String) oAuth2User.getAttributes().get("email");
+        // 1. 카카오 등 공급자 파편화에 대응하여 안전하게 이메일 추출
+        String email = null;
+        if (oAuth2User.getAttributes().containsKey("email")) {
+            email = (String) oAuth2User.getAttributes().get("email");
+        } else if (oAuth2User.getAttributes().containsKey("kakao_account")) {
+            Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
+            if (kakaoAccount != null) {
+                email = (String) kakaoAccount.get("email");
+            }
+        }
 
-        // 만약 카카오 이메일 추출 구조가 꼬일 것을 대비해, 안전하게 DB에서 다시 긁어오도록 연동
+        // 2. 이메일 동의가 거부되었을 때를 대비한 2차 방어선
+        if (email == null) {
+            Object id = oAuth2User.getAttributes().get("id");
+            email = id != null ? id.toString() + "@kakao.com" : null;
+        }
+
+        // 3. 유저 조회
         User user = userService.findByEmail(email);
 
         // 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
