@@ -85,6 +85,7 @@ public class WebOAuthSecurityConfig {
                          "/api/swagger-ui.html",
                          "/swagger-resources/**",
                          "/webjars/**").permitAll()
+                        .requestMatchers("/api/login/oauth2/code/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/login/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
