@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class TokenApiController {
-    private final TokenService tokenService
+    private final TokenService tokenService;
 
     @Operation(summary = "Access Token 신규 발급",
             description = "만료되지 않은 Refresh Token을 사용하여 새로운 Access Token을 획득합니다.")
