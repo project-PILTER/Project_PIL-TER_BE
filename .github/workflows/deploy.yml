@@ -21,7 +21,9 @@ jobs:
       - name: Make application-secret.yml
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_SECRET_YML }}" > src/main/resources/application-secret.yml
+          cat << 'EOF' > src/main/resources/application-secret.yml
+          ${{ secrets.APPLICATION_SECRET_YML }}
+          EOF
 
       - name: Build with Gradle
         run: |
@@ -48,5 +50,4 @@ jobs:
             cd /home/ubuntu/backend
             mv *SNAPSHOT.jar ./app.jar || true
             docker compose down || true
-            docker rm -f pilter-FE
-            docker compose up -d --build
+            docker compose up -d --build --force-recreate
