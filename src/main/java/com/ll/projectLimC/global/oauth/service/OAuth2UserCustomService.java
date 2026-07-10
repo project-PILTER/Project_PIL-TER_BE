@@ -47,8 +47,16 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         System.out.println("🌱 [CustomService] DB 저장 완료 후 유저 ID: " + user.getId());
 
         Map<String, Object> customAttributes = new java.util.HashMap<>(attributes.getAttributes());
-        customAttributes.put("id", user.getId());         // 고유 ID 바인딩
+        customAttributes.put("id", user.getId());
         customAttributes.put("email", user.getEmail());
+        customAttributes.put("nickname", user.getNickname());
+        customAttributes.put("profile_image", user.getProfileImage());
+        customAttributes.put("provider", user.getProvider());
+        customAttributes.put("provider_id", user.getProviderId());
+
+        if (user.getCreatedAt() != null) {
+            customAttributes.put("created_at", user.getCreatedAt().toString());
+        }
 
         // 5. 시큐리티 세션/필터 시스템에 등록될 인증 유저 반환 (Principal 권한 바인딩)
         return new DefaultOAuth2User(

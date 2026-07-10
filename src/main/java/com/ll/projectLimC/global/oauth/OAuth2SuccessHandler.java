@@ -45,31 +45,30 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                         Authentication authentication) throws IOException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        // CustomService에서 커스텀하게 가공해 둔 맵을 가져옴
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
+        // CustomService가 주입해 준 깔끔한 정석 데이터들 추출
+        Long userId = (Long) attributes.get("id");
         String email = (String) attributes.get("email");
-        Object providerId = attributes.get("sub") != null ? attributes.get("sub") : attributes.get("id");
+        String nickname = (String) attributes.get("nickname");
+        String provider = (String) attributes.get("provider");
+        String providerId = (String) attributes.get("provider_id");
+        String profileImage = (String) attributes.get("profile_image");
 
-        System.out.println("🎯 [디버깅] OAuth2 로그인 성공 - 이메일: " + email + ", 소셜ID: " + providerId);
-
-        User targetUser;
-        try {
-            targetUser = userService.findByEmail(email);
-        } catch (GlobalCustomException e) {
-            System.out.println("⚠️ [비상 조치] DB에 유저가 없어 SuccessHandler에서 강제 회원가입을 진행합니다.");
-            targetUser = User.builder()
-                    .email(email)
-                    .nickname((String) attributes.get("name"))
-                    .role(Role.USER)
-                    .password("")
-                    .provider("google")
-                    .providerId(String.valueOf(providerId))
-                    .build();
-            targetUser = userRepository.saveAndFlush(targetUser);
-        }
-
-        Long userId = targetUser.getId();
+        System.out.println("🎯 [디버깅] OAuth2 로그인 성공 - 이메일: " + email + ", 공급자: " + provider);
         System.out.println("🎯 [디버깅] 최종 확정된 DB User ID: " + userId);
+
+        // 1. 세션에서 추출한 정보로 안전하게 가상/영속 객체 바인딩 (DB 조회를 굳이 또 하지 않음)
+        User targetUser = User.builder()
+                .id(userId)
+                .email(email)
+                .nickname(nickname)
+                .provider(provider)
+                .providerId(providerId)
+                .profileImage(profileImage)
+                .role(Role.USER)
+                .build();
 
         // 2. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
         String refreshToken = tokenProvider.generateToken(targetUser, REFRESH_TOKEN_DURATION);
@@ -83,9 +82,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 인증 관련 설정값, 쿠키 제거
         clearAuthenticationAttributes(request, response);
 
-        // ⭐️ [누락 복구] 리다이렉트 실행 및 메서드 정상 종료
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
-    } // 👈 꼬여있던onAuthenticationSuccess 메서드의 닫는 괄호를 완벽히 닫아줍니다!
+    }
 
     // 생성된 리프레시 토큰을 전달받아 DB에 저장
     private void saveRefreshToken(Long userId, String newRefreshToken){
