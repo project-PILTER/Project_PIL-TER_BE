@@ -67,14 +67,11 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
                     return existingUser;
                 })
                 .orElseGet(() -> {
-                    User newUser = User.builder()
-                            .email(attributes.getEmail())
-                            .nickname(attributes.getNickname())
-                            .profileImage(attributes.getProfileImage()) // 신규 가입 시에도 함께 빌드
-                            .role(Role.USER)
-                            .build();
+                    System.out.println("====== [디버깅] 신규 소셜 유저를 DB에 저장합니다: " + attributes.getEmail() + " ======");
 
-                    System.out.println("====== [디버깅] 신규 소셜 유저를 DB에 저장합니다: " + newUser.getEmail() + " ======");
+                    // ⭐️ 복잡한 수정을 CustomService에서 하지 않고, toEntity() 내부로 위임합니다.
+                    User newUser = attributes.toEntity();
+
                     return userRepository.saveAndFlush(newUser);
                 });
     }

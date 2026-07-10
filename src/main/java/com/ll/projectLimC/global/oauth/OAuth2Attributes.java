@@ -71,14 +71,17 @@ public class OAuth2Attributes {
 
     // 괄호 쌍을 완벽히 맞추고 빌더 구조를 정돈한 변환 메서드
     public User toEntity() {
+        // 회원가입 시점에 중복 방지 접미사를 결합 (예: 박제욱_kakao_a2f1)
+        String uniqueSuffix = "_" + this.provider + "_" + java.util.UUID.randomUUID().toString().substring(0, 4);
+
         return User.builder()
                 .email(this.email)
-                .nickname(nickname)
+                .nickname(this.nickname + uniqueSuffix) // ⭐️ 유니크 닉네임 자동 저장
                 .role(Role.USER)
                 .profileImage(this.profileImage)
                 .provider(this.provider)
                 .providerId(this.providerId)
-                .password("") // 소셜 로그인 계정은 비밀번호 공백 처리
+                .password("")
                 .build();
     }
 }
