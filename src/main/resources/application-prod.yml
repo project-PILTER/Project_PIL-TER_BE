@@ -21,9 +21,11 @@ spring:
     properties:
       hibernate:
         ddl-auto: update
-        format_sql: false
-        show_sql: false
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            format_sql: true
+        show-sql: true
 springdoc:
   packages-to-scan: com.ll.projectLimC
 
