@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.UUID;
 // import java.util.Map;
 
 @RequiredArgsConstructor
@@ -48,11 +49,30 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
     // 유저가 있으면 업데이트, 없으면 유저 생성
     private User saveOrUpdate(OAuth2Attributes attributes) {
-        // 이미 가입된 유저라면 닉네임 정도만 동기화해주고, 없다면 신규 생성(회원가입) 처리합니다.
-        User user = userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId())
-                .map(entity -> entity.updateSocialProfile(attributes.getNickname()))
-                .orElseGet(attributes::toEntity);
+        return userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId())
+                .map(entity -> {
+                    // [기존 유저 로그인]: 이미 가입된 유저는 기존 닉네임을 그대로 유지하거나 동기화
+                    return entity.updateSocialProfile(entity.getNickname());
+                })
+                .orElseGet(() -> {
+                    // [신규 유저 회원가입]: 처음 가입하는 유저인 경우 닉네임 중복 체크를 합니다.
+                    String initialNickname = attributes.getNickname();
 
-        return userRepository.save(user);
+                    // 만약 소셜에서 가져온 닉네임이 빈 값이거나, DB에 이미 존재하는 닉네임이라면 뒤에 랜덤 값을 붙입니다.
+                    if (initialNickname == null || initialNickname.trim().isEmpty() || userRepository.existsByNickname(initialNickname)) {
+                        // 이름 뒤에 랜덤 4자리 글자 추가 (예: 박땡땡_a1b2)
+                        String suffix = UUID.randomUUID().toString().substring(0, 4);
+                        initialNickname = (initialNickname != null ? initialNickname : "User") + "_" + suffix;
+                    }
+
+                    // 변경된 안전한 닉네임으로 엔티티를 생성
+                    User newUser = attributes.toEntity();
+
+                    // 엔티티 내부에 닉네임을 변경할 수 있는 Setter나 메서드가 있다면 바인딩해준다.
+                    // 예: newUser.setNickname(initialNickname); 또는 newUser.changeNickname(initialNickname);
+                    newUser.changeNickname(initialNickname);
+
+                    return userRepository.save(newUser);
+                });
     }
 }
