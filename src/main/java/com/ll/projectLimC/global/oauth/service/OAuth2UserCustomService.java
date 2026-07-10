@@ -82,6 +82,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
                     return userRepository.save(newUser);
                 });
     }
+}
 //        try {
 //            System.out.println("====== [디버깅] 소셜 로그인 데이터 확인 ======");
 //            System.out.println("Provider: " + attributes.getProvider());
@@ -120,5 +121,3 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 //            e.printStackTrace(); // 스프링이 숨기던 원본 JPA/데이터베이스 에러 스택트레이스를 강제로 출력합니다.
 //            throw e;
 //        }
-    }
-}
