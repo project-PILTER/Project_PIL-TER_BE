@@ -33,64 +33,44 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
-    private final UserService userService;
+
+    // 💡 더 이상 Handler 단에서 가입 여부를 조회할 필요가 없으므로 UserService 주입 불필요!
+    // private final UserService userService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-
-        // 1. 공급자별 파편화에 대응하여 안전하게 이메일 추출
-        String email = null;
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        if (attributes.containsKey("email")) {
-            // 구글 등 일반적인 형태
-            email = (String) attributes.get("email");
-        } else if (attributes.containsKey("kakao_account")) {
-            // 카카오 구조 분해
-            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-            if (kakaoAccount != null) {
-                email = (String) kakaoAccount.get("email");
-            }
-        } else if (attributes.containsKey("response")) {
-            // ★ 네이버 구조 분해 (추가)
-            Map<String, Object> naverResponse = (Map<String, Object>) attributes.get("response");
-            if (naverResponse != null) {
-                email = (String) naverResponse.get("email");
-            }
+        // 1. CustomService가 안전하게 서빙해준 주 키(ID)와 이메일 가공 없이 바로 추출
+        Long userId = (Long) attributes.get("id");
+        String email = (String) attributes.get("email");
+
+        System.out.println("🎯 [디버깅] 핸들러 안전 진입 완료!");
+        System.out.println("🎯 추출된 User ID: " + userId);
+        System.out.println("🎯 추출된 User Email: " + email);
+
+        // 예외 방어선
+        if (userId == null || email == null) {
+            throw new IllegalArgumentException("소셜 세션 컨텍스트에 유저 식별 정보가 누락되었습니다.");
         }
 
-        // 2. 이메일 동의가 거부되었을 때를 대비한 공급자별 2차 방어선
-        if (email == null) {
-            if (attributes.containsKey("kakao_account") || attributes.containsKey("properties")) {
-                // 카카오 가짜 이메일 생성
-                Object id = attributes.get("id");
-                email = id != null ? id.toString() + "@kakao.com" : null;
-            } else if (attributes.containsKey("response")) {
-                // ★ 네이버 가짜 이메일 생성 (추가)
-                Map<String, Object> naverResponse = (Map<String, Object>) attributes.get("response");
-                Object id = naverResponse != null ? naverResponse.get("id") : null;
-                email = id != null ? id.toString() + "@naver.com" : null;
-            }
-        }
+        // 2. 가상의 가짜 User 엔티티 객체를 빌드하여 토큰 프로바이더에 전달
+        // (토큰 생성 시 내부적으로 user.getId(), user.getEmail() 등만 쓰기 때문에 굳이 영속 객체일 필요가 없음)
+        User mockUser = User.builder()
+                .id(userId)
+                .email(email)
+                .build();
 
-        // 이메일을 최종적으로도 추출하지 못했을 경우의 안전장치
-        if (email == null) {
-            throw new GlobalCustomException(ErrorCode.NOT_FOUND_THE_EMAIL_TO_SOCIAL);
-        }
-
-        // 3. 유저 조회
-        User user = userService.findByEmail(email);
-
-        // 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
-        String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(user.getId(), refreshToken);
+        // 3. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
+        String refreshToken = tokenProvider.generateToken(mockUser, REFRESH_TOKEN_DURATION);
+        saveRefreshToken(userId, refreshToken);
         addRefreshTokenToCookie(request, response, refreshToken);
 
-        // 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
-        String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
+        // 4. 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
+        String accessToken = tokenProvider.generateToken(mockUser, ACCESS_TOKEN_DURATION);
         String targetUrl = getTargetUrl(accessToken);
 
         // 인증 관련 설정값, 쿠키 제거

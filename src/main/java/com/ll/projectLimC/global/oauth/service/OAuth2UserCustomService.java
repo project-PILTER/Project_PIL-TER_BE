@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 // import java.util.Map;
 
@@ -40,10 +41,14 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         // 4. 가입/갱신 후 엔티티 영속화
         User user = saveOrUpdate(attributes);
 
+        Map<String, Object> customAttributes = new java.util.HashMap<>(attributes.getAttributes());
+        customAttributes.put("id", user.getId());         // ⭐️ 고유 ID 바인딩
+        customAttributes.put("email", user.getEmail());
+
         // 5. 시큐리티 세션/필터 시스템에 등록될 인증 유저 반환 (Principal 권한 바인딩)
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString())),
-                attributes.getAttributes(),
+                customAttributes, // 새로 커스텀한 맵을 주입
                 attributes.getNameAttributeKey()
         );
     }
