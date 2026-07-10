@@ -1,5 +1,6 @@
 package com.ll.projectLimC.global.oauth.service;
 
+import com.ll.projectLimC.domain.user.entity.Role;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.oauth.OAuth2Attributes;
@@ -60,43 +61,64 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
     // 유저가 있으면 업데이트, 없으면 유저 생성
     private User saveOrUpdate(OAuth2Attributes attributes) {
-        try {
-            System.out.println("====== [디버깅] 소셜 로그인 데이터 확인 ======");
-            System.out.println("Provider: " + attributes.getProvider());
-            System.out.println("ProviderId: " + attributes.getProviderId());
-            System.out.println("Email: " + attributes.getEmail());
-            System.out.println("Nickname: " + attributes.getNickname());
-            System.out.println("==========================================");
+        // 1. 기존 유저가 있는지 이메일로 먼저 조회
+        return userRepository.findByEmail(attributes.getEmail())
+                .map(existingUser -> {
+                    // 2. 이미 존재하는 유저라면 정보 업데이트 (Dirty Checking 등으로 반영)
+                    existingUser.updateSocialProfile(attributes.getNickname());
+                    return existingUser;
+                })
+                .orElseGet(() -> {
+                    // 3. ⭐️ 여기가 핵심! 존재하지 않는 신규 유저라면 새 엔티티를 생성하고 반드시 SAVE ⭐️
+                    User newUser = User.builder()
+                            .email(attributes.getEmail())
+                            .nickname(attributes.getNickname())
+                            .role(Role.USER) // 기본 권한 부여
+                            .build();
 
-            return userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId())
-                    .map(entity -> {
-                        System.out.println("-> [디버깅] 기존 유저 발견: " + entity.getEmail());
-                        return entity.updateSocialProfile(entity.getNickname());
-                    })
-                    .orElseGet(() -> {
-                        System.out.println("-> [디버깅] 신규 유저 생성 프로세스 진입");
-                        String initialNickname = attributes.getNickname();
+                    System.out.println("====== [디버깅] 신규 소셜 유저를 DB에 저장합니다: " + newUser.getEmail() + " ======");
 
-                        if (initialNickname == null || initialNickname.trim().isEmpty() || userRepository.existsByNickname(initialNickname)) {
-                            String suffix = UUID.randomUUID().toString().substring(0, 4);
-                            initialNickname = (initialNickname != null ? initialNickname : "User") + "_" + suffix;
-                        }
-
-                        User newUser = attributes.toEntity();
-                        newUser.changeNickname(initialNickname);
-
-                        System.out.println("-> [디버깅] DB 저장 시도 직전 유저 엔티티 상태 체크");
-                        // 만약 엔티티에 password나 다른 필수값이 null이면 여기서 디비가 거부합니다.
-
-                        User savedUser = userRepository.saveAndFlush(newUser);
-                        System.out.println("-> [디버깅] DB 저장 성공! 생성된 ID: " + savedUser.getId());
-                        return savedUser;
-                    });
-
-        } catch (Exception e) {
-            System.err.println("❌❌❌ [디버깅] 소셜 유저 DB 저장 중 진짜 에러 터짐!! ❌❌❌");
-            e.printStackTrace(); // 스프링이 숨기던 원본 JPA/데이터베이스 에러 스택트레이스를 강제로 출력합니다.
-            throw e;
-        }
+                    // ⚠️ 혹시 이Repository.save() 호출이 누락되었거나 에러가 나서 리턴이 안 되고 있는지 확인하세요!
+                    return userRepository.save(newUser);
+                });
+    }
+//        try {
+//            System.out.println("====== [디버깅] 소셜 로그인 데이터 확인 ======");
+//            System.out.println("Provider: " + attributes.getProvider());
+//            System.out.println("ProviderId: " + attributes.getProviderId());
+//            System.out.println("Email: " + attributes.getEmail());
+//            System.out.println("Nickname: " + attributes.getNickname());
+//            System.out.println("==========================================");
+//
+//            return userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId())
+//                    .map(entity -> {
+//                        System.out.println("-> [디버깅] 기존 유저 발견: " + entity.getEmail());
+//                        return entity.updateSocialProfile(entity.getNickname());
+//                    })
+//                    .orElseGet(() -> {
+//                        System.out.println("-> [디버깅] 신규 유저 생성 프로세스 진입");
+//                        String initialNickname = attributes.getNickname();
+//
+//                        if (initialNickname == null || initialNickname.trim().isEmpty() || userRepository.existsByNickname(initialNickname)) {
+//                            String suffix = UUID.randomUUID().toString().substring(0, 4);
+//                            initialNickname = (initialNickname != null ? initialNickname : "User") + "_" + suffix;
+//                        }
+//
+//                        User newUser = attributes.toEntity();
+//                        newUser.changeNickname(initialNickname);
+//
+//                        System.out.println("-> [디버깅] DB 저장 시도 직전 유저 엔티티 상태 체크");
+//                        // 만약 엔티티에 password나 다른 필수값이 null이면 여기서 디비가 거부합니다.
+//
+//                        User savedUser = userRepository.saveAndFlush(newUser);
+//                        System.out.println("-> [디버깅] DB 저장 성공! 생성된 ID: " + savedUser.getId());
+//                        return savedUser;
+//                    });
+//
+//        } catch (Exception e) {
+//            System.err.println("❌❌❌ [디버깅] 소셜 유저 DB 저장 중 진짜 에러 터짐!! ❌❌❌");
+//            e.printStackTrace(); // 스프링이 숨기던 원본 JPA/데이터베이스 에러 스택트레이스를 강제로 출력합니다.
+//            throw e;
+//        }
     }
 }
