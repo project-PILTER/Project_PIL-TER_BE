@@ -31,6 +31,7 @@ import java.util.Arrays;
 @Configuration
 public class WebOAuthSecurityConfig {
     private final OAuth2UserCustomService oAuth2UserCustomService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
@@ -104,7 +105,7 @@ public class WebOAuthSecurityConfig {
                                 .baseUri("/login/oauth2/code/**"))
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
                         // 인증 성공 시 실행할 핸들러
-                        .successHandler(oAuth2SuccessHandler())
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 // /api로 시작하는 url인 경우 401 상태 코드를 반환하도록 예외 처리
                 .exceptionHandling(ex -> ex
