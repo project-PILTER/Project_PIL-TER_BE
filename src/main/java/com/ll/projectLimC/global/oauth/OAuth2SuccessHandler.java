@@ -33,9 +33,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
-
-    // 💡 더 이상 Handler 단에서 가입 여부를 조회할 필요가 없으므로 UserService 주입 불필요!
-    // private final UserService userService;
+    private final UserService userService; // 2차 방어선을 위해 다시 추가.
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -44,33 +42,32 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        // 1. CustomService가 안전하게 서빙해준 주 키(ID)와 이메일 가공 없이 바로 추출
         Long userId = (Long) attributes.get("id");
         String email = (String) attributes.get("email");
 
-        System.out.println("🎯 [디버깅] 핸들러 안전 진입 완료!");
-        System.out.println("🎯 추출된 User ID: " + userId);
-        System.out.println("🎯 추출된 User Email: " + email);
-
-        // 예외 방어선
-        if (userId == null || email == null) {
-            throw new IllegalArgumentException("소셜 세션 컨텍스트에 유저 식별 정보가 누락되었습니다.");
+        // 1. 만약 CustomService 타이밍 때문에 id가 null로 넘어왔다면, 확실하게 가입된 상태이므로 DB에서 안전하게 다시 채워줌.
+        User targetUser;
+        if (userId == null) {
+            System.out.println("⚠️ [경고] ID가 null로 넘어와 DB에서 유저 정보를 동기화합니다. 이메일: " + email);
+            targetUser = userService.findByEmail(email);
+            userId = targetUser.getId();
+        } else {
+            // id가 정상적으로 들어있다면 굳이 조회하지 않고 효율적으로 가짜 객체 조립
+            targetUser = User.builder()
+                    .id(userId)
+                    .email(email)
+                    .build();
         }
 
-        // 2. 가상의 가짜 User 엔티티 객체를 빌드하여 토큰 프로바이더에 전달
-        // (토큰 생성 시 내부적으로 user.getId(), user.getEmail() 등만 쓰기 때문에 굳이 영속 객체일 필요가 없음)
-        User mockUser = User.builder()
-                .id(userId)
-                .email(email)
-                .build();
+        System.out.println("🎯 [디버깅] 최종 확정된 User ID: " + userId);
 
-        // 3. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
-        String refreshToken = tokenProvider.generateToken(mockUser, REFRESH_TOKEN_DURATION);
+        // 2. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
+        String refreshToken = tokenProvider.generateToken(targetUser, REFRESH_TOKEN_DURATION);
         saveRefreshToken(userId, refreshToken);
         addRefreshTokenToCookie(request, response, refreshToken);
 
-        // 4. 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
-        String accessToken = tokenProvider.generateToken(mockUser, ACCESS_TOKEN_DURATION);
+        // 3. 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
+        String accessToken = tokenProvider.generateToken(targetUser, ACCESS_TOKEN_DURATION);
         String targetUrl = getTargetUrl(accessToken);
 
         // 인증 관련 설정값, 쿠키 제거

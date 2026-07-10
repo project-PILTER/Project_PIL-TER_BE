@@ -40,9 +40,12 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
         // 4. 가입/갱신 후 엔티티 영속화
         User user = saveOrUpdate(attributes);
+        userRepository.saveAndFlush(user); // DB에 즉시 반영하여 ID(PK)를 객체에 확보
+
+        System.out.println("🌱 [CustomService] DB 저장 완료 후 유저 ID: " + user.getId());
 
         Map<String, Object> customAttributes = new java.util.HashMap<>(attributes.getAttributes());
-        customAttributes.put("id", user.getId());         // ⭐️ 고유 ID 바인딩
+        customAttributes.put("id", user.getId());         // 고유 ID 바인딩
         customAttributes.put("email", user.getEmail());
 
         // 5. 시큐리티 세션/필터 시스템에 등록될 인증 유저 반환 (Principal 권한 바인딩)
