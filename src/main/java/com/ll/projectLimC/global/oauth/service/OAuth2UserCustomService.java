@@ -49,30 +49,37 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
     // 유저가 있으면 업데이트, 없으면 유저 생성
     private User saveOrUpdate(OAuth2Attributes attributes) {
+        // 디버깅 로그 추가: 실제로 값들이 정상적으로 추출되어 넘어오는지 검사합니다.
+        System.out.println("========== [OAuth2 로드 데이터 검증] ==========");
+        System.out.println("Provider (공급자): " + attributes.getProvider());
+        System.out.println("ProviderId (고유식별자): " + attributes.getProviderId());
+        System.out.println("Nickname (소셜 닉네임): " + attributes.getNickname());
+        System.out.println("=============================================");
+
         return userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId())
                 .map(entity -> {
-                    // [기존 유저 로그인]: 이미 가입된 유저는 기존 닉네임을 그대로 유지하거나 동기화
+                    System.out.println("-> [기존 유저 발견] 로그인 프로세스 진행: " + entity.getEmail());
                     return entity.updateSocialProfile(entity.getNickname());
                 })
                 .orElseGet(() -> {
-                    // [신규 유저 회원가입]: 처음 가입하는 유저인 경우 닉네임 중복 체크를 합니다.
+                    System.out.println("-> [신규 유저] 회원가입 프로세스 진입");
                     String initialNickname = attributes.getNickname();
 
-                    // 만약 소셜에서 가져온 닉네임이 빈 값이거나, DB에 이미 존재하는 닉네임이라면 뒤에 랜덤 값을 붙입니다.
                     if (initialNickname == null || initialNickname.trim().isEmpty() || userRepository.existsByNickname(initialNickname)) {
-                        // 이름 뒤에 랜덤 4자리 글자 추가 (예: 박땡땡_a1b2)
                         String suffix = UUID.randomUUID().toString().substring(0, 4);
                         initialNickname = (initialNickname != null ? initialNickname : "User") + "_" + suffix;
                     }
 
-                    // 변경된 안전한 닉네임으로 엔티티를 생성
                     User newUser = attributes.toEntity();
-
-                    // 엔티티 내부에 닉네임을 변경할 수 있는 Setter나 메서드가 있다면 바인딩해준다.
-                    // 예: newUser.setNickname(initialNickname); 또는 newUser.changeNickname(initialNickname);
                     newUser.changeNickname(initialNickname);
 
-                    return userRepository.save(newUser);
+                    System.out.println("-> [신규 유저 저장 직전] 최종 닉네임: " + initialNickname);
+
+                    // 여기서 정상 저장되는지 확인
+                    User savedUser = userRepository.save(newUser);
+                    System.out.println("-> [DB 저장 성공] 생성된 유저 고유 ID: " + savedUser.getId());
+
+                    return savedUser;
                 });
     }
 }
