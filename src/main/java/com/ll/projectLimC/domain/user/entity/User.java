@@ -133,4 +133,12 @@ public class User implements UserDetails {
         this.nickname = nickname;
         return this;
     }
+
+    public User changeNickname(String newNickname) {
+        if (newNickname == null || newNickname.trim().isEmpty()) {
+            throw new IllegalArgumentException("올바르지 않은 닉네임 포맷입니다.");
+        }
+        this.nickname = newNickname;
+        return this; // 빌더 패턴처럼 연속 호출이 가능하도록 인스턴스 반환
+    }
 }

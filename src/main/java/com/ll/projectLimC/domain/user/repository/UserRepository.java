@@ -10,4 +10,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 소셜 계정 중복 가입 체크 및 대조를 위한 핵심 쿼리
     Optional<User> findByProviderAndProviderId(String provider, String providerId);
+
+
+    boolean existsByNickname(String initialNickname);
 }
