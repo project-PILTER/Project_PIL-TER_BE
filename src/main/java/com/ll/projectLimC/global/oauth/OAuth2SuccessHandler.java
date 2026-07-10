@@ -1,6 +1,8 @@
 package com.ll.projectLimC.global.oauth;
 
 import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
@@ -39,21 +41,44 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                         Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-        // 1. 카카오 등 공급자 파편화에 대응하여 안전하게 이메일 추출
+        // 1. 공급자별 파편화에 대응하여 안전하게 이메일 추출
         String email = null;
-        if (oAuth2User.getAttributes().containsKey("email")) {
-            email = (String) oAuth2User.getAttributes().get("email");
-        } else if (oAuth2User.getAttributes().containsKey("kakao_account")) {
-            Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+
+        if (attributes.containsKey("email")) {
+            // 구글 등 일반적인 형태
+            email = (String) attributes.get("email");
+        } else if (attributes.containsKey("kakao_account")) {
+            // 카카오 구조 분해
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
             if (kakaoAccount != null) {
                 email = (String) kakaoAccount.get("email");
             }
+        } else if (attributes.containsKey("response")) {
+            // ★ 네이버 구조 분해 (추가)
+            Map<String, Object> naverResponse = (Map<String, Object>) attributes.get("response");
+            if (naverResponse != null) {
+                email = (String) naverResponse.get("email");
+            }
         }
 
-        // 2. 이메일 동의가 거부되었을 때를 대비한 2차 방어선
+        // 2. 이메일 동의가 거부되었을 때를 대비한 공급자별 2차 방어선
         if (email == null) {
-            Object id = oAuth2User.getAttributes().get("id");
-            email = id != null ? id.toString() + "@kakao.com" : null;
+            if (attributes.containsKey("kakao_account") || attributes.containsKey("properties")) {
+                // 카카오 가짜 이메일 생성
+                Object id = attributes.get("id");
+                email = id != null ? id.toString() + "@kakao.com" : null;
+            } else if (attributes.containsKey("response")) {
+                // ★ 네이버 가짜 이메일 생성 (추가)
+                Map<String, Object> naverResponse = (Map<String, Object>) attributes.get("response");
+                Object id = naverResponse != null ? naverResponse.get("id") : null;
+                email = id != null ? id.toString() + "@naver.com" : null;
+            }
+        }
+
+        // 이메일을 최종적으로도 추출하지 못했을 경우의 안전장치
+        if (email == null) {
+            throw new GlobalCustomException(ErrorCode.NOT_FOUND_THE_EMAIL_TO_SOCIAL);
         }
 
         // 3. 유저 조회

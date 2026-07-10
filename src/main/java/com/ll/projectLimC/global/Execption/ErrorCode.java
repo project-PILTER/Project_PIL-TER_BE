@@ -22,7 +22,7 @@ public enum ErrorCode {
     UNAUTHORIZED_THE_HEALTHJOURNAL(4011, HttpStatus.UNAUTHORIZED, "해당 건강일지에 대한 권한이 없습니다."),
     UNEXPECTED_TOKEN(4012, HttpStatus.UNAUTHORIZED, "만료된 유저입니다."),
     UNEXPECTED_VALIDATION_TOKEN(4013, HttpStatus.BAD_REQUEST, "토큰 유효성 검사에 실패하였습니다."),
-
+    NOT_FOUND_THE_EMAIL_TO_SOCIAL(4014, HttpStatus.NOT_FOUND, "소셜 로그인으로부터 이메일 정보를 가져올 수 없습니다."),
     // 5000번대
     INTERNAL_SERVER_ERROR(5000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
