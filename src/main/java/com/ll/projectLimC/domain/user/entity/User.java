@@ -47,9 +47,11 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private Role role = Role.USER;
 
     @Column(name = "is_medical_expert", nullable = false)
+    @Builder.Default
     private boolean isMedicalExpert = false; // 기본값은 일반 유저(false)
 
     @Column(name = "expert_title")
