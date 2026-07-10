@@ -53,14 +53,15 @@ public class OAuth2Attributes {
                 .build();
     }
 
+    // 스크린샷에 찍힌 카카오 매핑 메서드 (구조 정돈)
     private static OAuth2Attributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
         return OAuth2Attributes.builder()
-                .nickname((String) profile.get("profile_nickname"))
-                .email((String) kakaoAccount.get("account_email"))
-                .profileImage((String) profile.get("profile_image"))
+                .nickname((String) profile.get("nickname"))
+                .email((String) kakaoAccount.get("email"))
+                .profileImage((String) profile.get("profile_image_url"))
                 .provider("kakao")
                 .providerId(String.valueOf(attributes.get("id")))
                 .attributes(attributes)
@@ -69,16 +70,15 @@ public class OAuth2Attributes {
     }
 
     // 괄호 쌍을 완벽히 맞추고 빌더 구조를 정돈한 변환 메서드
-    // public User toEntity() {
-    //     return User.builder()
-    //             // public User toEntity() {
-    //             .email(this.email)
-    //             .nickname(nickname)
-    //             .role(Role.USER)
-    //             .profileImage(this.profileImage)
-    //             .provider(this.provider)
-    //             .providerId(this.providerId)
-    //             .password("") // 소셜 로그인 계정은 비밀번호 공백 처리
-    //             .build();
-    // }
+    public User toEntity() {
+        return User.builder()
+                .email(this.email)
+                .nickname(nickname)
+                .role(Role.USER)
+                .profileImage(this.profileImage)
+                .provider(this.provider)
+                .providerId(this.providerId)
+                .password("") // 소셜 로그인 계정은 비밀번호 공백 처리
+                .build();
+    }
 }
