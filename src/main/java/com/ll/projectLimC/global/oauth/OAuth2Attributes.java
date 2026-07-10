@@ -68,11 +68,11 @@ public class OAuth2Attributes {
     // 괄호 쌍을 완벽히 맞추고 빌더 구조를 정돈한 변환 메서드
     public User toEntity() {
         return User.builder()
-                .email(email)
+                .email(this.email)
                 .nickname(nickname)
                 .role(Role.USER)
-                .provider(provider)
-                .providerId(providerId)
+                .provider(this.provider)
+                .providerId(this.providerId)
                 .password("") // 소셜 로그인 계정은 비밀번호 공백 처리
                 .build();
     }

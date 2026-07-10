@@ -15,6 +15,7 @@ spring:
     url: ${SECRET.REAL_DB_URL_PROD}
     username: ${SECRET.DB_USERNAME_PROD}
     password: ${SECRET.DB_PASSWORD_PROD}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     properties:
