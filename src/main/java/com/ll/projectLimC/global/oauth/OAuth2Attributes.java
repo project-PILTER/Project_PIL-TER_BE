@@ -17,6 +17,7 @@ public class OAuth2Attributes {
     private String email;
     private String provider;
     private String providerId;
+    private String profileImage;
 
     public static OAuth2Attributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         if ("naver".equals(registrationId)) {
@@ -31,6 +32,7 @@ public class OAuth2Attributes {
         return OAuth2Attributes.builder()
                 .nickname((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
+                .profileImage((String) attributes.get("picture"))
                 .provider("google")
                 .providerId((String) attributes.get("sub"))
                 .attributes(attributes)
@@ -43,6 +45,7 @@ public class OAuth2Attributes {
         return OAuth2Attributes.builder()
                 .nickname((String) response.get("name"))
                 .email((String) response.get("email"))
+                .profileImage((String) response.get("profile_image"))
                 .provider("naver")
                 .providerId((String) response.get("id"))
                 .attributes(attributes)
@@ -58,6 +61,7 @@ public class OAuth2Attributes {
         return OAuth2Attributes.builder()
                 .nickname((String) profile.get("nickname"))
                 .email((String) kakaoAccount.get("email"))
+                .profileImage((String) profile.get("profile_image_url"))
                 .provider("kakao")
                 .providerId(String.valueOf(attributes.get("id")))
                 .attributes(attributes)
@@ -71,6 +75,7 @@ public class OAuth2Attributes {
                 .email(this.email)
                 .nickname(nickname)
                 .role(Role.USER)
+                .profileImage(this.profileImage)
                 .provider(this.provider)
                 .providerId(this.providerId)
                 .password("") // 소셜 로그인 계정은 비밀번호 공백 처리

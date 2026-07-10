@@ -61,24 +61,20 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
     // 유저가 있으면 업데이트, 없으면 유저 생성
     private User saveOrUpdate(OAuth2Attributes attributes) {
-        // 1. 기존 유저가 있는지 이메일로 먼저 조회
         return userRepository.findByEmail(attributes.getEmail())
                 .map(existingUser -> {
-                    // 2. 이미 존재하는 유저라면 정보 업데이트 (Dirty Checking 등으로 반영)
-                    existingUser.updateSocialProfile(attributes.getNickname());
+                    existingUser.update(attributes.getNickname(), attributes.getProfileImage());
                     return existingUser;
                 })
                 .orElseGet(() -> {
-                    // 3. ⭐️ 여기가 핵심! 존재하지 않는 신규 유저라면 새 엔티티를 생성하고 반드시 SAVE ⭐️
                     User newUser = User.builder()
                             .email(attributes.getEmail())
                             .nickname(attributes.getNickname())
-                            .role(Role.USER) // 기본 권한 부여
+                            .profileImage(attributes.getProfileImage()) // 신규 가입 시에도 함께 빌드
+                            .role(Role.USER)
                             .build();
 
                     System.out.println("====== [디버깅] 신규 소셜 유저를 DB에 저장합니다: " + newUser.getEmail() + " ======");
-
-                    // ⚠️ 혹시 이Repository.save() 호출이 누락되었거나 에러가 나서 리턴이 안 되고 있는지 확인하세요!
                     return userRepository.saveAndFlush(newUser);
                 });
     }

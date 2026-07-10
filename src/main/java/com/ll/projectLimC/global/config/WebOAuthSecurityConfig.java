@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,10 +29,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
+@EnableWebSecurity
 @Configuration
 public class WebOAuthSecurityConfig {
     private final OAuth2UserCustomService oAuth2UserCustomService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
@@ -59,10 +60,9 @@ public class WebOAuthSecurityConfig {
 
     // 토큰 방식으로 인증을 하기에 기존에 사용하던 폼 로그인, 세션 비활성화
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 연결
-                // .cors(cors -> cors.disable())
                 // CSRF 비활성화 (API 서버이므로 필수)
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -79,49 +79,44 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/api/oauth2/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/v3/api-docs/**",
-                         "/api/v3/api-docs/**",
-                         "/swagger-ui/**",
-                         "/api/swagger-ui/**",
-                         "/swagger-ui.html",
-                         "/api/swagger-ui.html",
-                         "/swagger-resources/**",
-                         "/webjars/**").permitAll()
+                                "/api/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/api/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll()
                         .requestMatchers("/api/login/oauth2/code/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/login/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2Login(oauth2 -> oauth2
-                        // .loginPage("/login")
-                        // Authorization 요청과 관련된 상태 저장
-//                        .authorizationEndpoint(authorizationEndpoint ->
-//                                authorizationEndpoint.authorizationRequestRepository(
-//                                oAuth2AuthorizationRequestBasedOnCookieRepository()))
                         .authorizationEndpoint(authorization -> authorization
-                                        .baseUri("/oauth2/authorization")
-                                        .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
+                                .baseUri("/oauth2/authorization")
+                                // 1. ⭐️ 상단에 선언한 메서드 혹은 빈 주입 객체를 명시합니다.
+                                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
                         )
                         .redirectionEndpoint(redirection -> redirection
                                 .baseUri("/login/oauth2/code/**"))
-                                .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
-                        // 인증 성공 시 실행할 핸들러
-                        .successHandler(oAuth2SuccessHandler)
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                .userService(oAuth2UserCustomService))
+
+                        // 2. ⭐️ [순환 참조 해결의 핵심] 외부 빈 주입을 받지 않고, 여기서 직접 필요한 의존성을 채워 수동으로 생성해 꽂아버립니다.
+                        .successHandler(new OAuth2SuccessHandler(
+                                tokenProvider,
+                                refreshTokenRepository,
+                                oAuth2AuthorizationRequestBasedOnCookieRepository(),
+                                userService
+                        ))
                 )
                 // /api로 시작하는 url인 경우 401 상태 코드를 반환하도록 예외 처리
                 .exceptionHandling(ex -> ex
                         .defaultAuthenticationEntryPointFor(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-                                        request -> request.getRequestURI().startsWith("/api/"))
-                        )
+                                request -> request.getRequestURI().startsWith("/api/"))
+                )
                 .build();
-    }
-
-    @Bean
-    public OAuth2SuccessHandler oAuth2SuccessHandler(){
-        return new OAuth2SuccessHandler(tokenProvider,
-                refreshTokenRepository,
-                oAuth2AuthorizationRequestBasedOnCookieRepository(),
-                userService);
     }
 
     @Bean
@@ -150,3 +145,10 @@ public class WebOAuthSecurityConfig {
         return source;
     }
 }
+//@Bean
+//public OAuth2SuccessHandler oAuth2SuccessHandler(){
+//    return new OAuth2SuccessHandler(tokenProvider,
+//            refreshTokenRepository,
+//            oAuth2AuthorizationRequestBasedOnCookieRepository(),
+//            userService);
+//}
