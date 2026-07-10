@@ -1,5 +1,6 @@
 package com.ll.projectLimC.global.config;
 
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.ll.projectLimC.global.oauth.OAuth2SuccessHandler;
 import com.ll.projectLimC.global.oauth.service.OAuth2UserCustomService;
@@ -36,6 +37,7 @@ public class WebOAuthSecurityConfig {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final Environment env;
     @Bean
     public WebSecurityCustomizer configure(){
@@ -102,12 +104,13 @@ public class WebOAuthSecurityConfig {
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                 .userService(oAuth2UserCustomService))
 
-                        // 2. ⭐️ [순환 참조 해결의 핵심] 외부 빈 주입을 받지 않고, 여기서 직접 필요한 의존성을 채워 수동으로 생성해 꽂아버립니다.
+                        // 2. ⭐️ [순환 참조 해결의 핵심] 외부 빈 주입을 받지 않고, 여기서 직접 필요한 의존성을 채워 수동으로 생성해 꽂아버림
                         .successHandler(new OAuth2SuccessHandler(
                                 tokenProvider,
                                 refreshTokenRepository,
                                 oAuth2AuthorizationRequestBasedOnCookieRepository(),
-                                userService
+                                userService,
+                                userRepository
                         ))
                 )
                 // /api로 시작하는 url인 경우 401 상태 코드를 반환하도록 예외 처리

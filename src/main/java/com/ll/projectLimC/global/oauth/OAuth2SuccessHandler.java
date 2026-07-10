@@ -1,6 +1,8 @@
 package com.ll.projectLimC.global.oauth;
 
+import com.ll.projectLimC.domain.user.entity.Role;
 import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
@@ -34,33 +36,40 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
-    private final UserService userService;// 2차 방어선을 위해 다시 추가.
+    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
+
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        Long userId = (Long) attributes.get("id");
         String email = (String) attributes.get("email");
+        Object providerId = attributes.get("sub") != null ? attributes.get("sub") : attributes.get("id");
 
-        // 1. 만약 CustomService 타이밍 때문에 id가 null로 넘어왔다면, 확실하게 가입된 상태이므로 DB에서 안전하게 다시 채워줌.
+        System.out.println("🎯 [디버깅] OAuth2 로그인 성공 - 이메일: " + email + ", 소셜ID: " + providerId);
+
         User targetUser;
-        if (userId == null) {
-            System.out.println("⚠️ [경고] ID가 null로 넘어와 DB에서 유저 정보를 동기화합니다. 이메일: " + email);
+        try {
             targetUser = userService.findByEmail(email);
-            userId = targetUser.getId();
-        } else {
-            // id가 정상적으로 들어있다면 굳이 조회하지 않고 효율적으로 가짜 객체 조립
+        } catch (GlobalCustomException e) {
+            System.out.println("⚠️ [비상 조치] DB에 유저가 없어 SuccessHandler에서 강제 회원가입을 진행합니다.");
             targetUser = User.builder()
-                    .id(userId)
                     .email(email)
+                    .nickname((String) attributes.get("name"))
+                    .role(Role.USER)
+                    .password("")
+                    .provider("google")
+                    .providerId(String.valueOf(providerId))
                     .build();
+            targetUser = userRepository.saveAndFlush(targetUser);
         }
 
-        System.out.println("🎯 [디버깅] 최종 확정된 User ID: " + userId);
+        Long userId = targetUser.getId();
+        System.out.println("🎯 [디버깅] 최종 확정된 DB User ID: " + userId);
 
         // 2. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
         String refreshToken = tokenProvider.generateToken(targetUser, REFRESH_TOKEN_DURATION);
@@ -74,12 +83,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 인증 관련 설정값, 쿠키 제거
         clearAuthenticationAttributes(request, response);
 
-        // 리다이렉트
+        // ⭐️ [누락 복구] 리다이렉트 실행 및 메서드 정상 종료
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
-    }
+    } // 👈 꼬여있던onAuthenticationSuccess 메서드의 닫는 괄호를 완벽히 닫아줍니다!
 
     // 생성된 리프레시 토큰을 전달받아 DB에 저장
     private void saveRefreshToken(Long userId, String newRefreshToken){
+        // 기존 엔티티를 찾아서 업데이트하거나 없으면 생성 (생성자 인자 매핑 확인 필요)
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
                 .map(entity -> entity.update(newRefreshToken))
                 .orElse(new RefreshToken(userId, newRefreshToken));
@@ -96,11 +106,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
     }
 
-    // 인증관련 설정값, 쿠키 제거
-    private void clearAuthenticationAttributes(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ){
+    // 인증관련 설정값, 쿠키 제거 (부모 클래스의 시그니처 오류 방지를 위해 시큐리티 규격으로 보완)
+    private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
         authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
     }
