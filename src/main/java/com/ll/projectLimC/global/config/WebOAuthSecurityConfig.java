@@ -101,7 +101,7 @@ public class WebOAuthSecurityConfig {
                                         .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
                         )
                         .redirectionEndpoint(redirection -> redirection
-                                .baseUri("/login/oauth2/code/*"))
+                                .baseUri("/login/oauth2/code/**"))
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
                         // 인증 성공 시 실행할 핸들러
                         .successHandler(oAuth2SuccessHandler())
