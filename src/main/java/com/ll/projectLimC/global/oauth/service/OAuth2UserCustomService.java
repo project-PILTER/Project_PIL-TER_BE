@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
+// @Transactional
 public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
 
@@ -79,7 +79,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
                     System.out.println("====== [디버깅] 신규 소셜 유저를 DB에 저장합니다: " + newUser.getEmail() + " ======");
 
                     // ⚠️ 혹시 이Repository.save() 호출이 누락되었거나 에러가 나서 리턴이 안 되고 있는지 확인하세요!
-                    return userRepository.save(newUser);
+                    return userRepository.saveAndFlush(newUser);
                 });
     }
 }
