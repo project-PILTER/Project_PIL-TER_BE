@@ -78,15 +78,16 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     private User saveOrUpdate(OAuth2Attributes attributes) {
         return userRepository.findByEmail(attributes.getEmail())
                 .map(existingUser -> {
+                    // 기존 유저 데이터에 소셜 공급자 정보가 없다면 여기서 강제로 채워줍니다!
+                    if (existingUser.getProvider() == null || existingUser.getProvider().isEmpty()) {
+                        existingUser.updateSocialInfo(attributes.getProvider(), attributes.getProviderId());
+                    }
                     existingUser.update(attributes.getNickname(), attributes.getProfileImage());
                     return existingUser;
                 })
                 .orElseGet(() -> {
                     System.out.println("====== [디버깅] 신규 소셜 유저를 DB에 저장합니다: " + attributes.getEmail() + " ======");
-
-                    // ⭐️ 복잡한 수정을 CustomService에서 하지 않고, toEntity() 내부로 위임합니다.
                     User newUser = attributes.toEntity();
-
                     return userRepository.saveAndFlush(newUser);
                 });
     }

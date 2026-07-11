@@ -59,6 +59,8 @@ public class User implements UserDetails {
 
     // 소셜 로그인 식별용 연동 필드
     private String provider;   // google, naver, kakao
+
+    @Column(name = "provider_id")
     private String providerId; // 소셜 측에서 던져준 고유 서브/ID 키 값
 
 
@@ -129,6 +131,12 @@ public class User implements UserDetails {
         }
         this.nickname = newNickname;
         return this; // 빌더 패턴처럼 연속 호출이 가능하도록 인스턴스 반환
+    }
+
+    // 소셜 정보가 비어있을 때 채워넣어주는 메서드 추가
+    public void updateSocialInfo(String provider, String providerId) {
+        this.provider = provider;
+        this.providerId = providerId;
     }
 }
 //    @Builder
