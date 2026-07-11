@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -156,8 +157,8 @@ public class WebOAuthSecurityConfig {
     public OAuth2SuccessHandler oAuth2SuccessHandler(
             JwtTokenProvider tokenProvider,
             RefreshTokenRepository refreshTokenRepository,
-            UserService userService,
-            UserRepository userRepository) { // 🚨 스프링이 이 메서드를 실행할 때 이 부품들을 컨테이너에서 직접 꺼내서 주입해줍니다!
+            @Lazy UserService userService,
+            @Lazy UserRepository userRepository) { // 🚨 스프링이 이 메서드를 실행할 때 이 부품들을 컨테이너에서 직접 꺼내서 주입해줍니다!
 
         return new OAuth2SuccessHandler(
                 tokenProvider,
