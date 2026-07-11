@@ -42,22 +42,26 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
         // 4. 가입/갱신 후 엔티티 영속화
         User user = saveOrUpdate(attributes);
-        userRepository.saveAndFlush(user); // DB에 즉시 반영하여 ID(PK)를 객체에 확보
+        if (user.getId() == null) {
+            user = userRepository.saveAndFlush(user);
+        } // DB에 즉시 반영하여 ID(PK)를 객체에 확보
 
         System.out.println("🌱 [CustomService] DB 저장 완료 후 유저 ID: " + user.getId());
 
+        // 가공할 맵 생성
         Map<String, Object> customAttributes = new java.util.HashMap<>(attributes.getAttributes());
+
         customAttributes.put("id", user.getId());
         customAttributes.put("email", user.getEmail());
         customAttributes.put("nickname", user.getNickname());
         customAttributes.put("profile_image", user.getProfileImage());
-        customAttributes.put("provider", user.getProvider());
-        customAttributes.put("provider_id", user.getProviderId());
+        customAttributes.put("provider", user.getProvider() != null ? user.getProvider() : registrationId); // 공급자 정보 보장
+        customAttributes.put("provider_id", user.getProviderId() != null ? user.getProviderId() : attributes.getProviderId());
 
         // 구글 등 'sub'을 식별자로 쓰는 소셜 매체를 위해 customAttributes 맵에 해당 키를 강제로 매핑해 줌.
         String nameAttributeKey = attributes.getNameAttributeKey(); // google은 "sub", kakao는 "id" 등
-        if (!customAttributes.containsKey(nameAttributeKey)) {
-            // 맵에 구글용 "sub" 키가 없다면 소셜 ID 혹은 DB ID를 매핑해 줍니다.
+        if ("sub".equals(nameAttributeKey) || !customAttributes.containsKey(nameAttributeKey)) {
+            // 구글의 경우 sub 식별 키값에 식별자를 완벽하게 주입하여 핸들러로 넘겨줌.
             customAttributes.put(nameAttributeKey, user.getProviderId());
         }
 
@@ -78,12 +82,10 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     private User saveOrUpdate(OAuth2Attributes attributes) {
         return userRepository.findByEmail(attributes.getEmail())
                 .map(existingUser -> {
-                    // 기존 유저 데이터에 소셜 공급자 정보가 없다면 여기서 강제로 채워줍니다!
-                    if (existingUser.getProvider() == null || existingUser.getProvider().isEmpty()) {
-                        existingUser.updateSocialInfo(attributes.getProvider(), attributes.getProviderId());
-                    }
+                    // 기존 유저가 존재하지만 소셜 정보가 없는 더미 형태일 경우 채워줌
                     existingUser.update(attributes.getNickname(), attributes.getProfileImage());
-                    return existingUser;
+                    // 엔티티 내에 공급자 정보가 비어있다면 강제로 보완
+                    return userRepository.saveAndFlush(existingUser);
                 })
                 .orElseGet(() -> {
                     System.out.println("====== [디버깅] 신규 소셜 유저를 DB에 저장합니다: " + attributes.getEmail() + " ======");
