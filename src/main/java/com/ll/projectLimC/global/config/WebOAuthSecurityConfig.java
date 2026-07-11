@@ -34,8 +34,6 @@ import java.util.Arrays;
 @EnableWebSecurity
 @Configuration
 public class WebOAuthSecurityConfig {
-    private final OAuth2UserCustomService oAuth2UserCustomService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtTokenProvider tokenProvider;
     //private final RefreshTokenRepository refreshTokenRepository;
     //private final UserService userService;
@@ -65,7 +63,8 @@ public class WebOAuthSecurityConfig {
 
     // 토큰 방식으로 인증을 하기에 기존에 사용하던 폼 로그인, 세션 비활성화
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           OAuth2UserCustomService oAuth2UserCustomService) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 연결
                 // CSRF 비활성화 (API 서버이므로 필수)
@@ -108,7 +107,7 @@ public class WebOAuthSecurityConfig {
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                         .userService(oAuth2UserCustomService)
                                 )
-                                .successHandler(oAuth2SuccessHandler)
+                                .successHandler(oAuth2SuccessHandler(tokenProvider, null, null, null))
                         // 2. ⭐️ [순환 참조 해결의 핵심] 외부 빈 주입을 받지 않고, 여기서 직접 필요한 의존성을 채워 수동으로 생성해 꽂아버림
 //                        .successHandler(new OAuth2SuccessHandler(
 //                                tokenProvider,
