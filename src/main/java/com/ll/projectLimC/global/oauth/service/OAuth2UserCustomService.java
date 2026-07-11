@@ -54,6 +54,13 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         customAttributes.put("provider", user.getProvider());
         customAttributes.put("provider_id", user.getProviderId());
 
+        // 구글 등 'sub'을 식별자로 쓰는 소셜 매체를 위해 customAttributes 맵에 해당 키를 강제로 매핑해 줌.
+        String nameAttributeKey = attributes.getNameAttributeKey(); // google은 "sub", kakao는 "id" 등
+        if (!customAttributes.containsKey(nameAttributeKey)) {
+            // 맵에 구글용 "sub" 키가 없다면 소셜 ID 혹은 DB ID를 매핑해 줍니다.
+            customAttributes.put(nameAttributeKey, user.getProviderId());
+        }
+
         if (user.getCreatedAt() != null) {
             customAttributes.put("created_at", user.getCreatedAt().toString());
         }
@@ -61,8 +68,8 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         // 5. 시큐리티 세션/필터 시스템에 등록될 인증 유저 반환 (Principal 권한 바인딩)
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString())),
-                customAttributes, // 새로 커스텀한 맵을 주입
-                attributes.getNameAttributeKey()
+                customAttributes,
+                nameAttributeKey
         );
     }
 
