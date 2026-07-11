@@ -15,13 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 // import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
-// @Transactional
+@Transactional
 public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
 
@@ -57,7 +58,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         System.out.println("🌱 [CustomService] DB 저장 완료 후 유저 ID: " + user.getId());
 
         // 가공할 맵 생성
-        Map<String, Object> customAttributes = new java.util.HashMap<>(attributes.getAttributes());
+        Map<String, Object> customAttributes = new HashMap<>(attributes.getAttributes());
 
         customAttributes.put("id", user.getId());
         customAttributes.put("email", user.getEmail());
