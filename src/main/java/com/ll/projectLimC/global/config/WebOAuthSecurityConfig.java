@@ -34,14 +34,15 @@ import java.util.Arrays;
 @Configuration
 public class WebOAuthSecurityConfig {
     private final OAuth2UserCustomService oAuth2UserCustomService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtTokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final UserService userService;
-    private final UserRepository userRepository;
+    //private final RefreshTokenRepository refreshTokenRepository;
+    //private final UserService userService;
+    //private final UserRepository userRepository;
     private final Environment env;
 
     @Bean
-    public WebSecurityCustomizer configure(){
+    public WebSecurityCustomizer configure() {
         return (web) -> {
             // 1. 기본적으로 무시할 정적 리소스 설정
             var ignoring = web.ignoring().requestMatchers(
@@ -95,24 +96,26 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(authorization -> authorization
-                                .baseUri("/oauth2/authorization")
-                                // 1. ⭐️ 상단에 선언한 메서드 혹은 빈 주입 객체를 명시합니다.
-                                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
-                        )
-                        .redirectionEndpoint(redirection -> redirection
-                                .baseUri("/login/oauth2/code/**"))
-                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
-                                .userService(oAuth2UserCustomService))
-
+                                .authorizationEndpoint(authorization -> authorization
+                                        .baseUri("/oauth2/authorization")
+                                        // 1. ⭐️ 상단에 선언한 메서드 혹은 빈 주입 객체를 명시합니다.
+                                        .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
+                                )
+                                .redirectionEndpoint(redirection -> redirection
+                                        .baseUri("/login/oauth2/code/**")
+                                )
+                                .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                        .userService(oAuth2UserCustomService)
+                                )
+                                .successHandler(oAuth2SuccessHandler)
                         // 2. ⭐️ [순환 참조 해결의 핵심] 외부 빈 주입을 받지 않고, 여기서 직접 필요한 의존성을 채워 수동으로 생성해 꽂아버림
-                        .successHandler(new OAuth2SuccessHandler(
-                                tokenProvider,
-                                refreshTokenRepository,
-                                oAuth2AuthorizationRequestBasedOnCookieRepository(),
-                                userService,
-                                userRepository
-                        ))
+//                        .successHandler(new OAuth2SuccessHandler(
+//                                tokenProvider,
+//                                refreshTokenRepository,
+//                                oAuth2AuthorizationRequestBasedOnCookieRepository(),
+//                                userService,
+//                                userRepository
+//                        ))
                 )
                 // /api로 시작하는 url인 경우 401 상태 코드를 반환하도록 예외 처리
                 .exceptionHandling(ex -> ex
@@ -124,12 +127,12 @@ public class WebOAuthSecurityConfig {
     }
 
     @Bean
-    public TokenAuthentiocationFilter tokenAuthentiocationFilter(){
+    public TokenAuthentiocationFilter tokenAuthentiocationFilter() {
         return new TokenAuthentiocationFilter(tokenProvider);
     }
 
     @Bean
-    public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository(){
+    public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository() {
         return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 
@@ -148,11 +151,20 @@ public class WebOAuthSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    @Bean
+    public OAuth2SuccessHandler oAuth2SuccessHandler(
+            JwtTokenProvider tokenProvider,
+            RefreshTokenRepository refreshTokenRepository,
+            UserService userService,
+            UserRepository userRepository) { // 🚨 스프링이 이 메서드를 실행할 때 이 부품들을 컨테이너에서 직접 꺼내서 주입해줍니다!
+
+        return new OAuth2SuccessHandler(
+                tokenProvider,
+                refreshTokenRepository,
+                oAuth2AuthorizationRequestBasedOnCookieRepository(), // 클래스 내부의 빈 메서드 호출
+                userService,
+                userRepository
+        );
+    }
 }
-//@Bean
-//public OAuth2SuccessHandler oAuth2SuccessHandler(){
-//    return new OAuth2SuccessHandler(tokenProvider,
-//            refreshTokenRepository,
-//            oAuth2AuthorizationRequestBasedOnCookieRepository(),
-//            userService);
-//}
