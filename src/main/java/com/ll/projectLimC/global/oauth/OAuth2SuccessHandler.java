@@ -45,6 +45,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                         Authentication authentication) throws IOException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+
+        // 시큐리티 컨텍스트에 저장된 Principal의 모든 Attribute를 출력해봅니다.
+        System.out.println("🔍 [Handler] oAuth2User Attributes: " + oAuth2User.getAttributes());
+
+        // 이 값이 null로 찍히는지 반드시 확인!
+        System.out.println("🔍 [Handler] 추출된 유저 ID: " + oAuth2User.getAttribute("id"));
+
         // CustomService에서 커스텀하게 가공해 둔 맵을 가져옴
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
