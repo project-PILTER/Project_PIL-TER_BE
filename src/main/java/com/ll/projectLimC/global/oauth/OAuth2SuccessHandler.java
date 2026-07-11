@@ -11,6 +11,7 @@ import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
 import com.ll.projectLimC.domain.user.service.UserService;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import com.ll.projectLimC.util.CookieUtil;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,33 +43,53 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
+                                        Authentication authentication) throws IOException, ServletException { // 💡 ServletException 추가
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-        // 시큐리티 컨텍스트에 저장된 Principal의 모든 Attribute를 출력해봅니다.
-        System.out.println("🔍 [Handler] oAuth2User Attributes: " + oAuth2User.getAttributes());
-
-        // 이 값이 null로 찍히는지 반드시 확인!
-        System.out.println("🔍 [Handler] 추출된 유저 ID: " + oAuth2User.getAttribute("id"));
-
-        // CustomService에서 커스텀하게 가공해 둔 맵을 가져옴
+        // 1. 기본 어트리뷰트 맵 추출
         Map<String, Object> attributes = oAuth2User.getAttributes();
+        System.out.println("🔍 [Handler] oAuth2User Attributes: " + attributes);
 
-        // CustomService가 주입해 준 깔끔한 정석 데이터들 추출
-        Long userId = (Long) attributes.get("id");
+        // 2. 일차적으로 맵에서 데이터 추출 시도
+        Object idAttribute = attributes.get("id");
+        Long userId = null;
+
+        // 세션 컨텍스트에 따라 숫자가 Integer나 String으로 역직렬화될 수 있으므로 안전하게 변환
+        if (idAttribute != null) {
+            userId = Long.valueOf(String.valueOf(idAttribute));
+        }
+
         String email = (String) attributes.get("email");
         String nickname = (String) attributes.get("nickname");
         String provider = (String) attributes.get("provider");
         String providerId = (String) attributes.get("provider_id");
         String profileImage = (String) attributes.get("profile_image");
 
+        // 🚨 [질문자님 가설 반영] 만약 CustomService 단계에서 영속화 타이밍 이슈로 id가 null로 넘어왔다면?
+        if (userId == null) {
+            System.out.println("⚠️ [경고] 핸들러 맵에 id가 없습니다. 이메일(" + email + ") 기반으로 DB 전수조사를 시작합니다.");
+
+            if (email != null) {
+                // 주입받은 userRepository를 사용하여 실제 DB에 저장된 유저의 고유 PK(id)를 직접 강제로 땡겨옵니다.
+                userId = userRepository.findByEmail(email)
+                        .map(User::getId)
+                        .orElse(null);
+            }
+        }
+
+        // 🔥 [최종 방어선] DB 조회까지 했는데도 없다면 이것은 심각한 오류이므로 흐름을 중단시킵니다.
+        if (userId == null) {
+            System.out.println("❌ [최종 에러] 유저 식별자(PK)를 끝내 확보하지 못했습니다. 토큰 저장을 중단합니다.");
+            throw new ServletException("소셜 로그인 성공 후 유저 ID 매핑 실패");
+        }
+
         System.out.println("🎯 [디버깅] OAuth2 로그인 성공 - 이메일: " + email + ", 공급자: " + provider);
         System.out.println("🎯 [디버깅] 최종 확정된 DB User ID: " + userId);
 
-        // 1. 세션에서 추출한 정보로 안전하게 가상/영속 객체 바인딩 (DB 조회를 굳이 또 하지 않음)
+        // 3. 확보된 확실한 userId를 가지고 가상/영속 객체 바인딩
         User targetUser = User.builder()
-                .id(userId)
+                .id(userId) // ⭐️ 이제 절대 null이 아닙니다.
                 .email(email)
                 .nickname(nickname)
                 .provider(provider)
@@ -77,12 +98,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .role(Role.USER)
                 .build();
 
-        // 2. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
+        // 4. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
         String refreshToken = tokenProvider.generateToken(targetUser, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(userId, refreshToken);
+        saveRefreshToken(userId, refreshToken); // 🚀 안전하게 저장소로 Insert 쿼리가 수행됩니다.
         addRefreshTokenToCookie(request, response, refreshToken);
 
-        // 3. 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
+        // 5. 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
         String accessToken = tokenProvider.generateToken(targetUser, ACCESS_TOKEN_DURATION);
         String targetUrl = getTargetUrl(accessToken);
 

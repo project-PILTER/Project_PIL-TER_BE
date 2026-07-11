@@ -39,6 +39,7 @@ public class WebOAuthSecurityConfig {
     private final UserService userService;
     private final UserRepository userRepository;
     private final Environment env;
+
     @Bean
     public WebSecurityCustomizer configure(){
         return (web) -> {
