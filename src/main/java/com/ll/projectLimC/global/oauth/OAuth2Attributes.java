@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
@@ -76,11 +77,12 @@ public class OAuth2Attributes {
 
         return User.builder()
                 .email(this.email)
-                .nickname(this.nickname + uniqueSuffix) // ⭐️ 유니크 닉네임 자동 저장
+                .nickname(this.nickname + uniqueSuffix) // 유니크 닉네임 자동 저장
                 .role(Role.USER)
                 .profileImage(this.profileImage)
                 .provider(this.provider)
                 .providerId(this.providerId)
+                .createdAt(LocalDateTime.now())
                 .password("")
                 .build();
     }
