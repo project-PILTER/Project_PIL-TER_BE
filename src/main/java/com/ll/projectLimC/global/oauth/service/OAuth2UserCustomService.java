@@ -42,9 +42,17 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
         // 4. 가입/갱신 후 엔티티 영속화
         User user = saveOrUpdate(attributes);
+
+        // 만약 영속화 직후인데도 user.getId()가 null이라면, DB 연동이나 트랜잭션 시점이 꼬인 것.
         if (user.getId() == null) {
+            System.out.println("⚠️ [경고] user.getId()가 null입니다. 강제 saveAndFlush를 실행합니다.");
             user = userRepository.saveAndFlush(user);
-        } // DB에 즉시 반영하여 ID(PK)를 객체에 확보
+
+            // 강제 저장 후에도 null이라면 데이터베이스 저장 메커니즘 자체에 문제가 있는 것이므로 예외 발생
+            if (user.getId() == null) {
+                throw new OAuth2AuthenticationException("소셜 로그인 유저의 고유 식별자(ID)를 확보하는 데 실패했습니다.");
+            }
+        }
 
         System.out.println("🌱 [CustomService] DB 저장 완료 후 유저 ID: " + user.getId());
 
@@ -54,9 +62,9 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         customAttributes.put("id", user.getId());
         customAttributes.put("email", user.getEmail());
         customAttributes.put("nickname", user.getNickname());
-        customAttributes.put("profile_image", user.getProfileImage());
-        customAttributes.put("provider", user.getProvider() != null ? user.getProvider() : registrationId); // 공급자 정보 보장
+        customAttributes.put("provider", user.getProvider()!= null ? user.getProvider() : registrationId); // 공급자 정보 보장);
         customAttributes.put("provider_id", user.getProviderId() != null ? user.getProviderId() : attributes.getProviderId());
+        customAttributes.put("profile_image", user.getProfileImage());
 
         // 구글 등 'sub'을 식별자로 쓰는 소셜 매체를 위해 customAttributes 맵에 해당 키를 강제로 매핑해 줌.
         String nameAttributeKey = attributes.getNameAttributeKey(); // google은 "sub", kakao는 "id" 등
