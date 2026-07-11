@@ -29,6 +29,10 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     @Override
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        System.out.println("=================================================");
+        System.out.println("🔥 [확인] OAuth2UserCustomService가 작동 중입니다!");
+        System.out.println("=================================================");
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         // 1. 어떤 소셜 매체인지 식별 (google, naver, kakao)
