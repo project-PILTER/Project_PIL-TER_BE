@@ -53,11 +53,22 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 2. 일차적으로 맵에서 데이터 추출 시도
         Object idAttribute = attributes.get("id");
+
+        if (idAttribute == null && attributes.get("sub") != null) {
+            idAttribute = attributes.get("sub"); // 구글 공급자일 경우 sub를 식별값으로 대체 적용
+        }
+
         Long userId = null;
 
         // 세션 컨텍스트에 따라 숫자가 Integer나 String으로 역직렬화될 수 있으므로 안전하게 변환
         if (idAttribute != null) {
-            userId = Long.valueOf(String.valueOf(idAttribute));
+            try {
+                userId = Long.valueOf(String.valueOf(idAttribute));
+            } catch (NumberFormatException e) {
+                // 만약 소셜 고유 ID가 숫자가 아닌 문자열 형태로 되어 있다면
+                // 하단 이메일 기반 DB 조회 방어선으로 흘러가도록 유도
+                userId = null;
+            }
         }
 
         String email = (String) attributes.get("email");
@@ -80,8 +91,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 🔥 [최종 방어선] DB 조회까지 했는데도 없다면 이것은 심각한 오류이므로 흐름을 중단시킵니다.
         if (userId == null) {
-            System.out.println("❌ [최종 에러] 유저 식별자(PK)를 끝내 확보하지 못했습니다. 토큰 저장을 중단합니다.");
-            throw new ServletException("소셜 로그인 성공 후 유저 ID 매핑 실패");
+            System.out.println("⚠️ [안내] 회원 데이터가 DB에 없는 신규 유저입니다. 자동 회원가입 처리를 개시합니다.");
+
+            // DB에 새롭게 영속화하여 유저 식별자(PK)를 즉시 채굴해냅니다.
+            User newUser = User.builder()
+                    .email(email)
+                    .nickname(nickname != null ? nickname : "User_" + System.currentTimeMillis() % 10000)
+                    .provider(provider != null ? provider : "google")
+                    .providerId(providerId != null ? providerId : (String) attributes.get("sub"))
+                    .profileImage(profileImage)
+                    .role(Role.USER)
+                    .build();
+
+            User savedUser = userRepository.save(newUser); // JpaRepository를 통한 실시간 DB 영속화
+            userId = savedUser.getId(); // ⭐️ 드디어 확실하고 영속적인 DB의 auto_increment PK 확보!
         }
 
         System.out.println("🎯 [디버깅] OAuth2 로그인 성공 - 이메일: " + email + ", 공급자: " + provider);
