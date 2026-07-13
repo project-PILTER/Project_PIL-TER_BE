@@ -36,7 +36,7 @@ public class OAuth2Attributes {
         }
 
         return OAuth2Attributes.builder()
-                .nickname(googleName) // 추출한 이름을 nickname 필드에 매핑
+                .nickname((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .profileImage((String) attributes.get("picture"))
                 .provider("google")
