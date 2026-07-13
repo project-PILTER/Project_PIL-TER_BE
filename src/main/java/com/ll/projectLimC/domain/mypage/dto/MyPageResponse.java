@@ -20,9 +20,12 @@ import java.util.List;
 public class MyPageResponse {
 
     // 프로필 정보
-    private String nickname;
+    private Long id;
+    private String nickname; // "JE UK PARK_google_a1b2" 또는 "박제욱_naver_12db"
     private String email;
+    private String profileImage;
     private LocalDateTime createdAt; // 가입일
+    private MonthlyActivitySummary monthlyActivitySummary; // 소셜 플랫폼에서 받아온 프로필 이미지 URL
 
     // 상단 카운트 배지
     private long articleCount;       // 작성 게시글 수
@@ -61,5 +64,16 @@ public class MyPageResponse {
                 this.condition = "기록 없음";
             }
         }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class MonthlyActivitySummary {
+        private int currentPosts;
+        private int targetPosts;
+        private int currentComments;
+        private int targetComments;
+        private double healthRecordRate; // 건강 기록 달성률 (%)
     }
 }

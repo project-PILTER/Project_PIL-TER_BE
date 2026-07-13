@@ -45,6 +45,7 @@ public class WebOAuthSecurityConfig {
         return (web) -> {
             // 1. 기본적으로 무시할 정적 리소스 설정
             var ignoring = web.ignoring().requestMatchers(
+                    "/images/**",
                     "/img/**",
                     "/css/**",
                     "/js/**"
@@ -79,6 +80,7 @@ public class WebOAuthSecurityConfig {
                 // 토큰 재발급 URL은 인증 없이 접근 가능하도록 설정. 나머지 API URL은 인증 필요
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/token").permitAll()
+                        .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/oauth2/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()

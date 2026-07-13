@@ -80,7 +80,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String provider = (String) attributes.get("provider");
         String providerId = (String) attributes.get("provider_id");
-        String profileImage = (String) attributes.get("profile_image");
+        String profileImage = (String) attributes.get("profile_image"); // 네이버는 이거 씀.
 
         // 🚨 [질문자님 가설 반영] 만약 CustomService 단계에서 영속화 타이밍 이슈로 id가 null로 넘어왔다면?
         if (userId == null) {

@@ -35,10 +35,13 @@ public class OAuth2Attributes {
             googleName = (String) attributes.get("given_name"); // alternative
         }
 
+        String pictureUrl = (String) attributes.get("picture");
+        String defaultImage = "/images/default-profile.png";
+
         return OAuth2Attributes.builder()
                 .nickname(googleName)
                 .email((String) attributes.get("email"))
-                .profileImage((String) attributes.get("picture"))
+                .profileImage(pictureUrl != null && !pictureUrl.isEmpty() ? pictureUrl : defaultImage)
                 .provider("google")
                 .providerId((String) attributes.get("sub"))
                 .attributes(attributes)
@@ -64,10 +67,13 @@ public class OAuth2Attributes {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
+        String profileImage = (profile != null) ? (String) profile.get("profile_image_url") : null;
+        String defaultImage = "/images/default-profile.png";
+
         return OAuth2Attributes.builder()
-                .nickname((String) profile.get("nickname"))
+                .nickname(profile != null ? (String) profile.get("nickname") : null)
                 .email((String) kakaoAccount.get("email"))
-                .profileImage((String) profile.get("profile_image_url"))
+                .profileImage(profileImage != null && !profileImage.isEmpty() ? profileImage : defaultImage)
                 .provider("kakao")
                 .providerId(String.valueOf(attributes.get("id")))
                 .attributes(attributes)
