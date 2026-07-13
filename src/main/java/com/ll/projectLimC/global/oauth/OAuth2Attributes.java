@@ -36,7 +36,7 @@ public class OAuth2Attributes {
         }
 
         return OAuth2Attributes.builder()
-                .nickname((String) attributes.get("name"))
+                .nickname(googleName)
                 .email((String) attributes.get("email"))
                 .profileImage((String) attributes.get("picture"))
                 .provider("google")

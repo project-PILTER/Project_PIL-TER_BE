@@ -73,6 +73,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String email = (String) attributes.get("email");
         String nickname = (String) attributes.get("nickname");
+
+        if (nickname == null) {
+            nickname = (String) attributes.get("name");
+        }
+
         String provider = (String) attributes.get("provider");
         String providerId = (String) attributes.get("provider_id");
         String profileImage = (String) attributes.get("profile_image");
