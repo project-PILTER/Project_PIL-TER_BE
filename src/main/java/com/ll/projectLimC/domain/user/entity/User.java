@@ -140,6 +140,10 @@ public class User implements UserDetails {
         this.provider = provider;
         this.providerId = providerId;
     }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }
 //    @Builder
 //    public User(String email, String password, String nickname,

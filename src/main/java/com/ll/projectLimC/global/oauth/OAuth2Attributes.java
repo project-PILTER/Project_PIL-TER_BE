@@ -30,8 +30,13 @@ public class OAuth2Attributes {
     }
 
     private static OAuth2Attributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
+        String googleName = (String) attributes.get("name");
+        if (googleName == null || googleName.trim().isEmpty()) {
+            googleName = (String) attributes.get("given_name"); // alternative
+        }
+
         return OAuth2Attributes.builder()
-                .nickname((String) attributes.get("name"))
+                .nickname(googleName) // 추출한 이름을 nickname 필드에 매핑
                 .email((String) attributes.get("email"))
                 .profileImage((String) attributes.get("picture"))
                 .provider("google")

@@ -95,9 +95,14 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     private User saveOrUpdate(OAuth2Attributes attributes) {
         return userRepository.findByEmail(attributes.getEmail())
                 .map(existingUser -> {
-                    // 기존 유저가 존재하지만 소셜 정보가 없는 더미 형태일 경우 채워줌
-                    existingUser.update(attributes.getNickname(), attributes.getProfileImage());
-                    // 엔티티 내에 공급자 정보가 비어있다면 강제로 보완
+                    // 이미 소셜 로그인 정보가 있는 유저라면 닉네임은 유지하고 프로필만 변경
+                    if (existingUser.getProvider() != null && !existingUser.getProvider().isEmpty()) {
+                        existingUser.updateProfileImage(attributes.getProfileImage());
+                    } else {
+                        // 일반 회원인데 소셜 정보가 최초로 연동되는 경우라면 유니크한 닉네임을 조합해서 넣어줍니다.
+                        String uniqueNickname = attributes.getNickname() + "_" + attributes.getProvider() + "_" + java.util.UUID.randomUUID().toString().substring(0, 4);
+                        existingUser.update(uniqueNickname, attributes.getProfileImage());
+                    }
                     return userRepository.saveAndFlush(existingUser);
                 })
                 .orElseGet(() -> {
