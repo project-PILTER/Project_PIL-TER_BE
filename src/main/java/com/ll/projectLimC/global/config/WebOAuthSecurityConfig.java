@@ -109,7 +109,9 @@ public class WebOAuthSecurityConfig {
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                         .userService(oAuth2UserCustomService)
                                 )
-                                .successHandler(oAuth2SuccessHandler(tokenProvider, null, null, null))
+                                .successHandler(oAuth2SuccessHandler(tokenProvider, null, null
+                                        //, null
+                                ))
                         // 2. ⭐️ [순환 참조 해결의 핵심] 외부 빈 주입을 받지 않고, 여기서 직접 필요한 의존성을 채워 수동으로 생성해 꽂아버림
 //                        .successHandler(new OAuth2SuccessHandler(
 //                                tokenProvider,
@@ -158,14 +160,14 @@ public class WebOAuthSecurityConfig {
     public OAuth2SuccessHandler oAuth2SuccessHandler(
             JwtTokenProvider tokenProvider,
             RefreshTokenRepository refreshTokenRepository,
-            @Lazy UserService userService,
+            // @Lazy UserService userService,
             @Lazy UserRepository userRepository) { // 🚨 스프링이 이 메서드를 실행할 때 이 부품들을 컨테이너에서 직접 꺼내서 주입해줍니다!
 
         return new OAuth2SuccessHandler(
                 tokenProvider,
                 refreshTokenRepository,
                 oAuth2AuthorizationRequestBasedOnCookieRepository(), // 클래스 내부의 빈 메서드 호출
-                userService,
+        //        userService,
                 userRepository
         );
     }

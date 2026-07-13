@@ -3,28 +3,23 @@ package com.ll.projectLimC.global.oauth;
 import com.ll.projectLimC.domain.user.entity.Role;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
-import com.ll.projectLimC.global.Execption.ErrorCode;
-import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
-import com.ll.projectLimC.domain.user.service.UserService;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import com.ll.projectLimC.util.CookieUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -37,7 +32,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
-    private final UserService userService;
+    // private final UserService userService;
     private final UserRepository userRepository;
 
     @Override
@@ -52,64 +47,96 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         System.out.println("🔍 [Handler] oAuth2User Attributes: " + attributes);
 
         // 2. 일차적으로 맵에서 데이터 추출 시도
-        Object idAttribute = attributes.get("id");
+        String email = null;
+        String nickname = null;
+        String provider = null;
+        String providerId = null;
+        String profileImage = null;
 
-        if (idAttribute == null && attributes.get("sub") != null) {
-            idAttribute = attributes.get("sub"); // 구글 공급자일 경우 sub를 식별값으로 대체 적용
+        // A. 카카오 로그인인 경우 (kakao_account 키의 존재 여부로 판단)
+        if (attributes.containsKey("kakao_account")) {
+            provider = "kakao";
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            email = (String) kakaoAccount.get("email");
+
+            Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+            if (profile != null) {
+                nickname = (String) profile.get("nickname");
+                String kakaoImg = (String) profile.get("profile_image_url");
+                profileImage = (kakaoImg != null && !kakaoImg.isEmpty()) ? kakaoImg : "/api/images/default-profile.png";
+            } else {
+                profileImage = "/api/images/default-profile.png";
+            }
+            providerId = String.valueOf(attributes.get("id"));
+
+            // B. 네이버 로그인인 경우 (response 키의 존재 여부로 판단)
+        } else if (attributes.containsKey("response")) {
+            provider = "naver";
+            Map<String, Object> responseMap = (Map<String, Object>) attributes.get("response");
+            email = (String) responseMap.get("email");
+            nickname = (String) responseMap.get("name");
+
+            String naverImg = (String) responseMap.get("profile_image");
+            profileImage = (naverImg != null && !naverImg.isEmpty()) ? naverImg : "/api/images/default-profile.png";
+            providerId = (String) responseMap.get("id");
+
+            // C. 구글 로그인인 경우 (구글 원본 Attributes 구조 대응)
+        } else {
+            provider = "google";
+            email = (String) attributes.get("email");
+            nickname = (String) attributes.get("name");
+            if (nickname == null || nickname.trim().isEmpty()) {
+                nickname = (String) attributes.get("given_name");
+            }
+
+            String googleImg = (String) attributes.get("picture");
+            profileImage = (googleImg != null && !googleImg.isEmpty()) ? googleImg : "/api/images/default-profile.png";
+            providerId = (String) attributes.get("sub");
+        }
+
+//        String email = (String) attributes.get("email");
+//        String nickname = (String) attributes.get("nickname");
+
+        // 2. 식별자(userId) 파싱 및 DB 전수조사 방어선
+        Object idAttribute = attributes.get("id");
+        if (idAttribute == null && providerId != null) {
+            idAttribute = providerId; // 구글/네이버 등에서 추출한 고유 식별값을 ID 대용으로 매핑
         }
 
         Long userId = null;
-
-        // 세션 컨텍스트에 따라 숫자가 Integer나 String으로 역직렬화될 수 있으므로 안전하게 변환
         if (idAttribute != null) {
             try {
                 userId = Long.valueOf(String.valueOf(idAttribute));
             } catch (NumberFormatException e) {
-                // 만약 소셜 고유 ID가 숫자가 아닌 문자열 형태로 되어 있다면
-                // 하단 이메일 기반 DB 조회 방어선으로 흘러가도록 유도
-                userId = null;
+                userId = null; // 소셜 고유 ID가 숫자가 아닌 문자열(구글 sub 등)인 경우 아래 DB 조회로 해결
             }
         }
 
-        String email = (String) attributes.get("email");
-        String nickname = (String) attributes.get("nickname");
-
-        if (nickname == null) {
-            nickname = (String) attributes.get("name");
+        // DB 전수조사를 통해 유저 식별자(PK)를 명확하게 조회
+        if (userId == null && email != null) {
+            System.out.println("⚠️ [안내] 식별자 재추출 시작. 이메일(" + email + ") 기반으로 DB 조회를 수행합니다.");
+            userId = userRepository.findByEmail(email)
+                    .map(User::getId)
+                    .orElse(null);
         }
 
-        String provider = (String) attributes.get("provider");
-        String providerId = (String) attributes.get("provider_id");
-        String profileImage = (String) attributes.get("profile_image"); // 네이버는 이거 씀.
-
-        // 🚨 [질문자님 가설 반영] 만약 CustomService 단계에서 영속화 타이밍 이슈로 id가 null로 넘어왔다면?
-        if (userId == null) {
-            System.out.println("⚠️ [경고] 핸들러 맵에 id가 없습니다. 이메일(" + email + ") 기반으로 DB 전수조사를 시작합니다.");
-
-            if (email != null) {
-                // 주입받은 userRepository를 사용하여 실제 DB에 저장된 유저의 고유 PK(id)를 직접 강제로 땡겨옵니다.
-                userId = userRepository.findByEmail(email)
-                        .map(User::getId)
-                        .orElse(null);
-            }
-        }
-
-        // 🔥 [최종 방어선] DB 조회까지 했는데도 없다면 이것은 심각한 오류이므로 흐름을 중단시킵니다.
+        // [최종 방어선] DB 조회까지 했는데도 없다면 자동 회원가입 처리 진행
         if (userId == null) {
             System.out.println("⚠️ [안내] 회원 데이터가 DB에 없는 신규 유저입니다. 자동 회원가입 처리를 개시합니다.");
 
-            // DB에 새롭게 영속화하여 유저 식별자(PK)를 즉시 채굴해냅니다.
             User newUser = User.builder()
                     .email(email)
                     .nickname(nickname != null ? nickname : "User_" + System.currentTimeMillis() % 10000)
-                    .provider(provider != null ? provider : "google")
-                    .providerId(providerId != null ? providerId : (String) attributes.get("sub"))
+                    .provider(provider)
+                    .providerId(providerId)
                     .profileImage(profileImage)
                     .role(Role.USER)
+                    .password("")
+                    .createdAt(LocalDateTime.now()) // 혹시 몰라 생성일자도 추가
                     .build();
 
-            User savedUser = userRepository.save(newUser); // JpaRepository를 통한 실시간 DB 영속화
-            userId = savedUser.getId(); // ⭐️ 드디어 확실하고 영속적인 DB의 auto_increment PK 확보!
+            User savedUser = userRepository.save(newUser);
+            userId = savedUser.getId();
         }
 
         System.out.println("🎯 [디버깅] OAuth2 로그인 성공 - 이메일: " + email + ", 공급자: " + provider);
