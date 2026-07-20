@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class User implements UserDetails {
     @CreatedDate // jpa용
     @Column(name = "created_at")
 //    @CreationTimestamp 하이버네이트용
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
