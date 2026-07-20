@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
@@ -94,7 +95,7 @@ public class OAuth2Attributes {
                 .profileImage(this.profileImage)
                 .provider(this.provider)
                 .providerId(this.providerId)
-                .createdAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+                .createdAt(OffsetDateTime.now(ZoneId.of("Asia/Seoul")))
                 .password("")
                 .build();
     }
