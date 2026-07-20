@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,9 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         }
 
         if (user.getCreatedAt() != null) {
-            customAttributes.put("created_at", user.getCreatedAt().toString());
+            customAttributes.put("created_at", user.getCreatedAt()
+                    .atZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                    .toString());
         }
 
         // 5. 시큐리티 세션/필터 시스템에 등록될 인증 유저 반환 (Principal 권한 바인딩)

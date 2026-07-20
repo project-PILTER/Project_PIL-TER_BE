@@ -6,6 +6,7 @@ import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Configuration
@@ -15,6 +16,6 @@ public class JpaConfig {
     @Bean
     public DateTimeProvider utcDateTimeProvider() {
         // Auditing 실행 시 OffsetDateTime.now()를 반환하도록 지정
-        return () -> Optional.of(OffsetDateTime.now());
+        return () -> Optional.of(OffsetDateTime.now(ZoneId.of("Asia/Seoul")));
     }
 }
