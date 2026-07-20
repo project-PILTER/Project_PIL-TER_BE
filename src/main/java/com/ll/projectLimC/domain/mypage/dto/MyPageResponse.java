@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class MyPageResponse {
     private String nickname; // "JE UK PARK_google_a1b2" 또는 "박제욱_naver_12db"
     private String email;
     private String profileImage;
-    private LocalDateTime createdAt; // 가입일
+    private OffsetDateTime createdAt; // 가입일
     private MonthlyActivitySummary monthlyActivitySummary; // 소셜 플랫폼에서 받아온 프로필 이미지 URL
 
     // 상단 카운트 배지

@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
@@ -121,7 +122,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     .profileImage(profileImage)
                     .role(Role.USER)
                     .password("")
-                    .createdAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+                    .createdAt(OffsetDateTime.now(ZoneId.of("Asia/Seoul")))
                     .build();
 
             User savedUser = userRepository.save(newUser);
