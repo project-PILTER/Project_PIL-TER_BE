@@ -9,6 +9,7 @@ services:
       - SPRING_DATASOURCE_URL=${REAL_DB_URL_PROD}
       - SPRING_DATASOURCE_USERNAME=${DB_USERNAME_PROD}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD_PROD}
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=Asia/Seoul
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
