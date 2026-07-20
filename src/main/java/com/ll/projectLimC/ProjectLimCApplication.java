@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import java.io.File;
 import java.util.TimeZone;
 
-@EnableJpaAuditing // created_at, updated_at 자동 업데이트
+// @EnableJpaAuditing // created_at, updated_at 자동 업데이트
 @SpringBootApplication
 public class ProjectLimCApplication {
 
