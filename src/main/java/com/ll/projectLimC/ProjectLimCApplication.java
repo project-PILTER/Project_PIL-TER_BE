@@ -1,14 +1,22 @@
 package com.ll.projectLimC;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.io.File;
+import java.util.TimeZone;
 
 @EnableJpaAuditing // created_at, updated_at 자동 업데이트
 @SpringBootApplication
 public class ProjectLimCApplication {
+
+	@PostConstruct
+	public void started() {
+		// Application 전체의 TimeZone을 KST로 설정
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+	}
 
 	public static void main(String[] args) {
 		// 소셜 로그인 기능을 구현하고 나니 에러가 나타남.
