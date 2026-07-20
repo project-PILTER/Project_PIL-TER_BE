@@ -44,9 +44,9 @@ public class User implements UserDetails {
     @Column(name = "profile_image")
     private String profileImage;
 
-    @CreatedDate
+    @CreatedDate // jpa용
     @Column(name = "created_at")
-    @CreationTimestamp
+//    @CreationTimestamp 하이버네이트용
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)

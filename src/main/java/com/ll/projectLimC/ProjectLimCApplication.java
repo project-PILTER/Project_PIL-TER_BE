@@ -12,11 +12,11 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class ProjectLimCApplication {
 
-	@PostConstruct
-	public void started() {
-		// Application 전체의 TimeZone을 KST로 설정
-		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-	}
+//	@PostConstruct
+//	public void started() {
+//		// Application 전체의 TimeZone을 KST로 설정
+//		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+//	}
 
 	public static void main(String[] args) {
 		// 소셜 로그인 기능을 구현하고 나니 에러가 나타남.
