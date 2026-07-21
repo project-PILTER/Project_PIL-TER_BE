@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -24,7 +25,7 @@ public class ArticleViewResponse {
     private String content;
 
     @Schema(description = "게시글 작성 일시", example = "2026-06-24T11:00:00")
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Schema(description = "작성자 닉네임", example = "홍길동")
     private String author;
