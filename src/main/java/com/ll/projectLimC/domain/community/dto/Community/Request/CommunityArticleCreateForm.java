@@ -36,6 +36,7 @@ public class CommunityArticleCreateForm {
                 .content(content)
                 .author(author)
                 .imageUrl(imageUrl)
+                .category(category)
                 // isDraft가 null이어도 안전하게 false로 처리되어 PUBLISHED가 됨.
                 // isDraft가 true ➔ ArticleStatus.DRAFT
                 .status(Boolean.TRUE.equals(isDraft) ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED)
