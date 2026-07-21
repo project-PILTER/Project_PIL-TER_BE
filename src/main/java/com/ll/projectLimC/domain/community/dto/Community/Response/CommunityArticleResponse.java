@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.community.dto;
+package com.ll.projectLimC.domain.community.dto.Community.Response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;

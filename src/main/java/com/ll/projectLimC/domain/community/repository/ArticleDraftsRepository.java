@@ -17,6 +17,6 @@ public interface ArticleDraftsRepository extends JpaRepository<ArticleDrafts, Lo
     // 특정 유저의 '모든' 임시저장 글을 일괄 삭제 (회원 탈퇴, 또는 전체 초기화 시 활용)
     void deleteByUser(User user);
 
-    // 특정 임시저장 글 '하나만' 삭제할 때 사용\
+    // 특정 임시저장 글 '하나만' 삭제할 때 사용
     void deleteByIdAndUser(Long id, User user);
 }

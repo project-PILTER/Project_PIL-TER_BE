@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.community.dto;
+package com.ll.projectLimC.domain.community.dto.Community.Response;
 
 import com.ll.projectLimC.domain.comment.dto.CommentAuthorResponse;
 import com.ll.projectLimC.domain.comment.dto.CommentResponse;

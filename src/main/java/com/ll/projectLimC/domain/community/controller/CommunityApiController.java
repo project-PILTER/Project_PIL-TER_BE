@@ -1,9 +1,9 @@
 package com.ll.projectLimC.domain.community.controller;
 
-import com.ll.projectLimC.domain.community.dto.ArticleViewResponse;
-import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
-import com.ll.projectLimC.domain.community.dto.CommunityArticleResponse;
-import com.ll.projectLimC.domain.community.dto.UpdateCommunityArticleRequest;
+import com.ll.projectLimC.domain.community.dto.Community.Response.ArticleViewResponse;
+import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
+import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;

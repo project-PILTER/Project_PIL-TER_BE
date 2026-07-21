@@ -2,7 +2,7 @@ package com.ll.projectLimC.domain.community.service;
 
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.ArticleStatus;
-import com.ll.projectLimC.domain.community.dto.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.ll.projectLimC.domain.community.dto.UpdateCommunityArticleRequest;
+import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
 
 import java.util.List;
 

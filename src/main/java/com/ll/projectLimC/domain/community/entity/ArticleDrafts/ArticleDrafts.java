@@ -2,10 +2,7 @@ package com.ll.projectLimC.domain.community.entity.ArticleDrafts;
 
 import com.ll.projectLimC.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,6 +15,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@Getter
 public class ArticleDrafts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
