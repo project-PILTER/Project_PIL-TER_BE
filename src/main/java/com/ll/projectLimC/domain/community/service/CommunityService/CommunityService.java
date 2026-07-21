@@ -29,7 +29,7 @@ public class CommunityService {
     public CommunityArticle save(CommunityArticleCreateForm request, String email){
         // DB에서 유저 존재 여부 검증
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER));
 
         return communityRepository.save(request.toEntity(user.getEmail()));
     }
@@ -80,6 +80,7 @@ public class CommunityService {
                 request.getTitle(),
                 request.getContent(),
                 request.getImageUrl(),
+                request.getCategory(),
                 nextStatus
         );
 

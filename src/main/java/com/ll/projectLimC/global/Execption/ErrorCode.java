@@ -25,6 +25,7 @@ public enum ErrorCode {
     NOT_FOUND_THE_EMAIL_TO_SOCIAL(4014, HttpStatus.NOT_FOUND, "소셜 로그인으로부터 이메일 정보를 가져올 수 없습니다."),
     NOT_AUTHORIZED_THE_DRAFT_ARTICLE(4015, HttpStatus.UNAUTHORIZED, "해당 임시저장 글이 존재하지 않거나 권한이 없습니다."),
     NOT_FOUND_THE_DRAFT_ARTICLE(4016, HttpStatus.NOT_FOUND, "해당 임시저장 글을 찾을 수 없습니다."),
+    UNAUTHORIZED_USER(4017, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다(401)"),
     // 5000번대
     INTERNAL_SERVER_ERROR(5000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 

@@ -42,8 +42,7 @@ public class CommunityApiController {
             @RequestBody CommunityArticleCreateForm request,
             Principal principal
     ) {
-        String email = getAuthenticatedEmail(principal);
-        CommunityArticle savedCommunityArticle = communityService.save(request, email);
+        CommunityArticle savedCommunityArticle = communityService.save(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedCommunityArticle);
@@ -83,8 +82,7 @@ public class CommunityApiController {
             @RequestBody UpdateCommunityArticleRequest request,
             Principal principal // [추가] Principal 주입
     ) {
-        String email = getAuthenticatedEmail(principal);
-        CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request, email);
+        CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request, principal.getName());
 
         return ResponseEntity.ok().body(updatedCommunityArticle);
     }
@@ -97,8 +95,8 @@ public class CommunityApiController {
             @PathVariable long id,
             Principal principal // [추가] Principal 주입
     ) {
-        String email = getAuthenticatedEmail(principal);
-        communityService.deleteCommunityArticle(id, email);
+
+        communityService.deleteCommunityArticle(id, principal.getName());
 
         return ResponseEntity.ok().build();
     }
@@ -111,18 +109,15 @@ public class CommunityApiController {
             @RequestBody ArticleDraftsSaveRequest request,
             Principal principal
     ) {
-        String email = getAuthenticatedEmail(principal);
-
-        Long savedDraftId = articleDraftsService.saveOrUpdateDraft(draftId, request, email);
+        Long savedDraftId = articleDraftsService.saveOrUpdateDraft(draftId, request, principal.getName());
         return ResponseEntity.ok(savedDraftId);
     }
 
     @Operation(summary = "내 임시저장 글 목록 조회", description = "로그인한 사용자의 임시저장 목록 전체를 가져옵니다.")
     @GetMapping("/community/articles/drafts")
     public ResponseEntity<List<ArticleDraftsListResponse>> getMyDrafts(Principal principal) {
-        String email = getAuthenticatedEmail(principal);
 
-        List<ArticleDraftsListResponse> drafts = articleDraftsService.findMyDrafts(email);
+        List<ArticleDraftsListResponse> drafts = articleDraftsService.findMyDrafts(principal.getName());
         return ResponseEntity.ok(drafts);
     }
 
@@ -132,9 +127,7 @@ public class CommunityApiController {
             @PathVariable Long id,
             Principal principal
     ) {
-        String email = getAuthenticatedEmail(principal);
-
-        ArticleDraftsListResponse draft = articleDraftsService.findDraftById(id, email);
+        ArticleDraftsListResponse draft = articleDraftsService.findDraftById(id, principal.getName());
         return ResponseEntity.ok(draft);
     }
 
@@ -144,18 +137,8 @@ public class CommunityApiController {
             @PathVariable Long id,
             Principal principal
     ) {
-        String email = getAuthenticatedEmail(principal);
-
-        articleDraftsService.deleteDraft(id, email);
+        articleDraftsService.deleteDraft(id, principal.getName());
         return ResponseEntity.ok().build();
-    }
-
-    private String getAuthenticatedEmail(Principal principal) {
-        if (principal == null) {
-            // 토큰이 없거나 로그인하지 않은 요청일 때 500 에러 대신 Custom 예외를 던짐
-            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_ARTICLE);
-        }
-        return principal.getName(); // 안전하게 email 추출
     }
 }
 //    @Operation(summary = "내가 작성한 임시 저장 글 목록 조회",
@@ -190,4 +173,11 @@ public class CommunityApiController {
 //    public ResponseEntity<ArticleViewResponse> getArticleForEdit(@PathVariable Long id) {
 //        CommunityArticle article = communityService.findById(id);
 //        return ResponseEntity.ok().body(new ArticleViewResponse(article));
+//    }
+// private String getAuthenticatedEmail(Principal principal) {
+//        if (principal == null) {
+//            // 토큰이 없거나 로그인하지 않은 요청일 때 500 에러 대신 Custom 예외를 던짐
+//            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_ARTICLE);
+//        }
+//        return principal.getName(); // 안전하게 email 추출
 //    }
