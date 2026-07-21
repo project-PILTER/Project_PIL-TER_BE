@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.community.dto;
+package com.ll.projectLimC.domain.community.dto.Community.Request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

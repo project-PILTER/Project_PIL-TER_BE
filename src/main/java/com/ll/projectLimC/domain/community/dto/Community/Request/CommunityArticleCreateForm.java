@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.community.dto;
+package com.ll.projectLimC.domain.community.dto.Community.Request;
 
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
