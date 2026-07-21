@@ -23,4 +23,7 @@ public class UpdateCommunityArticleRequest {
 
     @Schema(description = "수정 후 최종 등록 여부 (false 입력 시 PUBLISHED로 상태 전환)", example = "false")
     private boolean isDraft; // 임시 저장 연장할지, 출간할지 결정
+
+    @Schema(description = "카테고리 수정", example = "암")
+    private String category;
 }

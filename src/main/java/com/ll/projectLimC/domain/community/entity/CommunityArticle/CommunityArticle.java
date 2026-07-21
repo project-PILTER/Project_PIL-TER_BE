@@ -43,6 +43,9 @@ public class CommunityArticle {
     @Column(name = "imageUrl", nullable = false)
     private String imageUrl;
 
+    @Column(name = "category")
+    private String category;
+
     @OneToMany(mappedBy = "communityArticle", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
@@ -55,6 +58,7 @@ public class CommunityArticle {
                             String title,
                             String content,
                             String imageUrl,
+                            String category,
                             // String nickname
                             ArticleStatus status
                             ){
@@ -62,14 +66,16 @@ public class CommunityArticle {
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+        this.category = category;
         // this.nickname = nickname;
         this.status = status != null ? status : ArticleStatus.PUBLISHED; // 상태값 추가 받아오기
     }
 
-    public void updateCommunityArticle(String title, String content, String imageUrl, ArticleStatus status){
+    public void updateCommunityArticle(String title, String content, String imageUrl, String category, ArticleStatus status){
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+        this.category = category;
         if (status != null) {
             this.status = status; // 수정할 때 DRAFT -> PUBLISHED로 전환 가능하도록 추가
         }
