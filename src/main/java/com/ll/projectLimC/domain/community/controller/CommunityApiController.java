@@ -1,11 +1,15 @@
 package com.ll.projectLimC.domain.community.controller;
 
+import com.ll.projectLimC.domain.community.dto.ArticleDrafts.Request.ArticleDraftsSaveRequest;
+import com.ll.projectLimC.domain.community.dto.ArticleDrafts.Response.ArticleDraftsListResponse;
 import com.ll.projectLimC.domain.community.dto.Community.Response.ArticleViewResponse;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
 import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.community.service.CommunityService;
+import com.ll.projectLimC.domain.community.repository.ArticleDraftsRepository;
+import com.ll.projectLimC.domain.community.service.ArticleDraftsService.ArticleDraftsService;
+import com.ll.projectLimC.domain.community.service.CommunityService.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,7 @@ import java.util.List;
 public class CommunityApiController {
 
     private final CommunityService communityService;
+    private final ArticleDraftsService articleDraftsService;
 
     // 1. 게시글 작성
     @Operation(summary = "커뮤니티 게시글 작성",
@@ -94,18 +99,58 @@ public class CommunityApiController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "내가 작성한 임시 저장 글 목록 조회",
-            description = "현재 로그인한 유저가 임시 저장(DRAFT)해 둔 글 목록만 모아서 가져옵니다.")
-    @GetMapping("/community/articles/drafts")
-    public ResponseEntity<List<CommunityArticleResponse>> findMyDraftArticles(Principal principal){
-        List<CommunityArticleResponse> drafts = communityService.findMyDrafts(principal.getName())
-                .stream()
-                .map(CommunityArticleResponse::new)
-                .toList();
+    /** 임시저장용 컨트롤러**/
+    @Operation(summary = "게시글 임시저장 생성 및 수정", description = "draftId 쿼리 파라미터 존재 여부에 따라 생성/수정 처리합니다.")
+    @PostMapping("/community/articles/drafts")
+    public ResponseEntity<Long> saveOrUpdateDraft(
+            @RequestParam(required = false) Long draftId,
+            @RequestBody ArticleDraftsSaveRequest request,
+            Principal principal
+    ) {
+        Long savedDraftId = articleDraftsService.saveOrUpdateDraft(draftId, request, principal.getName());
+        return ResponseEntity.ok(savedDraftId);
+    }
 
-        return ResponseEntity.ok().body(drafts);
+    @Operation(summary = "내 임시저장 글 목록 조회", description = "로그인한 사용자의 임시저장 목록 전체를 가져옵니다.")
+    @GetMapping("/community/articles/drafts")
+    public ResponseEntity<List<ArticleDraftsListResponse>> getMyDrafts(Principal principal) {
+        List<ArticleDraftsListResponse> drafts = articleDraftsService.findMyDrafts(principal.getName());
+        return ResponseEntity.ok(drafts);
+    }
+
+    @Operation(summary = "임시저장 글 단건 조회 (이어쓰기용)", description = "특정 임시저장 글의 내용을 불러옵니다.")
+    @GetMapping("/community/articles/drafts/{id}")
+    public ResponseEntity<ArticleDraftsListResponse> getDraftDetail(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        ArticleDraftsListResponse draft = articleDraftsService.findDraftById(id, principal.getName());
+        return ResponseEntity.ok(draft);
+    }
+
+    @Operation(summary = "임시저장 글 단건 삭제", description = "특정 임시저장 글을 삭제합니다.")
+    @DeleteMapping("/community/articles/drafts/{id}")
+    public ResponseEntity<Void> deleteDraft(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        articleDraftsService.deleteDraft(id, principal.getName());
+        return ResponseEntity.ok().build();
     }
 }
+//    @Operation(summary = "내가 작성한 임시 저장 글 목록 조회",
+//            description = "현재 로그인한 유저가 임시 저장(DRAFT)해 둔 글 목록만 모아서 가져옵니다.")
+//    @GetMapping("/community/articles/drafts")
+//    public ResponseEntity<List<CommunityArticleResponse>> findMyDraftArticles(Principal principal){
+//        List<CommunityArticleResponse> drafts = articleDraftsService.findMyDrafts
+//                        (principal.getName())
+//                .stream()
+//                .map(CommunityArticleResponse::new)
+//                .toList();
+//
+//        return ResponseEntity.ok().body(drafts);
+//    }
+
     // 7. 인기 게시글 조회
 //    @Operation(summary = "인기 게시글 조회",
 //            description = "좋아요 수가 많은 상위 5개의 커뮤니티 게시글 목록을 가져옵니다.")

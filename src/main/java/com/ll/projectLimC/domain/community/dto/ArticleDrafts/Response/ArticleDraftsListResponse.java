@@ -21,6 +21,6 @@ public class ArticleDraftsListResponse {
                 ? drafts.getTitle() : "(제목 없음)";
         this.content = drafts.getContent();
         this.category = drafts.getCategory();
-        this.updateAt = drafts.getUpdateAt(); // 엔티티의 필드명에 맞게 연결
+        this.updateAt = drafts.getUpdatedAt(); // 엔티티의 필드명에 맞게 연결
     }
 }

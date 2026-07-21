@@ -1,10 +1,12 @@
-package com.ll.projectLimC.domain.community.service;
+package com.ll.projectLimC.domain.community.service.CommunityService;
 
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.List;
 public class CommunityService {
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     // 커뮤니티 게시글 저장용 메서드
     public CommunityArticle save(CommunityArticleCreateForm request, String userName){
@@ -29,6 +32,7 @@ public class CommunityService {
 
     // 커뮤니티 게시글 단건 조회용 메서드
     public CommunityArticle findById(Long id){
+
         return communityRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE));
     }
@@ -50,6 +54,7 @@ public class CommunityService {
     // 커뮤니티 게시글 수정용 메서드
     @Transactional
     public CommunityArticle updateCommunityArticle(long id, UpdateCommunityArticleRequest request){
+
         CommunityArticle communityArticle = communityRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE));
 
@@ -74,10 +79,10 @@ public class CommunityService {
         }
     }
 
-    // 마이페이지나 임시저장함 뷰에 뿌려줄 제욱님의 임시저장 목록 조회용 - 선택하기
-    public List<CommunityArticle> findMyDrafts(String userName) {
-        return communityRepository.findByAuthorAndStatus(userName, ArticleStatus.DRAFT);
-    }
+//    // 마이페이지나 임시저장함 뷰에 뿌려줄 제욱님의 임시저장 목록 조회용
+//    public List<CommunityArticle> findMyDrafts(String userName) {
+//        return communityRepository.findByAuthorAndStatus(userName, ArticleStatus.DRAFT);
+//    }
 }
 // 인기 게시글 상위 5개 조회용 메서드
 //    public List<CommunityArticle> getPopularCommunityArticles(){

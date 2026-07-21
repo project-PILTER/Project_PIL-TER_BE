@@ -33,7 +33,7 @@ public class ArticleDrafts {
     private OffsetDateTime createdAt;
 
     @LastModifiedDate
-    private OffsetDateTime updateAt;
+    private OffsetDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
