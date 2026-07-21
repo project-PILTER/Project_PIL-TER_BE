@@ -10,6 +10,8 @@ import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArti
 import com.ll.projectLimC.domain.community.repository.ArticleDraftsRepository;
 import com.ll.projectLimC.domain.community.service.ArticleDraftsService.ArticleDraftsService;
 import com.ll.projectLimC.domain.community.service.CommunityService.CommunityService;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +42,9 @@ public class CommunityApiController {
             @RequestBody CommunityArticleCreateForm request,
             Principal principal
     ) {
+        String email = getAuthenticatedEmail(principal);
+        CommunityArticle savedCommunityArticle = communityService.save(request, email);
 
-        CommunityArticle savedCommunityArticle = communityService.save(request, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedCommunityArticle);
     }
@@ -53,10 +56,12 @@ public class CommunityApiController {
     public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable) {
+
         List<CommunityArticleResponse> communityArticles = communityService.findAll(pageable)
                 .stream()
                 .map(CommunityArticleResponse::new)
                 .toList();
+
         return ResponseEntity.ok().body(communityArticles);
     }
 
@@ -84,9 +89,12 @@ public class CommunityApiController {
     @PutMapping("/community/articles/{id}")
     public ResponseEntity<CommunityArticle> updateCommunityArticle(
             @PathVariable long id,
-            @RequestBody UpdateCommunityArticleRequest request
+            @RequestBody UpdateCommunityArticleRequest request,
+            Principal principal // [추가] Principal 주입
     ) {
-        CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request);
+        String email = getAuthenticatedEmail(principal);
+        CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request, email);
+
         return ResponseEntity.ok().body(updatedCommunityArticle);
     }
 
@@ -94,12 +102,17 @@ public class CommunityApiController {
     @Operation(summary = "게시글 삭제",
             description = "게시글 고유 ID(id)를 경로에 받아 해당 글을 삭제합니다.")
     @DeleteMapping("/community/articles/{id}")
-    public ResponseEntity<Void> deleteCommunityArticle(@PathVariable long id) {
-        communityService.deleteCommunityArticle(id);
+    public ResponseEntity<Void> deleteCommunityArticle(
+            @PathVariable long id,
+            Principal principal // [추가] Principal 주입
+    ) {
+        String email = getAuthenticatedEmail(principal);
+        communityService.deleteCommunityArticle(id, email);
+
         return ResponseEntity.ok().build();
     }
 
-    /** 임시저장용 컨트롤러**/
+    /** ---------------임시저장용 컨트롤러-------------**/
     @Operation(summary = "게시글 임시저장 생성 및 수정", description = "draftId 쿼리 파라미터 존재 여부에 따라 생성/수정 처리합니다.")
     @PostMapping("/community/articles/drafts")
     public ResponseEntity<Long> saveOrUpdateDraft(
@@ -136,6 +149,14 @@ public class CommunityApiController {
     ) {
         articleDraftsService.deleteDraft(id, principal.getName());
         return ResponseEntity.ok().build();
+    }
+
+    private String getAuthenticatedEmail(Principal principal) {
+        if (principal == null) {
+            // 토큰이 없거나 로그인하지 않은 요청일 때 500 에러 대신 Custom 예외를 던짐
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_ARTICLE);
+        }
+        return principal.getName(); // 안전하게 email 추출
     }
 }
 //    @Operation(summary = "내가 작성한 임시 저장 글 목록 조회",
