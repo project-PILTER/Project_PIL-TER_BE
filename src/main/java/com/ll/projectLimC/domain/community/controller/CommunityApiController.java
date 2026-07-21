@@ -74,15 +74,6 @@ public class CommunityApiController {
         return ResponseEntity.ok().body(new ArticleViewResponse(article));
     }
 
-    // 4. 게시글 수정 데이터 조회 (기존 신규/수정 폼 조회를 프론트엔드가 데이터만 바인딩하도록 API화)
-//    @Operation(summary = "수정용 게시글 데이터 조회",
-//            description = "글 수정 페이지 진입 시 기존에 작성된 제목과 본문 데이터를 불러옵니다.")
-//    @GetMapping("/community/articles/edit/{id}")
-//    public ResponseEntity<ArticleViewResponse> getArticleForEdit(@PathVariable Long id) {
-//        CommunityArticle article = communityService.findById(id);
-//        return ResponseEntity.ok().body(new ArticleViewResponse(article));
-//    }
-
     // 5. 게시글 수정 완료 처리
     @Operation(summary = "게시글 수정",
             description = "게시글 고유 ID(id)와 수정할 본문 데이터를 받아 글을 갱신합니다.")
@@ -120,14 +111,18 @@ public class CommunityApiController {
             @RequestBody ArticleDraftsSaveRequest request,
             Principal principal
     ) {
-        Long savedDraftId = articleDraftsService.saveOrUpdateDraft(draftId, request, principal.getName());
+        String email = getAuthenticatedEmail(principal);
+
+        Long savedDraftId = articleDraftsService.saveOrUpdateDraft(draftId, request, email);
         return ResponseEntity.ok(savedDraftId);
     }
 
     @Operation(summary = "내 임시저장 글 목록 조회", description = "로그인한 사용자의 임시저장 목록 전체를 가져옵니다.")
     @GetMapping("/community/articles/drafts")
     public ResponseEntity<List<ArticleDraftsListResponse>> getMyDrafts(Principal principal) {
-        List<ArticleDraftsListResponse> drafts = articleDraftsService.findMyDrafts(principal.getName());
+        String email = getAuthenticatedEmail(principal);
+
+        List<ArticleDraftsListResponse> drafts = articleDraftsService.findMyDrafts(email);
         return ResponseEntity.ok(drafts);
     }
 
@@ -137,7 +132,9 @@ public class CommunityApiController {
             @PathVariable Long id,
             Principal principal
     ) {
-        ArticleDraftsListResponse draft = articleDraftsService.findDraftById(id, principal.getName());
+        String email = getAuthenticatedEmail(principal);
+
+        ArticleDraftsListResponse draft = articleDraftsService.findDraftById(id, email);
         return ResponseEntity.ok(draft);
     }
 
@@ -147,7 +144,9 @@ public class CommunityApiController {
             @PathVariable Long id,
             Principal principal
     ) {
-        articleDraftsService.deleteDraft(id, principal.getName());
+        String email = getAuthenticatedEmail(principal);
+
+        articleDraftsService.deleteDraft(id, email);
         return ResponseEntity.ok().build();
     }
 
@@ -184,4 +183,11 @@ public class CommunityApiController {
 //                        .toList();
 //        return ResponseEntity.ok().body(getpopularCommunityArticles);
 //    }
-
+// 4. 게시글 수정 데이터 조회 (기존 신규/수정 폼 조회를 프론트엔드가 데이터만 바인딩하도록 API화)
+//    @Operation(summary = "수정용 게시글 데이터 조회",
+//            description = "글 수정 페이지 진입 시 기존에 작성된 제목과 본문 데이터를 불러옵니다.")
+//    @GetMapping("/community/articles/edit/{id}")
+//    public ResponseEntity<ArticleViewResponse> getArticleForEdit(@PathVariable Long id) {
+//        CommunityArticle article = communityService.findById(id);
+//        return ResponseEntity.ok().body(new ArticleViewResponse(article));
+//    }
