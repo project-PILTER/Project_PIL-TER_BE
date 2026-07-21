@@ -27,6 +27,9 @@ public class CommunityArticleCreateForm {
     @Schema(description = "임시 저장 여부 (true: 임시저장, false: 즉시등록)", example = "false")
     private Boolean isDraft;
 
+    @Schema(description ="게시글 분류를 위한 카테고리", example = "공통")
+    private String category;
+
     public CommunityArticle toEntity(String author){
         return CommunityArticle.builder()
                 .title(title)
