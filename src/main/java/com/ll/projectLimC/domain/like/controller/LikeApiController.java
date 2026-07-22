@@ -2,6 +2,8 @@ package com.ll.projectLimC.domain.like.controller;
 
 import com.ll.projectLimC.domain.like.dto.LikeResponse;
 import com.ll.projectLimC.domain.like.service.LikeService;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,11 @@ public class LikeApiController {
             @PathVariable Long id,
             Principal principal
     ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         // 토글 실행 결과 받기 (true: 등록, false: 취소)
         LikeResponse likeResponse = likeService.toggleLike(id, principal.getName());
 

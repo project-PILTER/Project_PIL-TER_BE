@@ -42,6 +42,11 @@ public class CommunityApiController {
             @RequestBody CommunityArticleCreateForm request,
             Principal principal
     ) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         CommunityArticle savedCommunityArticle = communityService.save(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -82,6 +87,11 @@ public class CommunityApiController {
             @RequestBody UpdateCommunityArticleRequest request,
             Principal principal // [추가] Principal 주입
     ) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request, principal.getName());
 
         return ResponseEntity.ok().body(updatedCommunityArticle);
@@ -95,6 +105,10 @@ public class CommunityApiController {
             @PathVariable long id,
             Principal principal // [추가] Principal 주입
     ) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
 
         communityService.deleteCommunityArticle(id, principal.getName());
 
@@ -109,6 +123,11 @@ public class CommunityApiController {
             @RequestBody ArticleDraftsSaveRequest request,
             Principal principal
     ) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         Long savedDraftId = articleDraftsService.saveOrUpdateDraft(draftId, request, principal.getName());
         return ResponseEntity.ok(savedDraftId);
     }
@@ -116,6 +135,10 @@ public class CommunityApiController {
     @Operation(summary = "내 임시저장 글 목록 조회", description = "로그인한 사용자의 임시저장 목록 전체를 가져옵니다.")
     @GetMapping("/community/articles/drafts")
     public ResponseEntity<List<ArticleDraftsListResponse>> getMyDrafts(Principal principal) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
 
         List<ArticleDraftsListResponse> drafts = articleDraftsService.findMyDrafts(principal.getName());
         return ResponseEntity.ok(drafts);
@@ -127,6 +150,11 @@ public class CommunityApiController {
             @PathVariable Long id,
             Principal principal
     ) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         ArticleDraftsListResponse draft = articleDraftsService.findDraftById(id, principal.getName());
         return ResponseEntity.ok(draft);
     }
@@ -137,6 +165,11 @@ public class CommunityApiController {
             @PathVariable Long id,
             Principal principal
     ) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         articleDraftsService.deleteDraft(id, principal.getName());
         return ResponseEntity.ok().build();
     }

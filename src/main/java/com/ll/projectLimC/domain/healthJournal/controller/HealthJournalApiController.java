@@ -5,6 +5,8 @@ import com.ll.projectLimC.domain.healthJournal.dto.HealthJournalResponse;
 import com.ll.projectLimC.domain.healthJournal.dto.UpdateHealthJournalRequest;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
 import com.ll.projectLimC.domain.healthJournal.service.HealthJournalService;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +61,11 @@ public class HealthJournalApiController {
             @RequestBody HealthJournalRequest request,
             Principal principal
             ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         // 인증객체에서 이메일을 추출하여 서비스단으로 넘김
         Long journalId = healthJournalService.saveHealthJournal(request, principal.getName());
 
@@ -79,6 +86,11 @@ public class HealthJournalApiController {
             @RequestBody UpdateHealthJournalRequest request,
             Principal principal
             ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         healthJournalService.updateHealthJournal(id, request, principal.getName());
 
         return ResponseEntity.ok().body(Map.of(
@@ -95,6 +107,11 @@ public class HealthJournalApiController {
             @PathVariable Long id,
             Principal principal
     ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         healthJournalService.deleteHealthJournal(id, principal.getName());
 
         return ResponseEntity.ok().body(Map.of(

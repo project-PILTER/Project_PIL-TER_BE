@@ -3,6 +3,8 @@ package com.ll.projectLimC.domain.mypage.controller;
 import com.ll.projectLimC.domain.mypage.dto.MyPageResponse;
 import com.ll.projectLimC.domain.mypage.dto.UpdateProfileRequest;
 import com.ll.projectLimC.domain.mypage.service.MyPageService;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,6 +25,11 @@ public class MyPageApiController {
             description = "현재 인증된 사용자의 프로필 상태 및 활동 스펙, 최근 컨디션 로그(최대 3건)를 원스톱으로 집계해 내려줍니다.")
     @GetMapping("/mypage")
     public ResponseEntity<MyPageResponse> getMypageDashboard(Principal principal) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         MyPageResponse response = mypageService.getMypageData(principal.getName());
         return ResponseEntity.ok().body(response);
     }
@@ -34,6 +41,11 @@ public class MyPageApiController {
             Principal principal,
             @Valid @RequestBody UpdateProfileRequest request
     ) {
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         mypageService.updateUserProfile(principal.getName(), request);
         return ResponseEntity.ok().build();
     }

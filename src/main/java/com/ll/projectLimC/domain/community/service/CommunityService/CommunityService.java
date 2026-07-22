@@ -24,6 +24,7 @@ public class CommunityService {
 
     // 커뮤니티 게시글 저장용 메서드
     public CommunityArticle save(CommunityArticleCreateForm request, String email){
+
         // DB에서 유저 존재 여부 검증
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER));
