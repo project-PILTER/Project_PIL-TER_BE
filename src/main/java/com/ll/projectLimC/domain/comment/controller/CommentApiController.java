@@ -6,6 +6,8 @@ import com.ll.projectLimC.domain.comment.dto.UpdateCommentRequest;
 import com.ll.projectLimC.domain.comment.dto.UpdateCommentResponse;
 import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.comment.service.CommentService;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,11 @@ public class CommentApiController {
             @RequestBody AddCommentRequest request,
             Principal principal
     ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         Comment savedComment = commentService.addComment(request, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(new AddCommentResponse(savedComment));
     }
@@ -42,6 +49,11 @@ public class CommentApiController {
             @RequestBody UpdateCommentRequest request,
             Principal principal
     ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         UpdateCommentResponse response = commentService.updateComment(id, request, principal.getName());
 
         return ResponseEntity.ok().body(response);
@@ -54,6 +66,11 @@ public class CommentApiController {
             @PathVariable Long id,
             Principal principal
     ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         commentService.deleteComment(id, principal.getName());
         return ResponseEntity.ok().build();
     }
