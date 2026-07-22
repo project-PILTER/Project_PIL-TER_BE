@@ -157,10 +157,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 5. 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
         String accessToken = tokenProvider.generateToken(targetUser, ACCESS_TOKEN_DURATION);
+        addAccessTokenToCookie(request, response, accessToken);
+        
         String targetUrl = getTargetUrl(accessToken);
 
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
+
+    private void addAccessTokenToCookie(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        String accessToken) {
+        int cookieMaxAge = (int) ACCESS_TOKEN_DURATION.toSeconds();
+        CookieUtil.deleteCookie(request, response, "accessToken");
+        CookieUtil.addCookie(response, "accessToken", accessToken, cookieMaxAge);
     }
 
     // 생성된 리프레시 토큰을 전달받아 DB에 저장
