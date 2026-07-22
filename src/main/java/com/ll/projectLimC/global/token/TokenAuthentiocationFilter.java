@@ -18,7 +18,7 @@ public class TokenAuthentiocationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider tokenProvider;
     private final static String HEADER_AUTHORIZATION = "Authorization";
     private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String COOKIE_ACCESS_TOKEN = "refreshToken";
+    private final static String COOKIE_ACCESS_TOKEN = "accessToken";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
