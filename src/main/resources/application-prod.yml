@@ -19,7 +19,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create # create 사용하고 푸쉬 후 update로 바꿔둘 것.
     show-sql: true
     properties:
       hibernate:
