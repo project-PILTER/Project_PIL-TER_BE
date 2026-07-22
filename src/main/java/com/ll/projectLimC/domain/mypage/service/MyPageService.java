@@ -36,7 +36,7 @@ public class MyPageService {
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
         // 2. 내가 작성한 게시글 수 집계
-        long articleCount = communityRepository.countByAuthor(user.getEmail());
+        long articleCount = communityRepository.countByUser(user);
 
         // 3. 내가 작성한 댓글 수 집계
         long commentCount = commentRepository.countByUser(user);
