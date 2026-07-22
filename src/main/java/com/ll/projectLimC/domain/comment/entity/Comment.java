@@ -37,7 +37,8 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 실무 최적화: 성능을 위해 지연 로딩 설정 권장.
+    @ManyToOne(fetch = FetchType.LAZY)// 실무 최적화: 성능을 위해 지연 로딩 설정 권장.
+    // @JoinColumn(name = "community_article_id")
     private CommunityArticle communityArticle;
 
     @Builder
