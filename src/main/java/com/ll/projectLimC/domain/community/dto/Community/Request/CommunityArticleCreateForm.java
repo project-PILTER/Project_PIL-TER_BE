@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.community.dto.Community.Request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,12 +26,16 @@ public class CommunityArticleCreateForm {
     private String imageUrl;
 
     @Schema(description = "임시 저장 여부 (true: 임시저장, false: 즉시등록)", example = "false")
+    @JsonProperty("draft")
     private Boolean isDraft;
 
+    // 프론트에서 "categoryId"로 들어오는 값을 이 필드에 바인딩
     @Schema(description ="게시글 분류를 위한 카테고리", example = "공통")
+    @JsonProperty("categoryId")
     private String category;
 
     public CommunityArticle toEntity(String author){
+
         return CommunityArticle.builder()
                 .title(title)
                 .content(content)
