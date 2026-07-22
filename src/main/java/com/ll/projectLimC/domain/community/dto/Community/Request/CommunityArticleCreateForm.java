@@ -3,6 +3,7 @@ package com.ll.projectLimC.domain.community.dto.Community.Request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -34,12 +35,12 @@ public class CommunityArticleCreateForm {
     @JsonProperty("categoryId")
     private String category;
 
-    public CommunityArticle toEntity(String author){
+    public CommunityArticle toEntity(User user){
 
         return CommunityArticle.builder()
                 .title(title)
                 .content(content)
-                .author(author)
+                .user(user)
                 .imageUrl(imageUrl)
                 .category(category)
                 // isDraft가 null이어도 안전하게 false로 처리되어 PUBLISHED가 됨.

@@ -1,6 +1,5 @@
 package com.ll.projectLimC.domain.community.service.CommunityService;
 
-import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
@@ -11,7 +10,6 @@ import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
@@ -22,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor // final이 붙거나 @NonNull이 붙은 필드의 생성자 추가
 public class CommunityService {
     private final CommunityRepository communityRepository;
-    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
     // 커뮤니티 게시글 저장용 메서드
@@ -31,7 +28,7 @@ public class CommunityService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER));
 
-        return communityRepository.save(request.toEntity(user.getEmail()));
+        return communityRepository.save(request.toEntity(user));
     }
 
     // 커뮤니티 게시글 단건 조회용 메서드
@@ -88,7 +85,7 @@ public class CommunityService {
     }
 
     private void authorizeArticleAuthor(CommunityArticle communityArticle, String userEmail) {
-        if (!communityArticle.getAuthor().equals(userEmail)) {
+        if (communityArticle.getUser() == null || !communityArticle.getUser().getEmail().equals(userEmail)) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_ARTICLE);
         }
     }

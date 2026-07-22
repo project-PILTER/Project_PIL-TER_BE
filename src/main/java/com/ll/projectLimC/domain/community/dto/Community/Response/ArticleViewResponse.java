@@ -28,7 +28,7 @@ public class ArticleViewResponse {
     private OffsetDateTime createdAt;
 
     @Schema(description = "작성자 닉네임", example = "홍길동")
-    private String author;
+    private String authorNickname;
 
     @Schema(description = "첨부 이미지 URL (없는 경우 null)",
             example = "https://images/article1.png")
@@ -41,7 +41,7 @@ public class ArticleViewResponse {
         this.id = article.getId();
         this.title = article.getTitle();
         this.content = article.getContent();
-        this.author = article.getAuthor();
+        this.authorNickname = article.getUser() != null ? article.getUser().getNickname() : "알 수 없음";
         this.imageUrl = article.getImageUrl();
         this.createdAt = article.getCreatedAt();
         this.comments = article.getComments() != null ?

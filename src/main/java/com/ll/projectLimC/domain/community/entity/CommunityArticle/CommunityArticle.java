@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.community.entity.CommunityArticle;
 
 import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.community.ArticleStatus;
+import com.ll.projectLimC.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -32,8 +33,9 @@ public class CommunityArticle {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "author", nullable = false)
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY) // 지연 로딩(LAZY) 권장
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @CreatedDate // 엔티티가 생성될 때 생성 시간 저장
     @Column(name = "created_at")
@@ -57,7 +59,7 @@ public class CommunityArticle {
     private ArticleStatus status = ArticleStatus.PUBLISHED; // 기본값 지정
 
     @Builder
-    public CommunityArticle(String author,
+    public CommunityArticle(User user,
                             String title,
                             String content,
                             String imageUrl,
@@ -65,7 +67,7 @@ public class CommunityArticle {
                             // String nickname
                             ArticleStatus status
                             ){
-        this.author = author;
+        this.user = user;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
