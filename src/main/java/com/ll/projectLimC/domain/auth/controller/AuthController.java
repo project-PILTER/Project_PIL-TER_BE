@@ -23,7 +23,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
 
-    // ✨ 프론트엔드 요청 1번: 로그인 세션/쿠키 유지용 유저 정보 조회 API
+    // 프론트엔드 요청 1번: 로그인 세션/쿠키 유지용 유저 정보 조회 API
     @Operation(summary = "현재 로그인한 유저 정보 조회",
             description = "프론트엔드 AuthProvider에서 로그인 상태 유지를 위해 쿠키/세션을 기반으로 유저 정보를 조회합니다.")
     @GetMapping("/user") // 프론트가 요청한 엔드포인트 매핑
@@ -43,13 +43,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<LoginResponse>> login(
             @Valid @RequestBody LoginRequest request,
-            HttpServletResponse response,
-            Principal principal) {
-        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
-        if (principal == null) {
-            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
-        }
-
+            HttpServletResponse response) {
         LoginResponse loginResponse = authService.login(request, response);
 
         // 💡 Generic(제네릭) 타입 일치를 위해 정적 팩토리 메서드 구조에 맞춰 반환합니다.
