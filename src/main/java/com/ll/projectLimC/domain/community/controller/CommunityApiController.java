@@ -42,6 +42,7 @@ public class CommunityApiController {
             @RequestBody CommunityArticleCreateForm request,
             Principal principal
     ) {
+
         // principal null 검증 (로그인 안 한 사용자 방어)
         if (principal == null) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
@@ -63,9 +64,9 @@ public class CommunityApiController {
             Principal principal) {
 
         // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
-        if (principal == null) {
-            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
-        }
+//        if (principal == null) {
+//            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+//        }
 
         List<CommunityArticleResponse> communityArticles = communityService.findAll(pageable)
                 .stream()

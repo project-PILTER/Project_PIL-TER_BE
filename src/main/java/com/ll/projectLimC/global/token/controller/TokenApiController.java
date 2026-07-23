@@ -24,16 +24,17 @@ public class TokenApiController {
     @Operation(summary = "Access Token 신규 발급",
             description = "만료되지 않은 Refresh Token을 사용하여 새로운 Access Token을 획득합니다.")
     @PostMapping("/token")
-    public ResponseEntity<CommonResponse<LoginResponse>> createNewAccessToken(
-            // 브라우저가 헤더에 실어 보낸 "refreshToken" 쿠키를 스프링이 자동으로 매핑
-            @CookieValue(name = "refreshToken", required = false) String refreshToken) {
+    public ResponseEntity<CommonResponse<?>> createNewAccessToken( //  <LoginResponse> 대신 <?> 지정
+                                                                   @CookieValue(name = "refreshToken", required = false) String refreshToken) {
 
-        // 쿠키가 아예 없거나 비어있다면 로그인 안 된 상태로 예외 처리
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+        // 1. 쿠키가 없거나 비어있는 경우
+        if (refreshToken == null || refreshToken.trim().isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(CommonResponse.fail(ErrorCode.AUTHENTICATION_FAILED)); // 👈 깔끔하게 통과!
         }
 
-        // 쿠키에서 꺼낸 refreshToken으로 새로운 Access Token 발급 진행
+        // 2. 새로운 Access Token 발급
         String newAccessToken = tokenService.createNewAccessToken(refreshToken);
 
         return ResponseEntity.ok(CommonResponse.success(new LoginResponse(newAccessToken)));
