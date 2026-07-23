@@ -6,6 +6,8 @@ import com.ll.projectLimC.domain.auth.dto.LoginRequest;
 import com.ll.projectLimC.domain.auth.dto.LoginResponse;
 import com.ll.projectLimC.domain.auth.service.AuthService;
 import com.ll.projectLimC.global.Execption.CommonResponse;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -26,6 +28,11 @@ public class AuthController {
             description = "프론트엔드 AuthProvider에서 로그인 상태 유지를 위해 쿠키/세션을 기반으로 유저 정보를 조회합니다.")
     @GetMapping("/user") // 프론트가 요청한 엔드포인트 매핑
     public ResponseEntity<UserResponse> getCurrentUser(Principal principal) {
+        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }
+
         UserResponse response = authService.getCurrentUser(principal);
 
         return ResponseEntity.ok(response);
@@ -36,7 +43,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<LoginResponse>> login(
             @Valid @RequestBody LoginRequest request,
-            HttpServletResponse response) {
+            HttpServletResponse response,
+            Principal principal) {
+        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }
 
         LoginResponse loginResponse = authService.login(request, response);
 
@@ -48,7 +60,13 @@ public class AuthController {
         description = "서비스를 사용하던 사용자가 로그아웃합니다.")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestParam Long id,
-                                         HttpServletResponse response){
+                                         HttpServletResponse response,
+                                         Principal principal){
+        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }
+
         // 본인인증이 된 상태에서 토큰 무효화를 위해 리프레시 토큰 레코드 삭제 처리
         authService.logout(id, response);
         return ResponseEntity.ok("로그아웃이 완료되었습니다.");

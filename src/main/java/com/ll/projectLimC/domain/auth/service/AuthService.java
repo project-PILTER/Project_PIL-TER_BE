@@ -33,11 +33,6 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(Principal principal) {
-        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
-        if (principal == null) {
-            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
-        }
-
         // 2. 단일 신뢰 원천(SSOT)인 DB에서 로그인한 유저 정보 조회
         User loginUser = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));

@@ -35,6 +35,11 @@ public class HealthJournalApiController {
             Principal principal,
             @PageableDefault(size = 10, sort = "journalDate", direction = Sort.Direction.DESC) Pageable pageable
     ){
+        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }
+
         List<HealthJournalResponse> journals = healthJournalService.findAllByUser(principal.getName(), pageable);
 
         return ResponseEntity.ok().body(journals);
@@ -48,6 +53,11 @@ public class HealthJournalApiController {
             @PathVariable Long id,
             Principal principal
     ){
+        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }
+
         HealthJournalResponse journal = healthJournalService.findById(id, principal.getName());
 
         return ResponseEntity.ok().body(journal);
