@@ -45,7 +45,7 @@ public class CommunityArticle {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
-    @Column(name = "imageUrl", nullable = false)
+    @Column(name = "imageUrl", nullable = true)
     private String imageUrl;
 
     @Column(name = "category")
