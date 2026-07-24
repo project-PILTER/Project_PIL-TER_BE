@@ -47,11 +47,18 @@ public class CommunityArticleResponse {
 
         this.imageUrl = communityArticle.getImageUrl();
 
+        // 1. likeCount 주석 해제 및 null 체크
         this.likeCount = communityArticle.getLikes() != null ? communityArticle.getLikes().size() : 0;
         this.commentCount = communityArticle.getComments() != null ? communityArticle.getComments().size() : 0;
 
+        // 2. viewCount null 안전하게 초기화
+        Long articleViewCount = communityArticle.getViewCount();
+        this.viewCount = articleViewCount != null ? articleViewCount : 0L;
+
+        // 3. HOT 조건 판별 (viewCount가 0L 이상으로 확실히 채워졌으므로 안전함)
         // HOT 조건 (좋아요 100개 이상 OR 조회수 1000회 이상)
-        this.isHot = this.likeCount >= 100 || this.viewCount >= 1000;
+        this.isHot = this.likeCount >= 100 || this.viewCount >= 1000L;
+
 
         this.createdAt = communityArticle.getCreatedAt();
         this.updatedAt = communityArticle.getUpdatedAt();
