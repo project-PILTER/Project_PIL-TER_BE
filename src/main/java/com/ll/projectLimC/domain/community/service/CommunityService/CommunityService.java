@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.community.service.CommunityService;
 
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import com.ll.projectLimC.domain.user.entity.User;
@@ -34,8 +35,12 @@ public class CommunityService {
 
     // 커뮤니티 게시글 단건 조회용 메서드
     public CommunityArticle findById(Long id){
-        return communityRepository.findById(id)
+        CommunityArticle article = communityRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE));
+
+        article.incrementViewCount(); // 조회수 누적
+
+        return article;
     }
 
     // 커뮤니티 게시글 전체 조회용 메서드
