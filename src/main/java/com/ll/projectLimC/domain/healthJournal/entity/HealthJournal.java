@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class HealthJournal {
 
     // 기록 날짜 UI 우측 달력 및 리스트 표현용
     @Column(name = "journal_date", nullable = false)
-    private LocalDate journalDate;
+    private OffsetDateTime journalDate;
 
     // 평균 기분 / 컨디션 (UI의 '좋음', '보통', '나쁨' 대시보드 연동)
     @Column(name = "condition_status", nullable = false)
@@ -47,7 +48,7 @@ public class HealthJournal {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     // 증상 태그 리스트 (UI의 '가벼운 두통', '피로감' 노란색 배지 매핑)
     @ElementCollection(fetch = FetchType.LAZY)
@@ -62,7 +63,7 @@ public class HealthJournal {
     private List<String> supplements = new ArrayList<>();
 
     @Builder
-    public HealthJournal(User user, LocalDate journalDate, ConditionStatus condiotionStatus,
+    public HealthJournal(User user, OffsetDateTime journalDate, ConditionStatus condiotionStatus,
                          int painScore, String content, List<String> symptoms, List<String> supplements){
         this.user = user;
         this.journalDate = journalDate;

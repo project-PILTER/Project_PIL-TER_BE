@@ -2,19 +2,23 @@ package com.ll.projectLimC.domain.healthJournal.dto;
 
 import com.ll.projectLimC.domain.healthJournal.ConditionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @Schema(description = "건강일지 조회 요청 정보 폼")
 public class HealthJournalRequest {
+    @CreatedDate
     @Schema(description = "일지 기록 날짜 (ISO 표준 날짜 포맷)", example = "2026-06-24")
-    private LocalDate journalDate;
+    private OffsetDateTime journalDate;
 
     @Schema(description = "오늘의 전반적인 컨디션 상태 (GOOD, NORMAL, BAD)", example = "GOOD")
     // 프론트가 "GOOD"이라고 보내면 자동으로 Enum 매핑됨

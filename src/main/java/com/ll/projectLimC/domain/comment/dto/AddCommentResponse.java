@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.comment.dto;
 
 import com.ll.projectLimC.domain.comment.entity.Comment;
+import com.ll.projectLimC.domain.community.dto.Community.Response.AuthorResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,12 +19,12 @@ public class AddCommentResponse {
     private String content;
 
     @Schema(description = "댓글 작성자 닉네임", example = "달려라하니")
-    private CommentAuthorResponse author;
+    private AuthorResponse author;
 
 
     public AddCommentResponse(Comment comment){
         this.id = comment.getId();
         this.content = comment.getContent();
-        this.author = new CommentAuthorResponse(comment.getUser());
+        this.author = AuthorResponse.from(comment.getUser());
     }
 }
