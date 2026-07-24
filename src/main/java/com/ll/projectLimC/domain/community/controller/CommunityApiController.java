@@ -60,8 +60,9 @@ public class CommunityApiController {
     @GetMapping("/community/articles")
     public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
-            Pageable pageable,
-            Principal principal) {
+            Pageable pageable
+            // Principal principal
+    ) {
 
         // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
 //        if (principal == null) {
@@ -82,14 +83,14 @@ public class CommunityApiController {
     @GetMapping("/community/articles/{id}")
     public ResponseEntity<ArticleViewResponse> getCommunityArticle(@PathVariable Long id,
                                                                    Principal principal) {
-
-        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
-        if (principal == null) {
-            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
-        }
-
         CommunityArticle article = communityService.findById(id);
-        return ResponseEntity.ok().body(new ArticleViewResponse(article));
+
+        if (principal == null) {
+            // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
+            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }else {
+            return ResponseEntity.ok().body(new ArticleViewResponse(article));
+        }
     }
 
     // 5. 게시글 수정 완료 처리
