@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 @JsonPropertyOrder({ "title", "content" })
 @Schema(description = "커뮤니티 게시글 상세 응답 정보")
 public class CommunityArticleResponse {
+    private Long id;
+
     @Schema(description = "게시글 제목", example = "배가 너무 아파요.")
     private String title;
 
@@ -38,6 +40,7 @@ public class CommunityArticleResponse {
 
     @JsonPropertyOrder({ "title", "content" })
     public CommunityArticleResponse(CommunityArticle communityArticle){
+        this.id = communityArticle.getId();
         this.title = communityArticle.getTitle();
         this.content = communityArticle.getContent();
 
