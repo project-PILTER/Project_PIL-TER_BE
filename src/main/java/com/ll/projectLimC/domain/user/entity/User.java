@@ -57,7 +57,7 @@ public class User implements UserDetails {
 
     @Column(name = "is_medical_expert", nullable = false)
     @Builder.Default
-    private boolean isMedicalExpert = false; // 기본값은 일반 유저(false)
+    private Boolean isMedicalExpert = false; // 기본값은 일반 유저(false)
 
     @Column(name = "expert_title")
     private String expertTitle; // 전문의가 아닐 경우 null 가능

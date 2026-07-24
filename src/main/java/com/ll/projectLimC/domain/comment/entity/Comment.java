@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Table(name = "comments")
 @Entity
@@ -35,7 +36,7 @@ public class Comment {
 
     @CreatedDate
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)// 실무 최적화: 성능을 위해 지연 로딩 설정 권장.
     // @JoinColumn(name = "community_article_id")

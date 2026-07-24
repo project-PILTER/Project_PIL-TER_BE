@@ -1,9 +1,16 @@
 package com.ll.projectLimC.domain.community.dto.Community.Response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.ll.projectLimC.domain.comment.dto.CommentResponse;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @JsonPropertyOrder({ "title", "content" })
@@ -14,10 +21,46 @@ public class CommunityArticleResponse {
 
     @Schema(description = "게시글 본문 내용", example = "배가 아파요. 어떤 약을 먹어야 할까요?")
     private String content;
+    private CategoryResponse category;
+    private String imageUrl;
+
+    private AuthorResponse author;
+
+    private Long viewCount;
+    private int likeCount;
+    private int commentCount;
+    private boolean isHot;
+
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+
+    private List<CommentResponse> comments;
 
     @JsonPropertyOrder({ "title", "content" })
     public CommunityArticleResponse(CommunityArticle communityArticle){
         this.title = communityArticle.getTitle();
         this.content = communityArticle.getContent();
+
+        this.category = new CategoryResponse(1L, communityArticle.getCategory());
+
+        this.author = AuthorResponse.from(communityArticle.getUser());
+
+        this.imageUrl = communityArticle.getImageUrl();
+
+        this.likeCount = communityArticle.getLikes() != null ? communityArticle.getLikes().size() : 0;
+        this.commentCount = communityArticle.getComments() != null ? communityArticle.getComments().size() : 0;
+
+        // HOT 조건 (좋아요 100개 이상 OR 조회수 1000회 이상)
+        this.isHot = this.likeCount >= 100 || this.viewCount >= 1000;
+
+        this.createdAt = communityArticle.getCreatedAt();
+        this.updatedAt = communityArticle.getUpdatedAt();
+
+        // 5. 댓글 목록 DTO 변환
+        this.comments = communityArticle.getComments() != null ?
+                communityArticle.getComments().stream()
+                        .map(CommentResponse::new)
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
     }
 }
