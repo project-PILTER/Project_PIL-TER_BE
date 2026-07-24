@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.community.dto.Community.Response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
+import com.ll.projectLimC.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -14,6 +15,8 @@ public class CommunityArticleResponse {
 
     @Schema(description = "게시글 본문 내용", example = "배가 아파요. 어떤 약을 먹어야 할까요?")
     private String content;
+
+    private User user;
 
     @JsonPropertyOrder({ "title", "content" })
     public CommunityArticleResponse(CommunityArticle communityArticle){

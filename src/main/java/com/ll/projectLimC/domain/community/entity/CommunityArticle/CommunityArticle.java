@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.community.entity.CommunityArticle;
 
 import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.community.ArticleStatus;
+import com.ll.projectLimC.domain.like.entity.Like;
 import com.ll.projectLimC.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -52,11 +54,22 @@ public class CommunityArticle {
     private String category;
 
     @OneToMany(mappedBy = "communityArticle", cascade = CascadeType.REMOVE)
-    private List<Comment> comments;
+    private List<Comment> comments= new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ArticleStatus status = ArticleStatus.PUBLISHED; // 기본값 지정
+
+    @Column(name = "view_count", nullable = false)
+    private Long viewCount = 0L; // 👈 조회수 (기본값 0)
+
+    @OneToMany(mappedBy = "communityArticle", cascade = CascadeType.REMOVE)
+    private List<Like> likes = new ArrayList<>();
+
+    // 조회수 증가 메서드
+    public void incrementViewCount() {
+        this.viewCount = (this.viewCount == null ? 0L : this.viewCount) + 1;
+    }
 
     @Builder
     public CommunityArticle(User user,
