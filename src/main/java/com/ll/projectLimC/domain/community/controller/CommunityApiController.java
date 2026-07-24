@@ -81,16 +81,9 @@ public class CommunityApiController {
     @Operation(summary = "게시글 상세 조회",
             description = "게시글 고유 ID(id)를 통해 해당 글의 상세 내용을 조회합니다.")
     @GetMapping("/community/articles/{id}")
-    public ResponseEntity<ArticleViewResponse> getCommunityArticle(@PathVariable Long id,
-                                                                   Principal principal) {
+    public ResponseEntity<ArticleViewResponse> getCommunityArticle(@PathVariable Long id) {
         CommunityArticle article = communityService.findById(id);
-
-        if (principal == null) {
-            // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
-            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
-        }else {
-            return ResponseEntity.ok().body(new ArticleViewResponse(article));
-        }
+        return ResponseEntity.ok().body(new ArticleViewResponse(article));
     }
 
     // 5. 게시글 수정 완료 처리
