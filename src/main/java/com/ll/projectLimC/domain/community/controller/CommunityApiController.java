@@ -81,9 +81,9 @@ public class CommunityApiController {
     @Operation(summary = "게시글 상세 조회",
             description = "게시글 고유 ID(id)를 통해 해당 글의 상세 내용을 조회합니다.")
     @GetMapping("/community/articles/{id}")
-    public ResponseEntity<ArticleViewResponse> getCommunityArticle(@PathVariable Long id) {
+    public ResponseEntity<CommunityArticleResponse> getCommunityArticle(@PathVariable Long id) {
         CommunityArticle article = communityService.findById(id);
-        return ResponseEntity.ok().body(new ArticleViewResponse(article));
+        return ResponseEntity.ok().body(new CommunityArticleResponse(article));
     }
 
     // 5. 게시글 수정 완료 처리
