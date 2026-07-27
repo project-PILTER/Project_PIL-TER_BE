@@ -21,8 +21,8 @@ public class HealthJournalRequest {
     // 1. @CreatedDate 제거
     // 2. pattern에 선택적 시간/타임존 구문([ '00:00:00'Z]) 추가
     @Schema(description = "일지 기록 날짜 (ISO 표준 날짜 포맷)", example = "2026-06-24")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd[ '00:00:00'Z]", timezone = "Asia/Seoul")
-    private OffsetDateTime journalDate;
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd[ '00:00:00'Z]", timezone = "Asia/Seoul")
+    private LocalDate journalDate;
 
     @Schema(description = "오늘의 전반적인 컨디션 상태 (GOOD, NORMAL, BAD)", example = "GOOD")
     private ConditionStatus conditionStatus;

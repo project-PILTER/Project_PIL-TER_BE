@@ -34,7 +34,7 @@ public class HealthJournal {
 
     // 기록 날짜 UI 우측 달력 및 리스트 표현용
     @Column(name = "journal_date", nullable = false)
-    private OffsetDateTime journalDate;
+    private LocalDate journalDate;
 
     // 평균 기분 / 컨디션 (UI의 '좋음', '보통', '나쁨' 대시보드 연동)
     @Column(name = "condition_status", nullable = false)
@@ -63,7 +63,7 @@ public class HealthJournal {
     private List<String> supplements = new ArrayList<>();
 
     @Builder
-    public HealthJournal(User user, OffsetDateTime journalDate, ConditionStatus condiotionStatus,
+    public HealthJournal(User user, LocalDate journalDate, ConditionStatus condiotionStatus,
                          int painScore, String content, List<String> symptoms, List<String> supplements){
         this.user = user;
         this.journalDate = journalDate;

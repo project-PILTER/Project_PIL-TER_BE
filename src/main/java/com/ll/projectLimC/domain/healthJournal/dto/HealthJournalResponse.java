@@ -5,6 +5,7 @@ import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class HealthJournalResponse {
     private final Long id;
 
     @Schema(description = "일지 기록 날짜 (ISO 표준 날짜 포맷)", example = "2026-06-24")
-    private final OffsetDateTime journalDate;
+    private final LocalDate journalDate;
 
     @Schema(description = "오늘의 전반적인 컨디션 상태 (GOOD, NORMAL, BAD)", example = "GOOD")
     private final ConditionStatus conditionStatus;
