@@ -13,5 +13,5 @@ public interface HealthJournalRepository extends JpaRepository<HealthJournal, Lo
     List<HealthJournal> findByUserIdOrderByJournalDateDesc(User user);
 
     // 페이지네이션
-    Page<HealthJournal> findByUserId(User user, Pageable pageable);
+    Page<HealthJournal> findByUser(User user, Pageable pageable);
 }

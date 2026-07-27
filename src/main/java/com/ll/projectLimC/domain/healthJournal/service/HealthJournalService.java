@@ -28,7 +28,7 @@ public class HealthJournalService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
-        return healthJournalRepository.findByUserId(user, pageable)
+        return healthJournalRepository.findByUser(user, pageable)
                 .stream()
                 // 엔티티 리스트를 DTO 리스트로 변환
                 .map(HealthJournalResponse::new)
