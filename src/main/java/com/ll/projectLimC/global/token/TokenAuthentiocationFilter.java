@@ -7,12 +7,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 public class TokenAuthentiocationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider tokenProvider;
@@ -25,13 +27,26 @@ public class TokenAuthentiocationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // 헤더 또는 쿠키에서 토큰 추출
-        String token = resolveToken(request);
+        String requestURI = request.getRequestURI();
 
-        // 가져온 토큰이 유효한지 확인하고, 유효할 때만 인증 정보 설정
-        if (token != null && tokenProvider.validToken(token)) {
-            Authentication authentication = tokenProvider.getAuthenication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        // /api 하위 요청에 대해서만 로그 출력
+        if (requestURI.startsWith("/api")) {
+            String token = resolveToken(request);
+
+            if (token == null) {
+                log.warn("[JwtFilter] 요청에서 토큰을 찾을 수 없습니다. URI: {}", requestURI);
+            } else {
+                boolean isValid = tokenProvider.validToken(token);
+                log.info("[JwtFilter] 토큰 추출 성공! URI: {}, 유효 여부: {}", requestURI, isValid);
+
+                if (isValid) {
+                    Authentication authentication = tokenProvider.getAuthenication(token);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("[JwtFilter] SecurityContext에 인증 객체 저장 완료: {}", authentication.getName());
+                } else {
+                    log.warn("[JwtFilter] 토큰이 유효하지 않습니다(만료/위변조 등). URI: {}", requestURI);
+                }
+            }
         }
 
         filterChain.doFilter(request, response);
