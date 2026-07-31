@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -55,19 +56,32 @@ public class TokenAuthentiocationFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         // 1. 요청 헤더(Authorization: Bearer <token>)에서 추출
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
-            return authorizationHeader.substring(TOKEN_PREFIX.length());
+        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith(TOKEN_PREFIX)) {
+            String token = authorizationHeader.substring(TOKEN_PREFIX.length()).trim();
+            if (isValidTokenFormat(token)) return token;
         }
 
-        // 2. 헤더에 없으면 쿠키(Cookie)에서 추출 ⭐ (이 부분이 핵심!)
+        // 2. 헤더에 없으면 쿠키(Cookie)에서 추출
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (COOKIE_ACCESS_TOKEN.equals(cookie.getName())) { // 쿠키 키 이름 체크
-                    return cookie.getValue();
+                if (COOKIE_ACCESS_TOKEN.equals(cookie.getName())) {
+                    String token = cookie.getValue();
+                    // "undefined", "null" 같은 문자열 찌꺼기 방어
+                    if (isValidTokenFormat(token)) {
+                        return token;
+                    }
                 }
             }
         }
 
         return null;
+    }
+
+    // 💡 간단한 JWT 형식 체크 (최소한 . 이 2개는 들어있어야 함)
+    private boolean isValidTokenFormat(String token) {
+        return StringUtils.hasText(token)
+                && !token.equalsIgnoreCase("undefined")
+                && !token.equalsIgnoreCase("null")
+                && token.split("\\.").length == 3;
     }
 }
