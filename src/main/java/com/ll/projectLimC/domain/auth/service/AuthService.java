@@ -51,42 +51,54 @@ public class AuthService {
     @Transactional
     public LoginResponse login(LoginRequest request, HttpServletResponse response){
 
-        // 1. 이메일로 유저 존재 여부 확인
+        // 이메일로 유저 존재 여부 확인
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
-        // 2. 입력된 평문 패스워드와 DB의 암호화된 패스워드 비교
+        // 입력된 평문 패스워드와 DB의 암호화된 패스워드 비교
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             throw new GlobalCustomException(ErrorCode.SIGN_IN_PASSWORD_NOT_MATCH);
         }
 
-        // 3. 비밀번호가 일치하면 1일짜리 액세스 토큰 생성 후 반환
+        // 토큰 생성
         String accessToken = tokenProvider.generateToken(
                 user,
                 Duration.ofMillis(jwtProperties.getAccessTokenExpiration())
         );
 
-        // Refresh Token 발행 및 DB 저장/갱신 로직 추가
         String refreshToken = tokenProvider.generateToken(
                 user,
                 Duration.ofMillis(jwtProperties.getRefreshTokenExpiration())
         );
 
+        // Refresh Token DB 저장/갱신
         RefreshToken tokenEntity = refreshTokenRepository.findByUserId(user.getId())
                 .map(entity -> entity.update(refreshToken))
                 .orElseGet(() -> new RefreshToken(user.getId(), refreshToken));
 
         refreshTokenRepository.save(tokenEntity);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)                    // 자바스크립트 접근 차단 (XSS 방어)
-                .secure(true)                      // HTTPS 환경에서만 전송
-                .path("/")                         // 모든 경로에서 쿠키 유효
-                .maxAge(Duration.ofDays(7))        // 쿠키 만료 시간 (7일)
-                .sameSite("None")                  // 크로스 도메인(프론트-백 주소 다를 때) 간 전송 허용
+        // Access Token 쿠키 생성 (프론트 serverApiGet의 cookies() 대응)
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofMillis(jwtProperties.getAccessTokenExpiration()))
+                .sameSite("None")
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        // Refresh Token 쿠키 생성
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofMillis(jwtProperties.getRefreshTokenExpiration()))
+                .sameSite("None")
+                .build();
+
+        // 응답 헤더에 쿠키 2개 각각 추가 (addHeader 사용)
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         return new LoginResponse(accessToken);
     }
@@ -97,13 +109,13 @@ public class AuthService {
         refreshTokenRepository.findByUserId(id)
                 .ifPresent(refreshTokenRepository::delete);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0) // 즉시 만료
-                .sameSite("None")
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        // 두 쿠키 모두 만료 시키기
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true).secure(true).path("/").maxAge(0).sameSite("None").build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true).secure(true).path("/").maxAge(0).sameSite("None").build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 }
