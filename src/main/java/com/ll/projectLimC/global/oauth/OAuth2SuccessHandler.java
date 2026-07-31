@@ -3,6 +3,7 @@ package com.ll.projectLimC.global.oauth;
 import com.ll.projectLimC.domain.user.entity.Role;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
+import com.ll.projectLimC.global.jwt.JwtProperties;
 import com.ll.projectLimC.global.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -23,17 +25,17 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
+@Component // ⭐️ Spring Bean 등록을 위해 @Component 명시
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
-    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
     public static final String REDIRECT_PATH = "https://pilter.co.kr/auth/callback";
 
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
     private final UserRepository userRepository;
+    private final JwtProperties jwtProperties;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -44,7 +46,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         if (oAuth2User == null) return;
 
-        // 1. 기본 어트리뷰트 맵 추출 및 로그 출력
+        // 1. 기본 어트리뷰트 맵 추출
         Map<String, Object> attributes = oAuth2User.getAttributes();
         System.out.println("🔍 [Handler] oAuth2User Attributes: " + attributes);
 
@@ -63,7 +65,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
                 if (profile != null) {
                     nickname = (String) profile.get("nickname");
-                    // profile_image_url 과 thumbnail_image_url 2중 방어선 구축
                     String kakaoImg = (String) profile.get("profile_image_url");
                     if (kakaoImg == null || kakaoImg.isEmpty()) {
                         kakaoImg = (String) profile.get("thumbnail_image_url");
@@ -72,7 +73,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 }
             }
             if (profileImage == null) profileImage = "/api/images/default-profile.png";
-            providerId = String.valueOf(attributes.get("id")); // 최상단 고유 ID 추출
+            providerId = String.valueOf(attributes.get("id"));
 
             // B. 네이버 로그인인 경우
         } else if (attributes.containsKey("response")) {
@@ -99,19 +100,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             providerId = (String) attributes.get("sub");
         }
 
-        // 2. ⭐️ [핵심 수정] 무조건 이메일을 기반으로 실제 우리 DB의 오토 인크리먼트 PK(id)를 선행 조회합니다.
+        // 2. 이메일 기반 DB 조회
         Long userId = null;
         if (email != null) {
-            System.out.println("🔍 [안내] 가입 여부 확인을 위해 이메일(" + email + ") 기반 DB 전수조사를 개시합니다.");
             userId = userRepository.findByEmail(email)
                     .map(User::getId)
                     .orElse(null);
         }
 
-        // [최종 방어선] DB 조회 결과가 null 이라면 진짜 최초 가입자이므로 자동 회원가입 진행
         if (userId == null) {
-            System.out.println("⚠️ [안내] 회원 데이터가 DB에 없는 신규 유저입니다. 자동 회원가입 처리를 개시합니다.");
-
             User newUser = User.builder()
                     .email(email)
                     .nickname(nickname != null ? nickname : "User_" + System.currentTimeMillis() % 10000)
@@ -125,19 +122,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             User savedUser = userRepository.save(newUser);
             userId = savedUser.getId();
-        } else {
-            // ⭐️ 기존 회원인 경우, 소셜 미디어에서 최신 이미지나 닉네임이 바뀌었을 수 있으므로 더티 체킹용 업데이트 처리 (선택 사항)
-            User existingUser = userRepository.findById(userId).orElse(null);
-            if (existingUser != null && profileImage != null && !profileImage.equals(existingUser.getProfileImage())) {
-                // 기존 유저의 프로필 사진이 카카오 실제 이미지로 동기화될 수 있도록 필요한 경우 업데이트 로직 배치 가능
-                System.out.println("🔄 [안내] 기존 유저의 최신 프로필 이미지 동기화를 진행합니다.");
-            }
         }
 
-        System.out.println("🎯 [디버깅] OAuth2 로그인 성공 - 이메일: " + email + ", 공급자: " + provider);
-        System.out.println("🎯 [디버깅] 최종 확정된 DB User ID: " + userId);
-
-        // 3. 확보된 확실한 userId를 가지고 가상/영속 객체 바인딩 (이제 토큰에 무조건 DB PK 숫자가 들어감)
         User targetUser = User.builder()
                 .id(userId)
                 .email(email)
@@ -148,32 +134,36 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .role(Role.USER)
                 .build();
 
-        // 4. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
-        String refreshToken = tokenProvider.generateToken(targetUser, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(userId, refreshToken);
-        addRefreshTokenToCookie(request, response, refreshToken);
+        // ⭐️ 2. YML 설정(application-secret.yml)의 만료 시간(밀리초)을 Duration 객체로 생성
+        Duration accessTokenDuration = Duration.ofMillis(jwtProperties.getAccessTokenExpiration());
+        Duration refreshTokenDuration = Duration.ofMillis(jwtProperties.getRefreshTokenExpiration());
 
-        // 5. 액세스 토큰 생성 -> 패스에 액세스 토큰 추가
-        String accessToken = tokenProvider.generateToken(targetUser, ACCESS_TOKEN_DURATION);
-        addAccessTokenToCookie(request, response, accessToken);
-        
+        // 4. 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
+        String refreshToken = tokenProvider.generateToken(targetUser, refreshTokenDuration);
+        saveRefreshToken(userId, refreshToken);
+        addRefreshTokenToCookie(request, response, refreshToken, refreshTokenDuration); // 👈 duration 인자 추가
+
+        // 5. 액세스 토큰 생성 -> 쿠키에 저장 -> 리다이렉트
+        String accessToken = tokenProvider.generateToken(targetUser, accessTokenDuration);
+        addAccessTokenToCookie(request, response, accessToken, accessTokenDuration); // 👈 duration 인자 추가
+
         String targetUrl = getTargetUrl(accessToken);
 
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
+    // ⭐️ 3. 만료 시간을 인자로 전달받도록 메서드 시그니처 수정
     private void addAccessTokenToCookie(HttpServletRequest request,
                                         HttpServletResponse response,
-                                        String accessToken) {
-        int cookieMaxAge = (int) ACCESS_TOKEN_DURATION.toSeconds();
+                                        String accessToken,
+                                        Duration duration) {
+        int cookieMaxAge = (int) duration.toSeconds();
         CookieUtil.deleteCookie(request, response, "accessToken");
         CookieUtil.addCookie(response, "accessToken", accessToken, cookieMaxAge);
     }
 
-    // 생성된 리프레시 토큰을 전달받아 DB에 저장
     private void saveRefreshToken(Long userId, String newRefreshToken){
-        // 기존 엔티티를 찾아서 업데이트하거나 없으면 생성 (생성자 인자 매핑 확인 필요)
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
                 .map(entity -> entity.update(newRefreshToken))
                 .orElse(new RefreshToken(userId, newRefreshToken));
@@ -181,22 +171,21 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshTokenRepository.save(refreshToken);
     }
 
-    // 생성된 리프레시 토큰을 쿠키에 저장
+    // ⭐️ 4. 만료 시간을 인자로 전달받도록 메서드 시그니처 수정
     private void addRefreshTokenToCookie(HttpServletRequest request,
                                          HttpServletResponse response,
-                                         String refreshToken){
-        int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
+                                         String refreshToken,
+                                         Duration duration){
+        int cookieMaxAge = (int) duration.toSeconds();
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
         CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
     }
 
-    // 인증관련 설정값, 쿠키 제거 (부모 클래스의 시그니처 오류 방지를 위해 시큐리티 규격으로 보완)
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
         authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
     }
 
-    // 액세스 토큰을 패스에 추가
     private String getTargetUrl(String token){
         return UriComponentsBuilder.fromUriString(REDIRECT_PATH)
                 .queryParam("token", token)

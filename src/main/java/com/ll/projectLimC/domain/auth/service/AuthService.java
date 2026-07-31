@@ -7,6 +7,7 @@ import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
+import com.ll.projectLimC.global.jwt.JwtProperties;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import com.ll.projectLimC.global.refreshToken.entity.RefreshToken;
 import com.ll.projectLimC.global.refreshToken.repository.RefreshTokenRepository;
@@ -30,6 +31,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtProperties jwtProperties;
 
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(Principal principal) {
@@ -59,10 +61,16 @@ public class AuthService {
         }
 
         // 3. 비밀번호가 일치하면 1일짜리 액세스 토큰 생성 후 반환
-        String accessToken = tokenProvider.generateToken(user, Duration.ofDays(1));
+        String accessToken = tokenProvider.generateToken(
+                user,
+                Duration.ofMillis(jwtProperties.getAccessTokenExpiration())
+        );
 
         // Refresh Token 발행 및 DB 저장/갱신 로직 추가
-        String refreshToken = tokenProvider.generateToken(user, Duration.ofDays(7));
+        String refreshToken = tokenProvider.generateToken(
+                user,
+                Duration.ofMillis(jwtProperties.getRefreshTokenExpiration())
+        );
 
         RefreshToken tokenEntity = refreshTokenRepository.findByUserId(user.getId())
                 .map(entity -> entity.update(refreshToken))

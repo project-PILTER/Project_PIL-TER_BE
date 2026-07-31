@@ -2,8 +2,10 @@ package com.ll.projectLimC.global.jwt;
 
 import com.ll.projectLimC.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +18,7 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
 
@@ -45,12 +48,15 @@ public class JwtTokenProvider {
     public boolean validToken(String token){
         try {
             Jwts.parser()
-                    .verifyWith(jwtProperties.getSecretKeyObject()) // setSigningKey 대용 최신 인터페이스
+                    .verifyWith(jwtProperties.getSecretKeyObject())
                     .build()
-                    .parseSignedClaims(token); // parseClaimsJws 대신 객체 형식 파싱
-
+                    .parseSignedClaims(token);
             return true;
-        } catch (Exception e){
+        } catch (ExpiredJwtException e) {
+            log.warn("[JwtProvider] 만료된 JWT 토큰입니다.");
+            return false;
+        } catch (Exception e) {
+            log.error("[JwtProvider] 유효하지 않은 JWT 토큰입니다: {}", e.getMessage());
             return false;
         }
     }
