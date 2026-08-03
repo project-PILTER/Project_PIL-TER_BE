@@ -62,6 +62,7 @@ public class HealthJournalService {
                 .painScore(request.getPainScore())
                 .content(request.getContent())
                 .symptoms(request.getSymptoms())
+                .createdAt(request.getCreatedAt())
                 .supplements(request.getSupplements())
                 .build();
 
@@ -86,7 +87,8 @@ public class HealthJournalService {
                 request.getPainScore(),
                 request.getContent(),
                 request.getSymptoms(),
-                request.getSupplements()
+                request.getSupplements(),
+                request.getUpdatedAt()
         );
     }
 
