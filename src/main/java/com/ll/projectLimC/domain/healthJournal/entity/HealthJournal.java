@@ -85,12 +85,14 @@ public class HealthJournal {
     public void updateHealthJournal(
             ConditionStatus condiotionStatus,
             int painScore, String content,
-            List<String> symptoms, List<String> supplements
+            List<String> symptoms, List<String> supplements,
+            OffsetDateTime updatedAt
     ){
         this.conditionStatus = condiotionStatus;
         this.painScore = painScore;
         this.content = content;
         this.symptoms = symptoms;
         this.supplements = supplements;
+        this.updatedAt = updatedAt;
     }
 }
