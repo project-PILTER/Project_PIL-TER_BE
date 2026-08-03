@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -38,19 +39,25 @@ public class Comment {
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)// 실무 최적화: 성능을 위해 지연 로딩 설정 권장.
     // @JoinColumn(name = "community_article_id")
     private CommunityArticle communityArticle;
 
     @Builder
-    public Comment(CommunityArticle communityArticle, User user, String content){
+    public Comment(CommunityArticle communityArticle, User user, String content, OffsetDateTime createdAt){
         this.communityArticle = communityArticle;
         this.user = user;
         this.content = content;
+        this.createdAt = createdAt;
     }
 
     // 댓글 수정 시에는 오직 내용(content)만 변경
-    public void updateComment(String content){
+    public void updateComment(String content, OffsetDateTime updatedAt){
         this.content = content;
+        this.updatedAt = updatedAt;
     }
 }

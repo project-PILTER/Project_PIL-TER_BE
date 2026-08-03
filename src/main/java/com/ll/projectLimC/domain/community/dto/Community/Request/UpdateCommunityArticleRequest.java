@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -26,4 +28,7 @@ public class UpdateCommunityArticleRequest {
 
     @Schema(description = "카테고리 수정", example = "암")
     private String category;
+
+    @Schema(description = "커뮤니티 게시글 수정 시간", example = "26-08-03 00:00:00 + 9:00")
+    private OffsetDateTime updatedAt;
 }

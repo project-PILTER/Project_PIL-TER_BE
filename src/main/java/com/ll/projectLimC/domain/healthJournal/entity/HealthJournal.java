@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
@@ -50,6 +51,10 @@ public class HealthJournal {
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
     // 증상 태그 리스트 (UI의 '가벼운 두통', '피로감' 노란색 배지 매핑)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "journal_symptoms", joinColumns = @JoinColumn(name = "health_journal_id"))
@@ -63,13 +68,14 @@ public class HealthJournal {
     private List<String> supplements = new ArrayList<>();
 
     @Builder
-    public HealthJournal(User user, LocalDate journalDate, ConditionStatus condiotionStatus,
+    public HealthJournal(User user, LocalDate journalDate, OffsetDateTime createdAt, ConditionStatus condiotionStatus,
                          int painScore, String content, List<String> symptoms, List<String> supplements){
         this.user = user;
         this.journalDate = journalDate;
         this.conditionStatus = condiotionStatus;
         this.painScore = painScore;
         this.content = content;
+        this.createdAt = createdAt;
         this.symptoms = symptoms != null ? symptoms : new ArrayList<>();;
         this.supplements = supplements != null ? supplements : new ArrayList<>();
     }
@@ -78,11 +84,13 @@ public class HealthJournal {
     public void updateHealthJournal(
             ConditionStatus condiotionStatus,
             int painScore, String content,
+            OffsetDateTime updatedAt,
             List<String> symptoms, List<String> supplements
     ){
         this.conditionStatus = condiotionStatus;
         this.painScore = painScore;
         this.content = content;
+        this.updatedAt = updatedAt;
         this.symptoms = symptoms;
         this.supplements = supplements;
     }

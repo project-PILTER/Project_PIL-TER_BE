@@ -30,18 +30,21 @@ public class ArticleDrafts {
     private String category;
 
     @CreatedDate
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
     @LastModifiedDate
+    @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public void updateDrafts(String title, String content, String category){
+    public void updateDrafts(String title, String content, String category, OffsetDateTime updatedAt){
         this.title =title;
         this.content = content;
         this.category = category;
+        this.updatedAt = updatedAt;
     }
 }

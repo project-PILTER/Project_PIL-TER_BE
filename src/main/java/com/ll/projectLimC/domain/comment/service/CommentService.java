@@ -49,7 +49,7 @@ public class CommentService {
         authorizeCommentAuthor(comment, userName);
 
         // 엔티티 상태 변경 (더티 체킹으로 자동 update 쿼리 유발)
-        comment.updateComment(request.getContent());
+        comment.updateComment(request.getContent(), request.getUpdatedAt());
 
         // DTO로 감싸서 반환
         return new UpdateCommentResponse(comment);

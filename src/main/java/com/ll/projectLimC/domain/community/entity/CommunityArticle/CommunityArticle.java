@@ -77,6 +77,7 @@ public class CommunityArticle {
                             String content,
                             String imageUrl,
                             String category,
+                            OffsetDateTime createdAt,
                             // String nickname
                             ArticleStatus status
                             ){
@@ -85,14 +86,16 @@ public class CommunityArticle {
         this.content = content;
         this.imageUrl = imageUrl;
         this.category = category;
+        this.createdAt = createdAt;
         this.status = status != null ? status : ArticleStatus.PUBLISHED; // 상태값 추가 받아오기
     }
 
-    public void updateCommunityArticle(String title, String content, String imageUrl, String category, ArticleStatus status){
+    public void updateCommunityArticle(String title, OffsetDateTime updatedAt, String content, String imageUrl, String category, ArticleStatus status){
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
         this.category = category;
+        this.updatedAt = updatedAt;
         if (status != null) {
             this.status = status; // 수정할 때 DRAFT -> PUBLISHED로 전환 가능하도록 추가
         }

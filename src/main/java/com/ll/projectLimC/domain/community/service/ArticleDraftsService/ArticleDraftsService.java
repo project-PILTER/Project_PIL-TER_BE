@@ -37,7 +37,7 @@ public class ArticleDraftsService {
             ArticleDrafts draft = articleDraftsRepository.findByIdAndUser(draftId, user)
                     .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_AUTHORIZED_THE_DRAFT_ARTICLE));
 
-            draft.updateDrafts(request.getTitle(), request.getContent(), request.getCategory());
+            draft.updateDrafts(request.getTitle(), request.getContent(), request.getCategory(), request.getUpdatedAt());
             return draft.getId();
         }
 

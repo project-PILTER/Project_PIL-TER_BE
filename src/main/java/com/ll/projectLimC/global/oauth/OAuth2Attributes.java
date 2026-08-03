@@ -96,6 +96,7 @@ public class OAuth2Attributes {
                 .provider(this.provider)
                 .providerId(this.providerId)
                 .createdAt(OffsetDateTime.now(ZoneId.of("Asia/Seoul")))
+                .updatedAt(OffsetDateTime.now(ZoneId.of("Asia/Seoul")))
                 .password("")
                 .build();
     }

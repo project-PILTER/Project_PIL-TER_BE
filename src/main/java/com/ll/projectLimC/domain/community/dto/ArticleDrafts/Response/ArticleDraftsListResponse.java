@@ -12,7 +12,7 @@ public class ArticleDraftsListResponse {
     private final String title;
     private final String content;
     private final String category;
-    private final OffsetDateTime updateAt;
+    private final OffsetDateTime updatedAt;
 
     // Entity를 DTO로 변환하는 생성자
     public ArticleDraftsListResponse(ArticleDrafts drafts) {
@@ -21,6 +21,6 @@ public class ArticleDraftsListResponse {
                 ? drafts.getTitle() : "(제목 없음)";
         this.content = drafts.getContent();
         this.category = drafts.getCategory();
-        this.updateAt = drafts.getUpdatedAt(); // 엔티티의 필드명에 맞게 연결
+        this.updatedAt = drafts.getUpdatedAt(); // 엔티티의 필드명에 맞게 연결
     }
 }

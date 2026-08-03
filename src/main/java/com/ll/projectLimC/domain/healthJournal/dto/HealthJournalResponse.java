@@ -37,6 +37,9 @@ public class HealthJournalResponse {
     @Schema(description = "오늘 복용한 영양제 및 의약품 목록", example = "타이레놀")
     private final List<String> supplements;
 
+    @Schema(description ="건강일지 생성 시간", example = "26-08-03 00:00:00 + 9:00")
+    private final OffsetDateTime createdAt;
+
     public HealthJournalResponse(HealthJournal journal){
         this.id = journal.getId();;
         this.journalDate = journal.getJournalDate();
@@ -44,6 +47,7 @@ public class HealthJournalResponse {
         this.conditionDescription = journal.getConditionStatus().getDescription();
         this.painScore = journal.getPainScore();;
         this.content = journal.getContent();;
+        this.createdAt = journal.getCreatedAt();
         this.symptoms = journal.getSymptoms();
         this.supplements = journal.getSupplements();
     }

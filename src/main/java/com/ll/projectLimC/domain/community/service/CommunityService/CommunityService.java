@@ -81,6 +81,7 @@ public class CommunityService {
 
         communityArticle.updateCommunityArticle(
                 request.getTitle(),
+                request.getUpdatedAt(),
                 request.getContent(),
                 request.getImageUrl(),
                 request.getCategory(),

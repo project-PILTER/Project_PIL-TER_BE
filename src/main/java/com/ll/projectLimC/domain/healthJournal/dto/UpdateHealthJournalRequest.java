@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -24,6 +25,11 @@ public class UpdateHealthJournalRequest {
     @Schema(description = "선택한 증상 태그 목록", example = "복통")
     private List<String> symptoms;
 
+    @Schema(description ="수정 시간", example = "26-08-03 00:00:00 + 9:00")
+    private OffsetDateTime createdAt;
+
     @Schema(description = "오늘 복용한 영양제 및 의약품 목록", example = "메부라틴")
     private List<String> supplements;
+
+    private OffsetDateTime updatedAt;
 }
