@@ -85,7 +85,6 @@ public class HealthJournalService {
                 request.getConditionStatus(),
                 request.getPainScore(),
                 request.getContent(),
-                request.getUpdatedAt(),
                 request.getSymptoms(),
                 request.getSupplements()
         );
