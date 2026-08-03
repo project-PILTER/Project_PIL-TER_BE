@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.healthJournal.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ll.projectLimC.domain.healthJournal.ConditionStatus;
 import com.ll.projectLimC.domain.healthJournal.entity.HealthJournal;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,6 +39,12 @@ public class HealthJournalResponse {
     private final List<String> supplements;
 
     @Schema(description ="건강일지 생성 시간", example = "26-08-03 00:00:00 + 9:00")
+    // ⭐️ 원하는 형태대로 JSON 변환 포맷 지정
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd HH:mm:ss.SSS Z",
+            timezone = "Asia/Seoul"
+    )
     private final OffsetDateTime createdAt;
 
     public HealthJournalResponse(HealthJournal journal){

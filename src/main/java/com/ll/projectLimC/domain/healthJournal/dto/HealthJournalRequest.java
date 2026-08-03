@@ -39,4 +39,6 @@ public class HealthJournalRequest {
 
     @Schema(description = "오늘 복용한 영양제 및 의약품 목록", example = "타이레놀")
     private List<String> supplements;
+
+    private OffsetDateTime createdAt;
 }
