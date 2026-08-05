@@ -21,7 +21,10 @@ public class AuthorResponse {
         return new AuthorResponse(
                 user.getId(),
                 user.getNickname(),
-                user.getProfileImage() != null ? user.getProfileImage() : "/logo/logo.png",
+                // 값이 있더라도 비어있거나 공백이면 기본 로고 반환
+                user.getProfileImage() != null && !user.getProfileImage().trim().isEmpty()
+                        ? user.getProfileImage()
+                        : "/logo/logo.png",
                 user.getIsMedicalExpert() != null ? user.getIsMedicalExpert() : false,
                 user.getExpertTitle()
         );
