@@ -1,13 +1,10 @@
 package com.ll.projectLimC.domain.community.service.ArticleDraftsService;
 
 
-import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.ArticleDrafts.Request.ArticleDraftsSaveRequest;
 import com.ll.projectLimC.domain.community.dto.ArticleDrafts.Response.ArticleDraftsListResponse;
 import com.ll.projectLimC.domain.community.entity.ArticleDrafts.ArticleDrafts;
-import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.community.repository.ArticleDraftsRepository;
-import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.domain.community.repository.AriticleDraftsRepository.ArticleDraftsRepository;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;

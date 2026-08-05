@@ -1,6 +1,6 @@
 package com.ll.projectLimC.domain.like.service;
 
-import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.domain.community.repository.CommunityRepository.CommunityRepository;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.like.dto.LikeResponse;
 import com.ll.projectLimC.domain.like.entity.Like;

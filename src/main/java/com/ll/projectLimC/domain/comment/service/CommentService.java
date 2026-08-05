@@ -7,7 +7,7 @@ import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
-import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.domain.community.repository.CommunityRepository.CommunityRepository;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;

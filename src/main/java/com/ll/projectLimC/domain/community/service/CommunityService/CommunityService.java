@@ -2,9 +2,8 @@ package com.ll.projectLimC.domain.community.service.CommunityService;
 
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
-import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.domain.community.repository.CommunityRepository.CommunityRepository;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;

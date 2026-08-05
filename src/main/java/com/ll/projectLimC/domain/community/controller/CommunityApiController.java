@@ -2,12 +2,10 @@ package com.ll.projectLimC.domain.community.controller;
 
 import com.ll.projectLimC.domain.community.dto.ArticleDrafts.Request.ArticleDraftsSaveRequest;
 import com.ll.projectLimC.domain.community.dto.ArticleDrafts.Response.ArticleDraftsListResponse;
-import com.ll.projectLimC.domain.community.dto.Community.Response.ArticleViewResponse;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
 import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.community.repository.ArticleDraftsRepository;
 import com.ll.projectLimC.domain.community.service.ArticleDraftsService.ArticleDraftsService;
 import com.ll.projectLimC.domain.community.service.CommunityService.CommunityService;
 import com.ll.projectLimC.global.Execption.ErrorCode;
