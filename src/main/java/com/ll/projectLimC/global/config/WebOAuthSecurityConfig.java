@@ -11,7 +11,7 @@ import com.ll.projectLimC.global.token.TokenAuthentiocationFilter;
 import com.ll.projectLimC.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;

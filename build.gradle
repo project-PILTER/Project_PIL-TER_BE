@@ -1,6 +1,12 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.1.0"
+	}
+}
+
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.6'
+	id 'org.springframework.boot' version '3.4.1'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -9,7 +15,13 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(26)
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
 	}
 }
 
@@ -19,105 +31,76 @@ repositories {
 
 dependencies {
 	// Spring Web
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	// Spring Boot DevTools
-	implementation 'org.springframework.boot:spring-boot-starter'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Lombok
-	implementation 'org.springframework.boot:spring-boot-starter'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testCompileOnly 'org.projectlombok:lombok'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok:1.18.36'
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
+	testCompileOnly 'org.projectlombok:lombok:1.18.36'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-	// h2 Database
-	implementation 'org.springframework.boot:spring-boot-h2console'
-	implementation 'org.springframework.boot:spring-boot-starter'
+	// Database (H2 & PostgreSQL)
 	runtimeOnly 'com.h2database:h2'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	// PostgreSQL Driver
-	implementation 'org.springframework.boot:spring-boot-starter'
-	// runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// 5. Redis (토큰 관리용)
+	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	// Spring Data Jpa
+	// Spring Data JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	//Spring Validation
+	// Spring Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Spring Security
+	// OAuth2 Client & Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-	// Oath2 Client
-	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
-	testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'//jjwt
+	// JJWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
-	// Querydsl 설정 추가
-	// implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	// annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-	// annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-	// annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	// QueryDSL (Spring Boot 3.x / Jakarta)
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-	// Swager Ui (Springdoc OpenAPI)
+	// Swagger UI
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 
-	// JUnit
+	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-
-	// AssertThat
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.assertj:assertj-core:3.24.2'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-// Querydsl 설정부
-//def generated = 'src/main/generated'
+// --- QueryDSL 설정 (src/main/generated 생성 및 IntelliJ 인식 최적화) ---
+def querydslDir = "src/main/generated"
 
-// querydsl QClass 파일 생성 위치를 지정
-//tasks.withType(JavaCompile) {
-//	options.getGeneratedSourceOutputDirectory().set(file(generated))
-//}
+sourceSets {
+	main {
+		java {
+			srcDirs += [querydslDir]
+		}
+	}
+}
 
-// java source set 에 querydsl QClass 위치 추가
-//sourceSets {
-//	main.java.srcDirs += [ generated ]
-//}
+// --- QueryDSL 최신 표준 설정 ---
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs += ["-parameters"]
+}
 
-// gradle clean 시에 QClass 디렉토리 삭제
-//clean {
-//	delete file(generated)
-//}
-
-//jar {
-//	enabled = false
-//}
+clean {
+	delete file(querydslDir)
+}
