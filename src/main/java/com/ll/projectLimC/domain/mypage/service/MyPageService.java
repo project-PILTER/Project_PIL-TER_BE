@@ -3,7 +3,7 @@ package com.ll.projectLimC.domain.mypage.service;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
-import com.ll.projectLimC.domain.community.repository.CommunityRepository;
+import com.ll.projectLimC.domain.community.repository.CommunityRepository.CommunityRepository;
 import com.ll.projectLimC.domain.healthJournal.repository.HealthJournalRepository;
 import com.ll.projectLimC.domain.mypage.dto.MyPageResponse;
 import com.ll.projectLimC.domain.mypage.dto.UpdateProfileRequest;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
 import java.util.List;
 
 @Slf4j

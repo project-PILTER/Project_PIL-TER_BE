@@ -1,8 +1,6 @@
-package com.ll.projectLimC.domain.community.repository;
+package com.ll.projectLimC.domain.community.repository.AriticleDraftsRepository;
 
-import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.entity.ArticleDrafts.ArticleDrafts;
-import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

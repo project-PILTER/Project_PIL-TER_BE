@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.community.repository;
+package com.ll.projectLimC.domain.community.repository.CommunityRepository;
 
 
 import com.ll.projectLimC.domain.community.ArticleStatus;
@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface CommunityRepository extends JpaRepository<CommunityArticle, Long> {
+public interface CommunityRepository extends JpaRepository<CommunityArticle, Long>, CommunityRepositoryCustom {
 
     long countByUser(User user);
 
