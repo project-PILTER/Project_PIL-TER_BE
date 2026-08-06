@@ -2,6 +2,7 @@ package com.ll.projectLimC.domain.community.service.CommunityService;
 
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
+import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository.CommunityRepository;
 import com.ll.projectLimC.domain.user.entity.User;
@@ -9,12 +10,11 @@ import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor // final이 붙거나 @NonNull이 붙은 필드의 생성자 추가
@@ -43,8 +43,10 @@ public class CommunityService {
     }
 
     // 커뮤니티 게시글 전체 조회용 메서드
-    public List<CommunityArticle> findAll(Pageable pageable){
-        return communityRepository.findByStatus(ArticleStatus.PUBLISHED, pageable);
+    public Page<CommunityArticleResponse> findAll(Pageable pageable){
+        Page<CommunityArticle> articlePage = communityRepository.findByStatus(ArticleStatus.PUBLISHED, pageable);
+
+        return articlePage.map(CommunityArticleResponse::new);
     }
 
     // 커뮤니티 게시글 삭제용 메서드

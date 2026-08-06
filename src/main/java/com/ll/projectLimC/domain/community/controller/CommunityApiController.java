@@ -13,6 +13,7 @@ import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -52,27 +53,19 @@ public class CommunityApiController {
                 .body(savedCommunityArticle);
     }
 
-    // 2. 전체 게시글 조회 (기존 ViewController의 중복된 전체 조회를 데이터 전용으로 단일화)
+    // 2. 전체 게시글 조회
     @Operation(summary = "전체 게시글 조회",
             description = "시스템에 등록된 모든 커뮤니티 게시글 목록을 JSON 데이터로 가져옵니다.")
     @GetMapping("/community/articles")
-    public ResponseEntity<List<CommunityArticleResponse>> findAllCommunityArticles(
+    public ResponseEntity<Page<CommunityArticleResponse>> findAllCommunityArticles(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable
             // Principal principal
     ) {
 
-        // 1. 로그인이 안 되어 있는 상태라면 즉시 401 예외 발생
-//        if (principal == null) {
-//            throw new GlobalCustomException(ErrorCode.AUTHENTICATION_FAILED);
-//        }
+        Page<CommunityArticleResponse> articlePage = communityService.findAll(pageable);
 
-        List<CommunityArticleResponse> communityArticles = communityService.findAll(pageable)
-                .stream()
-                .map(CommunityArticleResponse::new)
-                .toList();
-
-        return ResponseEntity.ok().body(communityArticles);
+        return ResponseEntity.ok().body(articlePage);
     }
 
     // 3. 게시글 상세 조회 (기존 ViewController의 단건 조회를 데이터 반환용 API로 변환)

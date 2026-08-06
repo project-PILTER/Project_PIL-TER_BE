@@ -4,6 +4,7 @@ package com.ll.projectLimC.domain.community.repository.CommunityRepository;
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.user.entity.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +16,7 @@ public interface CommunityRepository extends JpaRepository<CommunityArticle, Lon
     long countByUser(User user);
 
     // 메인 전체 피드용: 최종 등록(PUBLISHED)된 글만 최신순(혹은 기본순)으로 조회
-    List<CommunityArticle> findByStatus(ArticleStatus status, Pageable pageable);
+    Page<CommunityArticle> findByStatus(ArticleStatus status, Pageable pageable);
 
     // 좋아요(likes) 개수가 많은 순서대로 상위 5개 게시글을 가져오는 쿼리
     // 기존 SIZE(a.likes) 쿼리 대신, Like 엔티티와 조인하여 개수를 세는 조인 쿼리로 변경.
