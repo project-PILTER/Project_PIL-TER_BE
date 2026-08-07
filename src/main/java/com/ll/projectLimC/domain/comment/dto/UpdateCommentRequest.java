@@ -17,4 +17,6 @@ public class UpdateCommentRequest {
 
     @Schema(description = "댓글 내용 수정 시간", example = "26-08-03 00:00:00 + 9:00")
     private OffsetDateTime updatedAt;
+
+    private Long parentId;
 }
