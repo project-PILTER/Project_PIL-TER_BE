@@ -35,12 +35,16 @@ public class AddCommentResponse {
     @Schema(description = "좋아요 수", example = "1")
     private Long likeCount;
 
+    @Schema(description = "부모 댓글 ID (대댓글인 경우 존재)", example = "3")
+    private Long parentId;
+
     public AddCommentResponse(Comment comment){
         this.id = comment.getId();
         this.communityArticleId = comment.getCommunityArticle() != null ? comment.getCommunityArticle().getId() : null;
         this.content = comment.getContent();
         this.author = AuthorResponse.from(comment.getUser());
         this.likeCount = comment.getLikeCount();
+        this.parentId = comment.getParent() != null ? comment.getParent().getId() : null;
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();
     }

@@ -68,6 +68,13 @@ public class Comment {
     @Column(name = "like_count")
     private Long likeCount;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent; // 부모 댓글 (최상위 댓글이면 null)
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>(); // 대댓글 목록
+
     @Builder
     public Comment(CommunityArticle communityArticle, User user, String content, OffsetDateTime createdAt, Long likeCount){
         this.communityArticle = communityArticle;
