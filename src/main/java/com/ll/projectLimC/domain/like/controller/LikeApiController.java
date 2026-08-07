@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.like.controller;
 
+import com.ll.projectLimC.domain.like.dto.LikeCommentResponse;
 import com.ll.projectLimC.domain.like.dto.LikeResponse;
 import com.ll.projectLimC.domain.like.service.LikeService;
 import com.ll.projectLimC.global.Execption.ErrorCode;
@@ -24,7 +25,7 @@ public class LikeApiController {
     @Operation(summary = "게시글 좋아요 토글",
             description = "좋아요를 처음 눌렀다면 좋아요 표시가 되고, 2번째 누르는 것이라면 좋아요가 취소됩니다.")
     @PostMapping("/community/articles/{id}/likes")
-    public ResponseEntity<Map<String, Object>> toggleLike(
+    public ResponseEntity<Map<String, Object>> toggleCommunityArticleLike(
             @PathVariable Long id,
             Principal principal
     ){
@@ -34,13 +35,36 @@ public class LikeApiController {
         }
 
         // 토글 실행 결과 받기 (true: 등록, false: 취소)
-        LikeResponse likeResponse = likeService.toggleLike(id, principal.getName());
+        LikeResponse likeResponse = likeService.toggleCommunityArticleLike(id, principal.getName());
 
         return ResponseEntity.ok().body(Map.of(
                 "articleId", id,
                 "isLiked", likeResponse.isLiked(),
                 "totalLikes", likeResponse.getTotalLikes(),
                 "message", likeResponse.isLiked() ? "좋아요 등록 완료" : "좋아요 취소 완료"
+        ));
+    }
+
+    @Operation(summary = "커뮤니티 게시글의 댓글 좋아요 토글",
+            description = "댓글의 좋아요를 처음 눌렀다면 좋아요 표시가 되고, 2번째 누르는 것이라면 좋아요가 취소됩니다.")
+    @PostMapping("/community/comments/{id}/likes")
+    public ResponseEntity<Map<String, Object>> toggleCommentLike(
+            @PathVariable Long id,
+            Principal principal
+    ){
+        // principal null 검증 (로그인 안 한 사용자 방어)
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        // 토글 실행 결과 받기 (true: 등록, false: 취소)
+        LikeCommentResponse likeCommentResponse = likeService.toggleCommentLikeLike(id, principal.getName());
+
+        return ResponseEntity.ok().body(Map.of(
+                "commentId", id,
+                "isLiked", likeCommentResponse.isLiked(),
+                "totalLikes", likeCommentResponse.getTotalLikes(),
+                "message", likeCommentResponse.isLiked() ? "좋아요 등록 완료" : "좋아요 취소 완료"
         ));
     }
 }
