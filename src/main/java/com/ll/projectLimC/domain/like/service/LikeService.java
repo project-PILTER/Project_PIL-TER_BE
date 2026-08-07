@@ -23,6 +23,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     public LikeResponse toggleCommunityArticleLike(Long id, String userName) {
         CommunityArticle communityArticle = communityRepository.findById(id)
@@ -58,7 +59,6 @@ public class LikeService {
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_ARTICLE)); // 또는 적절한 댓글 에러코드로 변경
 
         // 2. 이미 좋아요를 눌렀는지 확인
-        CommentLikeRepository commentLikeRepository = null;
         Optional<CommentLike> alreadyLike = commentLikeRepository.findByCommentAndAuthor(comment, userName);
 
         boolean isLiked;
