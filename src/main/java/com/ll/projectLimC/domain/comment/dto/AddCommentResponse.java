@@ -31,9 +31,6 @@ public class AddCommentResponse {
     @Schema(description = "댓글 작성 시간", example = "26-08-07 00:00:00 + 9:00")
     private OffsetDateTime createdAt;
 
-    @Schema(description = "댓글 수정 시간", example = "26-08-07 00:00:00 + 9:00")
-    private OffsetDateTime updatedAt;
-
     @Schema(description = "좋아요 수", example = "1")
     private Long likeCount;
 
@@ -51,9 +48,8 @@ public class AddCommentResponse {
         this.likeCount = comment.getLikeCount();
         this.parentId = comment.getParent() != null ? comment.getParent().getId() : null;
         this.createdAt = comment.getCreatedAt();
-        this.updatedAt = comment.getUpdatedAt();
 
-        // 🎯 자식 댓글(children)을 DTO로 재귀적 매핑
+        // 자식 댓글(children)을 DTO로 재귀적 매핑
         if (comment.getChildren() != null && !comment.getChildren().isEmpty()) {
             this.children = comment.getChildren().stream()
                     .map(AddCommentResponse::new) // 자기 자신의 생성자를 호출하여 대댓글들도 DTO로 변환
