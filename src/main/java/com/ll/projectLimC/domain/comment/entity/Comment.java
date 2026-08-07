@@ -2,7 +2,9 @@ package com.ll.projectLimC.domain.comment.entity;
 
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.like.entity.CommentLike;
+import com.ll.projectLimC.domain.like.entity.Like;
 import com.ll.projectLimC.domain.user.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -24,6 +26,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "comments")
@@ -59,15 +62,19 @@ public class Comment {
     // @JoinColumn(name = "community_article_id")
     private CommunityArticle communityArticle;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<CommentLike> commentLike;
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
+    private List<CommentLike> commentLikes = new ArrayList<>();
+
+    @Column(name = "like_count")
+    private Long likeCount;
 
     @Builder
-    public Comment(CommunityArticle communityArticle, User user, String content, OffsetDateTime createdAt){
+    public Comment(CommunityArticle communityArticle, User user, String content, OffsetDateTime createdAt, Long likeCount){
         this.communityArticle = communityArticle;
         this.user = user;
         this.content = content;
         this.createdAt = createdAt;
+        this.likeCount = likeCount;
     }
 
     // 댓글 수정 시에는 오직 내용(content)만 변경
