@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,13 +37,29 @@ public class AddCommentResponse {
     @Schema(description = "좋아요 수", example = "1")
     private Long likeCount;
 
+    @Schema(description = "부모 댓글 ID (대댓글인 경우 존재)", example = "3")
+    private Long parentId;
+
+    @Schema(description = "대댓글 목록 (재귀 구조)")
+    private List<AddCommentResponse> children;
+
     public AddCommentResponse(Comment comment){
         this.id = comment.getId();
         this.communityArticleId = comment.getCommunityArticle() != null ? comment.getCommunityArticle().getId() : null;
         this.content = comment.getContent();
         this.author = AuthorResponse.from(comment.getUser());
         this.likeCount = comment.getLikeCount();
+        this.parentId = comment.getParent() != null ? comment.getParent().getId() : null;
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();
+
+        // 🎯 자식 댓글(children)을 DTO로 재귀적 매핑
+        if (comment.getChildren() != null && !comment.getChildren().isEmpty()) {
+            this.children = comment.getChildren().stream()
+                    .map(AddCommentResponse::new) // 자기 자신의 생성자를 호출하여 대댓글들도 DTO로 변환
+                    .toList();
+        } else {
+            this.children = new ArrayList<>(); // 자식 없으면 빈 리스트
+        }
     }
 }

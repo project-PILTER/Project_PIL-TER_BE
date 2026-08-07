@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.community.dto.Community.Response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.ll.projectLimC.domain.comment.dto.AddCommentResponse;
 import com.ll.projectLimC.domain.comment.dto.CommentResponse;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.user.entity.User;
@@ -36,7 +37,7 @@ public class CommunityArticleResponse {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    private List<CommentResponse> comments;
+    private List<AddCommentResponse> comments;
 
     @JsonPropertyOrder({ "title", "content" })
     public CommunityArticleResponse(CommunityArticle communityArticle){
@@ -69,7 +70,8 @@ public class CommunityArticleResponse {
         // 5. 댓글 목록 DTO 변환
         this.comments = communityArticle.getComments() != null ?
                 communityArticle.getComments().stream()
-                        .map(CommentResponse::new)
+                        .filter(comment -> comment.getParent() == null) // 부모가 없는 최상위 댓글만 추출!
+                        .map(AddCommentResponse::new) // 대댓글은 AddCommentResponse 내부에서 children으로 자동 재귀 매핑됨
                         .collect(Collectors.toList())
                 : new ArrayList<>();
     }

@@ -68,13 +68,22 @@ public class Comment {
     @Column(name = "like_count")
     private Long likeCount;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent; // 부모 댓글 (최상위 댓글이면 null)
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>(); // 대댓글 목록
+
     @Builder
-    public Comment(CommunityArticle communityArticle, User user, String content, OffsetDateTime createdAt, Long likeCount){
+    public Comment(CommunityArticle communityArticle, User user, String content, OffsetDateTime createdAt, Long likeCount,
+                   Comment parent){
         this.communityArticle = communityArticle;
         this.user = user;
         this.content = content;
         this.createdAt = createdAt;
         this.likeCount = likeCount;
+        this.parent = parent;
     }
 
     // 댓글 수정 시에는 오직 내용(content)만 변경

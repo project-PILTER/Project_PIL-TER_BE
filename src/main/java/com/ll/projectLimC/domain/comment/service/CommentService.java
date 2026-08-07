@@ -35,8 +35,30 @@ public class CommentService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
+        // 부모 댓글이 있는 경우(대댓글) 조회 및 검증
+        Comment parentComment = null;
+        if (request.getParentId() != null) {
+            parentComment = commentRepository.findById(request.getParentId())
+                    .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_COMMENT));
+
+            // 대댓글의 대댓글을 방지하고 싶다면 부모가 이미 parent를 가지고 있는지 체크할 수도 있습니다.
+            if (parentComment.getParent() != null) {
+                // 🎯 부모 댓글이 이미 최상위 댓글의 자식(즉, 대댓글)이라면, 그 아래에는 더 달 수 없도록 예외 발생
+                throw new GlobalCustomException(ErrorCode.CANNOT_NEST_DEEP_COMMENT);
+            }
+        }
+
+        // 🎯 2. 댓글 저장 시 parent 전달
+        Comment comment = Comment.builder()
+                .communityArticle(communityArticle)
+                .user(user)
+                .content(request.getContent())
+                .parent(parentComment)
+                .likeCount(0L)
+                .build();
+
         // 빌더에 조인한 user 객체를 넘겨서 저장
-        return commentRepository.save(request.toEntity(user, communityArticle));
+        return commentRepository.save(comment);
     }
 
     // 댓글 수정용 메서드

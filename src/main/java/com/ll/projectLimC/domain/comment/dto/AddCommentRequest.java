@@ -19,10 +19,13 @@ public class AddCommentRequest {
     @Schema(description = "댓글 내용", example = "버틸만 하시면 타이레놀 드시고, 힘드시면 가까운 신경과에 내원해보세요.")
     private String content;
 
-    public Comment toEntity(User user, CommunityArticle communityArticle){
+    private Long parentId;
+
+    public Comment toEntity(User user, CommunityArticle communityArticle, Comment parent){
         return Comment.builder()
                 .communityArticle(communityArticle)
                 .content(content)
+                .parent(parent)
                 .user(user)
                 .build();
     }

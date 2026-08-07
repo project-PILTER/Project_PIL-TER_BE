@@ -1,5 +1,8 @@
 package com.ll.projectLimC.domain.community.service.CommunityService;
 
+import com.ll.projectLimC.domain.comment.dto.AddCommentResponse;
+import com.ll.projectLimC.domain.comment.entity.Comment;
+import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
 import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
@@ -16,11 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor // final이 붙거나 @NonNull이 붙은 필드의 생성자 추가
 public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     // 커뮤니티 게시글 저장용 메서드
     public CommunityArticle save(CommunityArticleCreateForm request, String email){
