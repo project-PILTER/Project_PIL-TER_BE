@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod # 개발환경 dev
+    active: dev # 개발환경 dev
     include: secret # 민감정보 secret 파일
 
 server:
@@ -33,9 +33,6 @@ cors:
 
 cloud:
   aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
     s3:
       bucket: "pilter-uploaded-bucket"
     region:

@@ -9,10 +9,12 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor // 기본 생성자 추가
 @AllArgsConstructor // 모든 필드 값을 파라미터로 빋는 생성자 추가
 @Getter
+@Setter
 @Schema(description = "커뮤니티 게시글 생성 요청 양식")
 public class CommunityArticleCreateForm {
     @Schema(description = "게시글 제목", example = "배가 너무 아파요.")

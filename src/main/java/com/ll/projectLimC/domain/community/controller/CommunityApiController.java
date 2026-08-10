@@ -8,6 +8,7 @@ import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunity
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.service.ArticleDraftsService.ArticleDraftsService;
 import com.ll.projectLimC.domain.community.service.CommunityService.CommunityService;
+import com.ll.projectLimC.domain.s3.service.S3Service;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -32,13 +34,15 @@ public class CommunityApiController {
 
     private final CommunityService communityService;
     private final ArticleDraftsService articleDraftsService;
+    private final S3Service s3Service;
 
     // 1. 게시글 작성
     @Operation(summary = "커뮤니티 게시글 작성",
             description = "로그인한 사용자가 본문에 내용을 입력하여 새 게시글을 작성합니다.")
     @PostMapping("/community/articles")
     public ResponseEntity<CommunityArticle> addCommunityArticle(
-            @RequestBody CommunityArticleCreateForm request,
+            @RequestPart(value = "request") CommunityArticleCreateForm request,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             Principal principal
     ) {
 
@@ -46,6 +50,12 @@ public class CommunityApiController {
         if (principal == null) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
+
+        // 1. S3에 파일 업로드 후 접근 URL 받아오기
+        String fileUrl = s3Service.uploadFile(file);
+
+        // 2. 받아온 fileUrl을 폼 객체나 엔티티에 세팅하여 저장
+        request.setImageUrl(fileUrl);
 
         CommunityArticle savedCommunityArticle = communityService.save(request, principal.getName());
 
