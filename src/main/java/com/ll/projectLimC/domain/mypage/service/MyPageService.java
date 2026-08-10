@@ -1,5 +1,6 @@
 package com.ll.projectLimC.domain.mypage.service;
 
+import com.ll.projectLimC.domain.s3.service.S3Service;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
@@ -9,6 +10,7 @@ import com.ll.projectLimC.domain.mypage.dto.MyPageResponse;
 import com.ll.projectLimC.domain.mypage.dto.UpdateProfileRequest;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
+import com.ll.projectLimC.util.S3FolderName;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class MyPageService {
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
     private final HealthJournalRepository healthJournalRepository;
+    private final S3Service s3Service;
 
     public MyPageResponse getMypageData(String email) {
         // 1. 유저 검증
@@ -78,10 +82,21 @@ public class MyPageService {
     }
 
     @Transactional
-    public void updateUserProfile(String email, UpdateProfileRequest request) {
+    public void updateUserProfile(String email, UpdateProfileRequest request, MultipartFile file) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
-        user.update(request.getNickname(), request.getProfileImageUrl());
+        String imageUrl = user.getProfileImage();
+
+        if (file != null && !file.isEmpty()) {
+            // 기존에 등록된 이미지가 있다면 S3 버킷에서 삭제
+            if (user.getProfileImage() != null && !user.getProfileImage().isBlank()) {
+                s3Service.deleteFile(user.getProfileImage());
+            }
+            // 새로운 이미지를 "community" 폴더에 업로드하고 URL 받아오기
+            imageUrl = s3Service.uploadFile(file, S3FolderName.PROFILE);
+        }
+
+        user.update(request.getNickname(), imageUrl);
     }
 }

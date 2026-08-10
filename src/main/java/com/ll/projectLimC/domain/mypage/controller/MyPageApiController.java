@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
@@ -39,14 +40,15 @@ public class MyPageApiController {
     @PutMapping("/mypage/profile")
     public ResponseEntity<Void> updateProfile(
             Principal principal,
-            @Valid @RequestBody UpdateProfileRequest request
+            @RequestPart(value = "request") UpdateProfileRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         // principal null 검증 (로그인 안 한 사용자 방어)
         if (principal == null) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        mypageService.updateUserProfile(principal.getName(), request);
+        mypageService.updateUserProfile(principal.getName(), request, file);
         return ResponseEntity.ok().build();
     }
 }
