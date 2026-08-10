@@ -93,7 +93,8 @@ public class CommunityApiController {
     @PutMapping("/community/articles/{id}")
     public ResponseEntity<CommunityArticle> updateCommunityArticle(
             @PathVariable long id,
-            @RequestBody UpdateCommunityArticleRequest request,
+            @RequestPart(value = "request") UpdateCommunityArticleRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             Principal principal // [추가] Principal 주입
     ) {
         // principal null 검증 (로그인 안 한 사용자 방어)
@@ -101,7 +102,7 @@ public class CommunityApiController {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request, principal.getName());
+        CommunityArticle updatedCommunityArticle = communityService.updateCommunityArticle(id, request, file, principal.getName());
 
         return ResponseEntity.ok().body(updatedCommunityArticle);
     }

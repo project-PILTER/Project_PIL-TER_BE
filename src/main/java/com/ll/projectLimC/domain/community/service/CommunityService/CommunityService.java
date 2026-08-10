@@ -8,6 +8,7 @@ import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticl
 import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
 import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
 import com.ll.projectLimC.domain.community.repository.CommunityRepository.CommunityRepository;
+import com.ll.projectLimC.domain.s3.service.S3Service;
 import com.ll.projectLimC.domain.user.entity.User;
 import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +29,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final S3Service s3Service;
 
     // 커뮤니티 게시글 저장용 메서드
     public CommunityArticle save(CommunityArticleCreateForm request, String email){
@@ -73,7 +76,8 @@ public class CommunityService {
 
     // 커뮤니티 게시글 수정용 메서드
     @Transactional
-    public CommunityArticle updateCommunityArticle(long id, UpdateCommunityArticleRequest request, String email) {
+    public CommunityArticle updateCommunityArticle(long id, UpdateCommunityArticleRequest request,
+                                                   MultipartFile file, String email) {
         // DB에서 유저 존재 여부 검증
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
@@ -84,13 +88,25 @@ public class CommunityService {
         // 인자로 받은 email 기준으로 작성자 검증
         authorizeArticleAuthor(communityArticle, user.getEmail());
 
+        // 이미지 처리 로직
+        String imageUrl = communityArticle.getImageUrl(); // 기본값은 기존 이미지 유지
+
+        if (file != null && !file.isEmpty()) {
+            // 기존에 등록된 이미지가 있다면 S3 버킷에서 삭제
+            if (communityArticle.getImageUrl() != null && !communityArticle.getImageUrl().isBlank()) {
+                s3Service.deleteFile(communityArticle.getImageUrl());
+            }
+            // 새로운 이미지를 "community" 폴더에 업로드하고 URL 받아오기
+            imageUrl = s3Service.uploadFile(file, "community");
+        }
+
         ArticleStatus nextStatus = request.isDraft() ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED;
 
         communityArticle.updateCommunityArticle(
                 request.getTitle(),
                 request.getUpdatedAt(),
                 request.getContent(),
-                request.getImageUrl(),
+                imageUrl, // 새로 갱신된 이미지 URL 전달
                 request.getCategory(),
                 nextStatus
         );
