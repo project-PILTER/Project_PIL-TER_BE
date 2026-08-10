@@ -11,6 +11,7 @@ import com.ll.projectLimC.domain.community.service.CommunityService.CommunitySer
 import com.ll.projectLimC.domain.s3.service.S3Service;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
+import com.ll.projectLimC.util.S3FolderName;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class CommunityApiController {
         }
 
         // 1. S3에 파일 업로드 후 접근 URL 받아오기
-        String fileUrl = s3Service.uploadFile(file, "community");
+        String fileUrl = s3Service.uploadFile(file, S3FolderName.COMMUNITY);
 
         // 2. 받아온 fileUrl을 폼 객체나 엔티티에 세팅하여 저장
         request.setImageUrl(fileUrl);
