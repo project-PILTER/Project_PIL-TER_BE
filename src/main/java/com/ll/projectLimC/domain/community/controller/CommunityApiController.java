@@ -52,7 +52,7 @@ public class CommunityApiController {
         }
 
         // 1. S3에 파일 업로드 후 접근 URL 받아오기
-        String fileUrl = s3Service.uploadFile(file);
+        String fileUrl = s3Service.uploadFile(file, "community");
 
         // 2. 받아온 fileUrl을 폼 객체나 엔티티에 세팅하여 저장
         request.setImageUrl(fileUrl);

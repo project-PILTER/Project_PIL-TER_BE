@@ -22,14 +22,14 @@ public class S3Service {
     private String bucket;
 
     // 파일 업로드 메서드
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file, String dirName) {
         if (file == null || file.isEmpty()) {
             return null;
         }
 
-        // 중복 파일명 방지를 위해 UUID 생성
         String originalFilename = file.getOriginalFilename();
-        String fileName = UUID.randomUUID().toString() + "_" + originalFilename;
+        // 전달받은 폴더 이름 뒤에 슬래시를 붙여서 경로 완성
+        String fileName = dirName + "/" + UUID.randomUUID().toString() + "_" + originalFilename;
 
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -38,10 +38,8 @@ public class S3Service {
                     .contentType(file.getContentType())
                     .build();
 
-            s3Client.putObject(putObjectRequest,
-                    RequestBody.fromBytes(file.getBytes()));
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
-            // 업로드된 파일의 S3 접근 URL 반환
             return s3Client.utilities().getUrl(GetUrlRequest.builder()
                     .bucket(bucket)
                     .key(fileName)
