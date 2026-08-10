@@ -79,6 +79,9 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.assertj:assertj-core:3.24.2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// AWS S3 SDK v2
+	implementation 'software.amazon.awssdk:s3:2.20.26'
 }
 
 tasks.named('test') {
