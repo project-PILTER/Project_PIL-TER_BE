@@ -1,7 +1,5 @@
 package com.ll.projectLimC.domain.community.service.CommunityService;
 
-import com.ll.projectLimC.domain.comment.dto.AddCommentResponse;
-import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.comment.repository.CommentRepository;
 import com.ll.projectLimC.domain.community.ArticleStatus;
 import com.ll.projectLimC.domain.community.dto.Community.Request.CommunityArticleCreateForm;
@@ -14,14 +12,15 @@ import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ll.projectLimC.domain.community.dto.Community.Request.UpdateCommunityArticleRequest;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor // final이 붙거나 @NonNull이 붙은 필드의 생성자 추가
@@ -122,6 +121,24 @@ public class CommunityService {
         if (communityArticle.getUser() == null || !communityArticle.getUser().getEmail().equals(userEmail)) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_THE_ARTICLE);
         }
+    }
+
+    public String replaceBlobImageUrl(String content, String fileUrl) {
+        // Jsoup을 이용해 HTML 파싱
+        Document document = Jsoup.parseBodyFragment(content);
+
+        // 본문 안에 있는 모든 <img> 태그를 순회
+        for (Element img : document.select("img")) {
+            String src = img.attr("src");
+
+            // src가 브라우저 임시 주소인 blob: 으로 시작한다면 S3 URL로 교체
+            if (src.startsWith("blob:")) {
+                img.attr("src", fileUrl);
+            }
+        }
+
+        // 수정된 HTML 문자열 반환
+        return document.body().html();
     }
 }
     // 게시글을 작성한 유저인지 확인

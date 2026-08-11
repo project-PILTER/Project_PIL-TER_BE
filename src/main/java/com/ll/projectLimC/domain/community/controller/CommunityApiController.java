@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,24 +41,34 @@ public class CommunityApiController {
     // 1. 게시글 작성
     @Operation(summary = "커뮤니티 게시글 작성",
             description = "로그인한 사용자가 본문에 내용을 입력하여 새 게시글을 작성합니다.")
-    @PostMapping("/community/articles")
+    @PostMapping(value = "/community/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CommunityArticle> addCommunityArticle(
             @RequestPart(value = "request") CommunityArticleCreateForm request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             Principal principal
     ) {
 
-        // principal null 검증 (로그인 안 한 사용자 방어)
         if (principal == null) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        // 1. S3에 파일 업로드 후 접근 URL 받아오기
-        String fileUrl = s3Service.uploadFile(file, S3FolderName.COMMUNITY);
+        // 1. 이미지가 존재하는 경우 처리
+        if (file != null && !file.isEmpty()) {
+            // S3에 파일 업로드 후 실제 URL(CloudFront URL) 반환 받기
+            String fileUrl = s3Service.uploadFile(file, S3FolderName.COMMUNITY);
 
-        // 2. 받아온 fileUrl을 폼 객체나 엔티티에 세팅하여 저장
-        request.setImageUrl(fileUrl);
+            // (선택) 게시글 대표 이미지(Thumbnail 등)가 있다면 설정
+            request.setImageUrl(fileUrl);
 
+            // 2. 본문(content) HTML 안의 blob: URL을 실제 S3 URL로 교체
+            String content = request.getContent();
+            if (content != null && !content.isBlank()) {
+                content = communityService.replaceBlobImageUrl(content, fileUrl);
+                request.setContent(content); // 치환된 본문으로 덮어쓰기
+            }
+        }
+
+        // 3. DB에 저장
         CommunityArticle savedCommunityArticle = communityService.save(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
