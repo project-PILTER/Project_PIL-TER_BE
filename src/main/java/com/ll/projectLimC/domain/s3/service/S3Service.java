@@ -1,6 +1,7 @@
 package com.ll.projectLimC.domain.s3.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +14,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
@@ -24,6 +26,9 @@ public class S3Service {
 
     @Value("${cloud.aws.s3.thumb-bucket}")
     private String thumbBucket;
+
+    @Value("${cloud.aws.s3.cloudfront-domain}")
+    private String cloudFrontDomain;
 
     // 파일 업로드 메서드
     public String uploadFile(MultipartFile file, String dirName) {
@@ -45,12 +50,9 @@ public class S3Service {
 
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
-            // DB 및 프론트엔드에는 썸네일 버킷(thumb-bucket)의 URL을 반환
-            // Lambda가 원본 버킷의 이벤트를 감지하여 동일한 key로 썸네일 버킷에 축소된 이미지를 자동 생성
-            return s3Client.utilities().getUrl(GetUrlRequest.builder()
-                    .bucket(thumbBucket)
-                    .key(fileName)
-                    .build()).toString();
+            // 3. S3 직접 접근 URL 대신 CloudFront 도메인 주소를 조합하여 반환
+            // (Lambda가 썸네일 버킷에 동일한 이름으로 파일을 생성하므로 CloudFront를 통해 썸네일에 접근 가능)
+            return cloudFrontDomain + "/" + fileName;
 
         } catch (IOException e) {
             throw new RuntimeException("S3 파일 업로드 중 오류가 발생했습니다.", e);
@@ -64,7 +66,7 @@ public class S3Service {
         }
 
         // URL에서 파일 키(경로 포함 전체 파일명) 추출
-        // 예: https://bucket.s3.region.amazonaws.com/community/uuid_filename.jpg -> community/uuid_filename.jpg 추출
+        // Ex: https://d299mtvm1wus1q.cloudfront.net/community/uuid_filename.jpg -> community/uuid_filename.jpg 추출
         String fileName;
         try {
             java.net.URI uri = new java.net.URI(fileUrl);
@@ -74,13 +76,17 @@ public class S3Service {
             fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
         }
 
-        // 원본 버킷과 썸네일 버킷 양쪽에 삭제 요청을 보내 찌꺼기가 남지 않도록 합니다.
+        // 원본 버킷과 썸네일 버킷 양쪽에 삭제 요청을 보내 찌꺼기가 남지 X
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder().bucket(originBucket).key(fileName).build());
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            log.warn("원본 S3 파일 삭제 중 예외 발생 (무시됨): {}", e.getMessage());
+        }
 
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder().bucket(thumbBucket).key(fileName).build());
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            log.warn("썸네일 S3 파일 삭제 중 예외 발생 (무시됨): {}", e.getMessage());
+        }
     }
 }
