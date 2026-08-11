@@ -36,5 +36,6 @@ cloud:
     s3:
       origin-bucket: "pilter-origin-bucket"  # 스프링이 파일을 업로드할 원본 버킷
       thumb-bucket: "pilter-thumb-bucket"    # 모바일/웹에서 불러쓸 썸네일 버킷
+      cloudfront-domain: https://d299mtvm1wus1q.cloudfront.net
     region:
       static: "ap-northeast-2"
