@@ -34,6 +34,7 @@ cors:
 cloud:
   aws:
     s3:
-      bucket: "pilter-uploaded-bucket"
+      origin-bucket: "pilter-origin-bucket"  # 스프링이 파일을 업로드할 원본 버킷
+      thumb-bucket: "pilter-thumb-bucket"    # 모바일/웹에서 불러쓸 썸네일 버킷
     region:
       static: "ap-northeast-2"
