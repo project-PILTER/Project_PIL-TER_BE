@@ -18,8 +18,12 @@ import java.util.UUID;
 public class S3Service {
     private final S3Client s3Client;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    // 1. 원본 버킷과 썸네일 버킷을 각각 주입받습니다.
+    @Value("${cloud.aws.s3.origin-bucket}")
+    private String originBucket;
+
+    @Value("${cloud.aws.s3.thumb-bucket}")
+    private String thumbBucket;
 
     // 파일 업로드 메서드
     public String uploadFile(MultipartFile file, String dirName) {
@@ -32,16 +36,19 @@ public class S3Service {
         String fileName = dirName + "/" + UUID.randomUUID().toString() + "_" + originalFilename;
 
         try {
+            // 사용자가 올린 원본 파일은 원본 버킷(origin-bucket)에 저장
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucket)
+                    .bucket(originBucket)
                     .key(fileName)
                     .contentType(file.getContentType())
                     .build();
 
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
+            // DB 및 프론트엔드에는 썸네일 버킷(thumb-bucket)의 URL을 반환
+            // Lambda가 원본 버킷의 이벤트를 감지하여 동일한 key로 썸네일 버킷에 축소된 이미지를 자동 생성
             return s3Client.utilities().getUrl(GetUrlRequest.builder()
-                    .bucket(bucket)
+                    .bucket(thumbBucket)
                     .key(fileName)
                     .build()).toString();
 
@@ -50,20 +57,30 @@ public class S3Service {
         }
     }
 
-    // 파일 삭제 메서드 (필요시 사용)
+    // 파일 삭제 메서드 (원본과 썸네일 버킷 모두에서 삭제)
     public void deleteFile(String fileUrl) {
         if (fileUrl == null || fileUrl.isBlank()) {
             return;
         }
 
-        // URL에서 파일 키(파일명) 추출
-        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        // URL에서 파일 키(경로 포함 전체 파일명) 추출
+        // 예: https://bucket.s3.region.amazonaws.com/community/uuid_filename.jpg -> community/uuid_filename.jpg 추출
+        String fileName;
+        try {
+            java.net.URI uri = new java.net.URI(fileUrl);
+            fileName = uri.getPath().substring(1); // 맨 앞의 '/' 제거
+        } catch (Exception e) {
+            // 예외 발생 시 기존 방식처럼 파싱
+            fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        }
 
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucket)
-                .key(fileName)
-                .build();
+        // 원본 버킷과 썸네일 버킷 양쪽에 삭제 요청을 보내 찌꺼기가 남지 않도록 합니다.
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder().bucket(originBucket).key(fileName).build());
+        } catch (Exception ignored) {}
 
-        s3Client.deleteObject(deleteObjectRequest);
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder().bucket(thumbBucket).key(fileName).build());
+        } catch (Exception ignored) {}
     }
 }
