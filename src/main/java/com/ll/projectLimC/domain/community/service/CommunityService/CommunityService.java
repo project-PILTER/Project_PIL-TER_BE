@@ -71,6 +71,10 @@ public class CommunityService {
         // 인자로 받은 email 기준으로 작성자 검증
         authorizeArticleAuthor(communityArticle, user.getEmail());
 
+        if (communityArticle.getImageUrl() != null && !communityArticle.getImageUrl().isBlank()) {
+            s3Service.deleteFile(communityArticle.getImageUrl());
+        }
+
         communityRepository.delete(communityArticle);
     }
 
