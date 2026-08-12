@@ -2,7 +2,7 @@ package com.ll.projectLimC.domain.medicine.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ll.projectLimC.domain.medicine.Entity.Medicine;
+import com.ll.projectLimC.domain.medicine.entity.Medicine;
 import com.ll.projectLimC.domain.medicine.repository.MedicineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
