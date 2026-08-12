@@ -55,7 +55,7 @@ public class PublicDataSyncService {
 
                 // 식약처 API 필드명에 맞춰 엔티티 빌더 생성
                 Medicine medicine = Medicine.builder()
-                        .name(name)
+                        .medicineName(name)
                         .manufacturer(item.path("entpName").asText())         // 제조사
                         .efficacy(item.path("efcyQesitm").asText())           // 효능·효과
                         .dosage(item.path("useMethodQesitm").asText())        // 용법·용량
