@@ -32,6 +32,8 @@ springdoc:
 cors:
   allowed-origin: https://pilter.co.kr
 
+
+
 #spring:
 #  config:
 #    activate:

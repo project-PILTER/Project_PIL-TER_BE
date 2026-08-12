@@ -39,3 +39,6 @@ cloud:
       cloudfront-domain: https://d299mtvm1wus1q.cloudfront.net
     region:
       static: "ap-northeast-2"
+public:
+  api:
+    service-key: ${secret.PUBLIC_API_E_MEDICINE}
