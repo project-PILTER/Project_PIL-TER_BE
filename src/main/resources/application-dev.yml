@@ -30,3 +30,4 @@ springdoc:
 
 cors:
   allowed-origin: http://localhost:3000
+
