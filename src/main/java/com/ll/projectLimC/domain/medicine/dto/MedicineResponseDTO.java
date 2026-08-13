@@ -11,12 +11,22 @@ public class MedicineResponseDTO {
     private String medicineName;
     private String manufacturer;
     private String efficiency;
+    private String useMethodQesitm;
+    private String atpnQesitm;
+    private String atpnWarnQesitm;
+    private String itemImage;
+    private String depositMethodQesitm;
 
     public static MedicineResponseDTO fromEntity(Medicine medicine) {
         return MedicineResponseDTO.builder()
                 .medicineName(medicine.getMedicineName())
                 .manufacturer(medicine.getManufacturer())
                 .efficiency(medicine.getEfficacy())
+                .useMethodQesitm(medicine.getUseMethodQesitm())
+                .atpnQesitm(medicine.getAtpnQesitm())
+                .atpnWarnQesitm(medicine.getAtpnWarnQesitm())
+                .itemImage(medicine.getItemImage())
+                .depositMethodQesitm(medicine.getDepositMethodQesitm())
                 .build();
     }
 }
