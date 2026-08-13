@@ -22,6 +22,11 @@ public class MedicineResponseDTO {
                 .medicineName(medicine.getMedicineName())
                 .manufacturer(medicine.getManufacturer())
                 .efficiency(medicine.getEfficacy())
+                .useMethodQesitm(medicine.getUseMethodQesitm())
+                .atpnQesitm(medicine.getAtpnQesitm())
+                .atpnWarnQesitm(medicine.getAtpnWarnQesitm())
+                .itemImage(medicine.getItemImage())
+                .depositMethodQesitm(medicine.getDepositMethodQesitm())
                 .build();
     }
 }
