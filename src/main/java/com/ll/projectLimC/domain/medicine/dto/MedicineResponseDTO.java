@@ -11,6 +11,11 @@ public class MedicineResponseDTO {
     private String medicineName;
     private String manufacturer;
     private String efficiency;
+    private String useMethodQesitm;
+    private String atpnQesitm;
+    private String atpnWarnQesitm;
+    private String itemImage;
+    private String depositMethodQesitm;
 
     public static MedicineResponseDTO fromEntity(Medicine medicine) {
         return MedicineResponseDTO.builder()
