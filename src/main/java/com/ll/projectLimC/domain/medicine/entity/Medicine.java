@@ -49,9 +49,8 @@ public class Medicine {
     private String depositMethodQesitm; // 보관방법
 
     // 기존 객체의 필드 값을 덮어씌우는 용도
-    public void updateInfo(String itemSeq, String manufacturer, String efficacy, String useMethodQesitm,
+    public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,
                            String atpnQesitm, String atpnWarnQesitm, String itemImage, String depositMethodQesitm) {
-        this.itemSeq = itemSeq;
         this.manufacturer = manufacturer;
         this.efficacy = efficacy;
         this.useMethodQesitm = useMethodQesitm;

@@ -63,7 +63,6 @@ public class PublicDataSyncService {
             }
 
             for (JsonNode item : items) {
-                String itemSeq = item.path("itemSeq").asText();
                 String name = item.path("itemName").asText();
                 String manufacturer = item.path("entpName").asText();
                 String efficacy = item.path("efcyQesitm").asText();
@@ -79,11 +78,10 @@ public class PublicDataSyncService {
                 if (existingMedicine.isPresent()) {
                     // 2-A. 이미 존재한다면 최신 데이터로 값 변경 (JPA 더티 체킹에 의해 자동 Update 됨)
                     Medicine medicine = existingMedicine.get();
-                    medicine.updateInfo(itemSeq, manufacturer, efficacy, useMethod, atpn, atpnWarn, itemImage, depositMethod);
+                    medicine.updateInfo(manufacturer, efficacy, useMethod, atpn, atpnWarn, itemImage, depositMethod);
                 } else {
                     // 2-B. 존재하지 않는다면 새로 생성해서 저장
                     Medicine medicine = Medicine.builder()
-                            .itemSeq(itemSeq)
                             .medicineName(name)
                             .manufacturer(manufacturer)
                             .efficacy(efficacy)

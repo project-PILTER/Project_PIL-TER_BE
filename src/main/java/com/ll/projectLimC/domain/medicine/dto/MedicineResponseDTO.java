@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Builder
 public class MedicineResponseDTO {
-    private String itemSeq;
+    private Long id;
     private String medicineName;
     private String manufacturer;
     private String efficiency;
@@ -20,7 +20,7 @@ public class MedicineResponseDTO {
 
     public static MedicineResponseDTO fromEntity(Medicine medicine) {
         return MedicineResponseDTO.builder()
-                .itemSeq(medicine.getItemSeq())
+                .id(medicine.getId())
                 .medicineName(medicine.getMedicineName())
                 .manufacturer(medicine.getManufacturer())
                 .efficiency(medicine.getEfficacy())
