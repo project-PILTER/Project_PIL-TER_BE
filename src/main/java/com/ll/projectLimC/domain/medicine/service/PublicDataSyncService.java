@@ -74,8 +74,11 @@ public class PublicDataSyncService {
                         .medicineName(name)
                         .manufacturer(item.path("entpName").asText())
                         .efficacy(item.path("efcyQesitm").asText())
-                        .dosage(item.path("useMethodQesitm").asText())
-                        .precautions(item.path("atpnQesitm").asText())
+                        .useMethodQesitm(item.path("useMethodQesitm").asText())
+                        .atpnQesitm(item.path("atpnQesitm").asText())
+                        .atpnWarnQesitm(item.path("atpnWarnQesitm").asText())
+                        .itemImage(item.path("itemImage").asText())
+                        .depositMethodQesitm(item.path("depositMethodQesitm").asText())
                         .build();
 
                 medicineRepository.save(medicine);
