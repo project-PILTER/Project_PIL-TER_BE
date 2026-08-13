@@ -21,6 +21,9 @@ public class Medicine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 약품 id
 
+    @Column(unique = true)
+    private String itemSeq; // 공공데이터 고유 품목기준코드
+
     @Column(columnDefinition = "TEXT")
     private String medicineName;// 제품명
 
@@ -48,6 +51,7 @@ public class Medicine {
     // 기존 객체의 필드 값을 덮어씌우는 용도
     public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,
                            String atpnQesitm, String atpnWarnQesitm, String itemImage, String depositMethodQesitm) {
+        this.id = id;
         this.manufacturer = manufacturer;
         this.efficacy = efficacy;
         this.useMethodQesitm = useMethodQesitm;

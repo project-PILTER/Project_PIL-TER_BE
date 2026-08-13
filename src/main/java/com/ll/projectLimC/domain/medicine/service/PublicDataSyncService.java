@@ -63,6 +63,7 @@ public class PublicDataSyncService {
             }
 
             for (JsonNode item : items) {
+                String itemSeq = item.path("itemSeq").asText();
                 String name = item.path("itemName").asText();
                 String manufacturer = item.path("entpName").asText();
                 String efficacy = item.path("efcyQesitm").asText();
@@ -82,6 +83,7 @@ public class PublicDataSyncService {
                 } else {
                     // 2-B. 존재하지 않는다면 새로 생성해서 저장
                     Medicine medicine = Medicine.builder()
+                            .itemSeq(itemSeq)
                             .medicineName(name)
                             .manufacturer(manufacturer)
                             .efficacy(efficacy)
