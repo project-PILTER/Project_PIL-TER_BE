@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class PublicDataSyncService {
     @Value("${public.api.service-key}")
     private String serviceKey;
 
-    @Scheduled(cron = "0 0 3 * * MON")// 매주 월요일 새벽 3시 실행
+    @Scheduled(cron = "0 0 3 * * MON")
     @Transactional
     public void scheduledSync() {
         try {
@@ -32,17 +33,15 @@ public class PublicDataSyncService {
             System.out.println("=== 공공데이터 자동 동기화 완료 ===");
         } catch (Exception e) {
             e.printStackTrace();
-            // 실무에서는 로그 처리(log.error)를 사용합니다.
         }
     }
 
     @Transactional
     public void fetchAndSaveMedicinesFromPortal() throws Exception {
-        // API 상세 경로를 포함한 URL 설정
         String baseUrl = "http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
 
         int pageNo = 1;
-        int numOfRows = 100; // 한 번에 가져올 데이터 개수 설정
+        int numOfRows = 100;
         RestTemplate restTemplate = new RestTemplate();
 
         while (true) {
@@ -56,40 +55,52 @@ public class PublicDataSyncService {
 
             String responseStr = restTemplate.getForObject(uri, String.class);
 
-            // JSON 파싱
             JsonNode root = objectMapper.readTree(responseStr);
             JsonNode items = root.path("body").path("items");
 
-            // 더 이상 가져올 데이터가 없거나 비어있으면 반복문 종료
             if (items.isMissingNode() || items.isEmpty() || !items.isArray()) {
                 break;
             }
 
             for (JsonNode item : items) {
                 String name = item.path("itemName").asText();
+                String manufacturer = item.path("entpName").asText();
+                String efficacy = item.path("efcyQesitm").asText();
+                String useMethod = item.path("useMethodQesitm").asText();
+                String atpn = item.path("atpnQesitm").asText();
+                String atpnWarn = item.path("atpnWarnQesitm").asText();
+                String itemImage = item.path("itemImage").asText();
+                String depositMethod = item.path("depositMethodQesitm").asText();
 
-                if (medicineRepository.existsByMedicineName(name)) continue;
+                // 1. 이미 존재하는 약 이름인지 확인
+                Optional<Medicine> existingMedicine = medicineRepository.findFirstByMedicineName(name);
 
-                Medicine medicine = Medicine.builder()
-                        .medicineName(name)
-                        .manufacturer(item.path("entpName").asText())
-                        .efficacy(item.path("efcyQesitm").asText())
-                        .useMethodQesitm(item.path("useMethodQesitm").asText())
-                        .atpnQesitm(item.path("atpnQesitm").asText())
-                        .atpnWarnQesitm(item.path("atpnWarnQesitm").asText())
-                        .itemImage(item.path("itemImage").asText())
-                        .depositMethodQesitm(item.path("depositMethodQesitm").asText())
-                        .build();
+                if (existingMedicine.isPresent()) {
+                    // 2-A. 이미 존재한다면 최신 데이터로 값 변경 (JPA 더티 체킹에 의해 자동 Update 됨)
+                    Medicine medicine = existingMedicine.get();
+                    medicine.updateInfo(manufacturer, efficacy, useMethod, atpn, atpnWarn, itemImage, depositMethod);
+                } else {
+                    // 2-B. 존재하지 않는다면 새로 생성해서 저장
+                    Medicine medicine = Medicine.builder()
+                            .medicineName(name)
+                            .manufacturer(manufacturer)
+                            .efficacy(efficacy)
+                            .useMethodQesitm(useMethod)
+                            .atpnQesitm(atpn)
+                            .atpnWarnQesitm(atpnWarn)
+                            .itemImage(itemImage)
+                            .depositMethodQesitm(depositMethod)
+                            .build();
 
-                medicineRepository.save(medicine);
+                    medicineRepository.save(medicine);
+                }
             }
 
-            // 마지막 페이지 도달 확인 (가져온 데이터 개수가 요청한 수보다 적으면 끝)
             if (items.size() < numOfRows) {
                 break;
             }
 
-            pageNo++; // 다음 페이지 번호로 증가
+            pageNo++;
         }
     }
 }

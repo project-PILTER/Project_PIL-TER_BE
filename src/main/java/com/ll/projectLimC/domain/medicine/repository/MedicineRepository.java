@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     // 중복 방지를 위해 이름으로 검색
-    boolean existsByMedicineName(String medicineName);;
+    boolean existsByMedicineName(String medicineName);
+    Optional<Medicine> findFirstByMedicineName(String medicineName);
 }
