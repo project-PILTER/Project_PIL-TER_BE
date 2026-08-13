@@ -68,7 +68,7 @@ public class PublicDataSyncService {
             for (JsonNode item : items) {
                 String name = item.path("itemName").asText();
 
-                if (medicineRepository.findByMedicineName(name).isPresent()) continue;
+                if (medicineRepository.existsByMedicineName(name)) continue;
 
                 Medicine medicine = Medicine.builder()
                         .medicineName(name)
