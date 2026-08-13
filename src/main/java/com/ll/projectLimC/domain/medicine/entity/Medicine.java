@@ -22,9 +22,11 @@ public class Medicine {
     private Long id;
 
     // 제품명
+    @Column(columnDefinition = "TEXT")
     private String medicineName;
 
     // 제조사명
+    @Column(columnDefinition = "TEXT")
     private String manufacturer;
 
     @Column(columnDefinition = "TEXT")
