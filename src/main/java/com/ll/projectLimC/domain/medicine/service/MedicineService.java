@@ -14,8 +14,11 @@ public class MedicineService {
 
     // 약품 상세 조회용 메서드
     public Medicine findByMedicineDetailInfo(Long id) {
-        // 2. id로 약을 찾고, 없으면 예외를 던지도록 작성
-        return medicineRepository.findById(id)
+        Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NO_EXIST_THAT_MEDICINE));
+
+        medicine.incrementViewCount();
+
+        return medicine;
     }
 }

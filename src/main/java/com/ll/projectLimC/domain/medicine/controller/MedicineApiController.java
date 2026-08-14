@@ -40,12 +40,8 @@ public class MedicineApiController {
     @GetMapping("/medicines")
     public ResponseEntity<Page<MedicineResponseDTO>> getMedicines(
             @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-
-        // 1. pageable을 repository에 전달하여 Page<Medicine>을 가져옴
         Page<Medicine> medicinePage = medicineRepository.findAll(pageable);
-
-        // 2. Page 객체 자체의 .map()을 사용하면 페이징 메타데이터를 유지한 채 DTO로 변환 가능
-        return ResponseEntity.ok(medicinePage.map(MedicineResponseDTO::fromEntity));
+        return ResponseEntity.ok(medicinePage.map(MedicineResponseDTO::new));
     }
 
     @Operation(summary = "약품 정보 상세 조회",
@@ -53,6 +49,6 @@ public class MedicineApiController {
     @GetMapping("/medicines/{id}")
     public ResponseEntity<MedicineResponseDTO> getMedicineDetailInfo(@PathVariable Long id) {
         Medicine medicine = medicineService.findByMedicineDetailInfo(id);
-        return ResponseEntity.ok(MedicineResponseDTO.fromEntity(medicine));
+        return ResponseEntity.ok(new MedicineResponseDTO(medicine));
     }
 }

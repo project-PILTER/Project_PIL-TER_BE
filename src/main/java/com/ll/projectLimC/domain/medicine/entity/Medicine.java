@@ -48,6 +48,10 @@ public class Medicine {
     @Column(columnDefinition = "TEXT")
     private String depositMethodQesitm; // 보관방법
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Long viewCount = 0L;
+
     // 기존 객체의 필드 값을 덮어씌우는 용도
     public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,
                            String atpnQesitm, String atpnWarnQesitm, String itemImage, String depositMethodQesitm) {
@@ -58,5 +62,12 @@ public class Medicine {
         this.atpnWarnQesitm = atpnWarnQesitm;
         this.itemImage = itemImage;
         this.depositMethodQesitm = depositMethodQesitm;
+    }
+
+    public void incrementViewCount() {
+        if (this.viewCount == null) {
+            this.viewCount = 0L;
+        }
+        this.viewCount++;
     }
 }
