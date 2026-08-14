@@ -27,6 +27,7 @@ public enum ErrorCode {
     NOT_FOUND_THE_DRAFT_ARTICLE(4016, HttpStatus.NOT_FOUND, "해당 임시저장 글을 찾을 수 없습니다."),
     UNAUTHORIZED_USER(4017, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다(401)"),
     CANNOT_NEST_DEEP_COMMENT(4018, HttpStatus.NOT_FOUND, "더 이상의 대댓글을 작성할 수 없습니다."),
+    NO_EXIST_THAT_MEDICINE(4019, HttpStatus.NOT_FOUND, "해당 약품이 존재하지 않습니다."),
     // 5000번대
     INTERNAL_SERVER_ERROR(5000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
