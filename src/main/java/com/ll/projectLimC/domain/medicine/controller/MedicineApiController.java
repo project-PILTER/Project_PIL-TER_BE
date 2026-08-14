@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,13 +32,13 @@ public class MedicineApiController {
 
 
     @GetMapping("/medicines")
-    public Page<MedicineResponseDTO> getMedicines(
-            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<Page<MedicineResponseDTO>> getMedicines(
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
 
         // 1. pageable을 repository에 전달하여 Page<Medicine>을 가져옴
         Page<Medicine> medicinePage = medicineRepository.findAll(pageable);
 
         // 2. Page 객체 자체의 .map()을 사용하면 페이징 메타데이터를 유지한 채 DTO로 변환 가능
-        return medicinePage.map(MedicineResponseDTO::fromEntity);
+        return ResponseEntity.ok(medicinePage.map(MedicineResponseDTO::fromEntity));
     }
 }
