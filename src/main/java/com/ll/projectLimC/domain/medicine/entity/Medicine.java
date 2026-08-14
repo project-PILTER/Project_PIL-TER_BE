@@ -49,7 +49,7 @@ public class Medicine {
     private String depositMethodQesitm; // 보관방법
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bigint default 0")
     private Long viewCount = 0L;
 
     // 기존 객체의 필드 값을 덮어씌우는 용도
