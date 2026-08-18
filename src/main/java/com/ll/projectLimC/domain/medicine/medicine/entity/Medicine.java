@@ -1,4 +1,4 @@
-package com.ll.projectLimC.domain.medicine.entity;
+package com.ll.projectLimC.domain.medicine.medicine.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

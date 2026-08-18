@@ -1,9 +1,9 @@
-package com.ll.projectLimC.domain.medicine.service;
+package com.ll.projectLimC.domain.medicine.medicine.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ll.projectLimC.domain.medicine.entity.Medicine;
-import com.ll.projectLimC.domain.medicine.repository.MedicineRepository;
+import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
+import com.ll.projectLimC.domain.medicine.medicine.repository.MedicineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
