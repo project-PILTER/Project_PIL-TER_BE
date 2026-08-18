@@ -1,12 +1,10 @@
-package com.ll.projectLimC.domain.medicine.controller;
+package com.ll.projectLimC.domain.medicine.medicine.controller;
 
-import com.ll.projectLimC.domain.community.dto.Community.Response.CommunityArticleResponse;
-import com.ll.projectLimC.domain.community.entity.CommunityArticle.CommunityArticle;
-import com.ll.projectLimC.domain.medicine.dto.MedicineResponseDTO;
-import com.ll.projectLimC.domain.medicine.entity.Medicine;
-import com.ll.projectLimC.domain.medicine.repository.MedicineRepository;
-import com.ll.projectLimC.domain.medicine.service.MedicineService;
-import com.ll.projectLimC.domain.medicine.service.PublicDataSyncService;
+import com.ll.projectLimC.domain.medicine.medicine.dto.MedicineResponseDTO;
+import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
+import com.ll.projectLimC.domain.medicine.medicine.repository.MedicineRepository;
+import com.ll.projectLimC.domain.medicine.medicine.service.MedicineService;
+import com.ll.projectLimC.domain.medicine.medicine.service.PublicDataSyncService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,9 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

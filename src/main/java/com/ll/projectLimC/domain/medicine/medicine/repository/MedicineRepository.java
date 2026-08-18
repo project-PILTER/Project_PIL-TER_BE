@@ -1,6 +1,6 @@
-package com.ll.projectLimC.domain.medicine.repository;
+package com.ll.projectLimC.domain.medicine.medicine.repository;
 
-import com.ll.projectLimC.domain.medicine.entity.Medicine;
+import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,10 +1,8 @@
-package com.ll.projectLimC.domain.medicine.dto;
+package com.ll.projectLimC.domain.medicine.medicine.dto;
 
-import com.ll.projectLimC.domain.medicine.entity.Medicine;
+import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Schema(description = "약품 상세 응답 정보")

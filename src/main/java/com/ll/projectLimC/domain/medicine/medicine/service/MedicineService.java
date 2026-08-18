@@ -1,7 +1,7 @@
-package com.ll.projectLimC.domain.medicine.service;
+package com.ll.projectLimC.domain.medicine.medicine.service;
 
-import com.ll.projectLimC.domain.medicine.entity.Medicine;
-import com.ll.projectLimC.domain.medicine.repository.MedicineRepository;
+import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
+import com.ll.projectLimC.domain.medicine.medicine.repository.MedicineRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
