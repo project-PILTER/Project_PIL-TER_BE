@@ -3,5 +3,10 @@ package com.ll.projectLimC.domain.medicine.bookmark.repository;
 import com.ll.projectLimC.domain.medicine.bookmark.entity.Bookmark;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class BookmarkRepository extends JpaRepository<Bookmark, Long> {
+import java.util.Optional;
+
+public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
+    long countByMedicineId(Long medicineId);
+    boolean existsByUserIdAndMedicineId(Long userId, Long medicineId);
+    Optional<Bookmark> findByUserIdAndMedicineId(Long userId, Long medicineId);
 }
