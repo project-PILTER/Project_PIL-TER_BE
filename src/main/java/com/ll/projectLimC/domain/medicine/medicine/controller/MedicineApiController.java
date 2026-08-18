@@ -68,4 +68,16 @@ public class MedicineApiController {
         reviewService.createReview(id, userId, requestDTO);
         return ResponseEntity.ok("후기가 등록되었습니다.");
     }
+
+    // 북마크(찜하기/취소) 토글 API 추가
+    @Operation(summary = "약품 북마크 토글",
+            description = "특정 약품의 북마크를 설정하거나 해제합니다.")
+    @PostMapping("/medicines/{id}/bookmark")
+    public ResponseEntity<String> toggleBookmark(
+            @PathVariable Long id,
+            @RequestParam Long userId) {
+        boolean isBookmarked = bookmarkService.toggleMedicineBookmark(id, userId);
+        String message = isBookmarked ? "북마크가 설정되었습니다." : "북마크가 해제되었습니다.";
+        return ResponseEntity.ok(message);
+    }
 }
