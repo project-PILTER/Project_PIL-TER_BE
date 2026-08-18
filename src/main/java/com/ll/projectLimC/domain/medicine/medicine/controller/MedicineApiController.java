@@ -1,10 +1,13 @@
 package com.ll.projectLimC.domain.medicine.medicine.controller;
 
+import com.ll.projectLimC.domain.medicine.bookmark.service.BookmarkService;
 import com.ll.projectLimC.domain.medicine.medicine.dto.MedicineResponseDTO;
 import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
 import com.ll.projectLimC.domain.medicine.medicine.repository.MedicineRepository;
 import com.ll.projectLimC.domain.medicine.medicine.service.MedicineService;
 import com.ll.projectLimC.domain.medicine.medicine.service.PublicDataSyncService;
+import com.ll.projectLimC.domain.medicine.review.dto.request.ReviewRequestDto;
+import com.ll.projectLimC.domain.medicine.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,6 +28,8 @@ public class MedicineApiController {
     private final PublicDataSyncService publicDataSyncService;
     private final MedicineRepository medicineRepository;
     private final MedicineService medicineService;
+    private final ReviewService reviewService;
+    private final BookmarkService bookmarkService;
 
     // 관리자: 공공데이터 강제 동기화 (Admin용)
     @PostMapping("/medicines/sync")
@@ -32,6 +39,7 @@ public class MedicineApiController {
     }
 
 
+    // 약품 목록 조회 (페이지네이션)
     @GetMapping("/medicines")
     public ResponseEntity<Page<MedicineResponseDTO>> getMedicines(
             @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -39,11 +47,25 @@ public class MedicineApiController {
         return ResponseEntity.ok(medicinePage.map(MedicineResponseDTO::new));
     }
 
+    // 약품 정보 상세 조회 (리뷰, 통계, 북마크 수 포함)
     @Operation(summary = "약품 정보 상세 조회",
             description = "게시글 고유 ID(id)를 통해 해당 약품 정보의 상세 내용을 조회합니다.")
     @GetMapping("/medicines/{id}")
     public ResponseEntity<MedicineResponseDTO> getMedicineDetailInfo(@PathVariable Long id) {
-        Medicine medicine = medicineService.findByMedicineDetailInfo(id);
-        return ResponseEntity.ok(new MedicineResponseDTO(medicine));
+        // ✨ 기존의 findByMedicineDetailInfo 대신 확장된 상세 조회 서비스 메서드 호출
+        MedicineResponseDTO response = medicineService.getMedicineDetailInfo(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // 후기 작성 API 추가
+    @Operation(summary = "약품 후기 작성",
+            description = "특정 약품에 대한 후기와 별점을 등록합니다.")
+    @PostMapping("/medicines/{id}/reviews")
+    public ResponseEntity<String> createMedicineReview(
+            @PathVariable Long id,
+            @RequestParam Long userId,
+            @RequestBody ReviewRequestDto requestDTO) {
+        reviewService.createReview(id, userId, requestDTO);
+        return ResponseEntity.ok("후기가 등록되었습니다.");
     }
 }

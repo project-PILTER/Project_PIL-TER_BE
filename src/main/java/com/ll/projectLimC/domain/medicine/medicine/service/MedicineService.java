@@ -21,7 +21,7 @@ public class MedicineService {
     private final BookmarkRepository bookmarkRepository;
 
     // 약품 상세 조회용 메서드
-    public MedicineResponseDTO findByMedicineDetailInfo(Long id) {
+    public MedicineResponseDTO getMedicineDetailInfo(Long id) {
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NO_EXIST_THAT_MEDICINE));
 

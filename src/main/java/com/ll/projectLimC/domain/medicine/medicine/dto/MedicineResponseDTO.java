@@ -64,7 +64,30 @@ public class MedicineResponseDTO {
     @Schema(description = "인기 약품 여부")
     private boolean isHot;
 
-    // ✨ CommunityArticleResponse처럼 생성자 기반 매핑 적용
+    // 목록 조회용 생성자 (Medicine만 받음)
+    public MedicineResponseDTO(Medicine medicine) {
+        this.id = medicine.getId();
+        this.medicineName = medicine.getMedicineName();
+        this.manufacturer = medicine.getManufacturer();
+        this.efficiency = medicine.getEfficacy();
+        this.useMethodQesitm = medicine.getUseMethodQesitm();
+        this.atpnQesitm = medicine.getAtpnQesitm();
+        this.atpnWarnQesitm = medicine.getAtpnWarnQesitm();
+        this.itemImage = medicine.getItemImage();
+        this.depositMethodQesitm = medicine.getDepositMethodQesitm();
+        this.isHot = medicine.getViewCount() != null && medicine.getViewCount() >= 1000L;
+
+        // 목록 조회 시 통계값 초기화
+        this.averageRating = 0.0;
+        this.totalReviewCount = 0;
+        this.bookmarkCount = 0;
+        this.effectivePercent = 0;
+        this.ineffectivePercent = 0;
+        this.sideEffectPercent = 0;
+        this.reviews = List.of();
+    }
+
+    // CommunityArticleResponse처럼 생성자 기반 매핑 적용
     public MedicineResponseDTO(Medicine medicine, List<Review> reviews, long bookmarkCount) {
         this.id = medicine.getId();
         this.medicineName = medicine.getMedicineName();
