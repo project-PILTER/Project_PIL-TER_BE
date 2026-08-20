@@ -80,4 +80,13 @@ public class MedicineApiController {
         String message = isBookmarked ? "북마크가 설정되었습니다." : "북마크가 해제되었습니다.";
         return ResponseEntity.ok(message);
     }
+
+    @Operation(summary = "약품 Hot(인기) 상태 토글",
+            description = "특정 약품의 인기 상품 지정 상태를 변경합니다.")
+    @PostMapping("/medicines/{id}/hot")
+    public ResponseEntity<String> toggleHotStatus(@PathVariable Long id) {
+        boolean isHot = medicineService.updateHotStatus(id);
+        String message = isHot ? "인기(Hot) 약품으로 지정되었습니다." : "인기(Hot) 지정이 해제되었습니다.";
+        return ResponseEntity.ok(message);
+    }
 }

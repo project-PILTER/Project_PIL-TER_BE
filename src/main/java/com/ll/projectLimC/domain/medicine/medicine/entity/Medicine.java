@@ -52,9 +52,14 @@ public class Medicine {
     @Column(nullable = false, columnDefinition = "bigint default 0")
     private Long viewCount = 0L;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean isHot = false;
+
     // 기존 객체의 필드 값을 덮어씌우는 용도
     public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,
-                           String atpnQesitm, String atpnWarnQesitm, String itemImage, String depositMethodQesitm) {
+                           String atpnQesitm, String atpnWarnQesitm, String itemImage,
+                           String depositMethodQesitm) {
         this.manufacturer = manufacturer;
         this.efficacy = efficacy;
         this.useMethodQesitm = useMethodQesitm;
@@ -69,5 +74,10 @@ public class Medicine {
             this.viewCount = 0L;
         }
         this.viewCount++;
+    }
+
+    // 상태 변경 메서드
+    public void updateHotStatus(boolean isHot) {
+        this.isHot = isHot;
     }
 }

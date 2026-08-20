@@ -10,6 +10,7 @@ import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,5 +34,17 @@ public class MedicineService {
         long bookmarkCount = bookmarkRepository.countByMedicineId(id);
 
         return new MedicineResponseDTO(medicine, reviews, bookmarkCount);
+    }
+
+    @Transactional
+    public boolean updateHotStatus(Long id) {
+        Medicine medicine = medicineRepository.findById(id)
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NO_EXIST_THAT_MEDICINE));
+
+        // 현재 상태의 반대값으로 토글
+        boolean newHotStatus = !medicine.getIsHot();
+        medicine.updateHotStatus(newHotStatus);
+
+        return newHotStatus;
     }
 }
