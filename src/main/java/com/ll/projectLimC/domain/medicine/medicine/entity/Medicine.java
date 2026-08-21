@@ -54,7 +54,7 @@ public class Medicine {
 
     @Builder.Default
     @Column(nullable = false)
-    private Boolean isHot = false;
+    private boolean isHot = false;
 
     // 기존 객체의 필드 값을 덮어씌우는 용도
     public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,

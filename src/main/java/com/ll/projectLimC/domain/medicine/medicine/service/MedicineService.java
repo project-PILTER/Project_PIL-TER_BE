@@ -42,7 +42,7 @@ public class MedicineService {
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NO_EXIST_THAT_MEDICINE));
 
         // 현재 상태의 반대값으로 토글
-        boolean newHotStatus = !medicine.getIsHot();
+        boolean newHotStatus = !medicine.isHot();
         medicine.updateHotStatus(newHotStatus);
 
         return newHotStatus;
