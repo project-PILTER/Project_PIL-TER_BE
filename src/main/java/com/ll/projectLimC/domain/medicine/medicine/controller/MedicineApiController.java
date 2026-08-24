@@ -76,8 +76,9 @@ public class MedicineApiController {
     }
 
     // 약품 후기 수정
-    @Operation(summary = "약품 후기 글 수정", description = "후기 고유 ID(reviewId)를 받아 해당 후기를 수정합니다.")
-    @PutMapping("/medicines/reviews/{reviewId}")
+    @Operation(summary = "약품 후기 글 수정",
+            description = "후기 고유 ID(reviewId)를 받아 해당 후기를 수정합니다.")
+    @PutMapping("/medicines/{id}/reviews")
     public ResponseEntity<String> updateMedicineReview(
             @PathVariable Long id,
             @RequestBody ReviewRequestDto request,
@@ -92,17 +93,18 @@ public class MedicineApiController {
     }
 
     // 약품 후기 삭제
-    @Operation(summary = "약품 후기 글 삭제", description = "후기 고유 ID(reviewId)를 받아 해당 후기를 삭제합니다.")
-    @DeleteMapping("/medicines/reviews/{reviewId}")
+    @Operation(summary = "약품 후기 글 삭제",
+            description = "후기 고유 ID를 받아 해당 후기를 삭제합니다.")
+    @DeleteMapping("/medicines/{id}/reviews")
     public ResponseEntity<Void> deleteMedicineReview(
-            @PathVariable Long reviewId,
+            @PathVariable Long id,
             Principal principal
     ) {
         if (principal == null) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        reviewService.deleteMedicineReview(reviewId, principal.getName());
+        reviewService.deleteMedicineReview(id, principal.getName());
         return ResponseEntity.ok().build();
     }
 
