@@ -52,4 +52,10 @@ public class Review {
     private Long likeCount = 0L; // 좋아요 수
 
     private OffsetDateTime createdAt;// 약 후기 생성 시간
+
+    public void updateReview(int rating, String content, EffectType effectType) {
+        this.rating = rating;
+        this.content = content;
+        this.effectType = effectType;
+    }
 }

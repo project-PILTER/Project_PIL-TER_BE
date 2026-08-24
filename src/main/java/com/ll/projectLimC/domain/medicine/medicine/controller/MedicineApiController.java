@@ -8,6 +8,8 @@ import com.ll.projectLimC.domain.medicine.medicine.service.MedicineService;
 import com.ll.projectLimC.domain.medicine.medicine.service.PublicDataSyncService;
 import com.ll.projectLimC.domain.medicine.review.dto.request.ReviewRequestDto;
 import com.ll.projectLimC.domain.medicine.review.service.ReviewService;
+import com.ll.projectLimC.global.Execption.ErrorCode;
+import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,12 +17,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,6 +73,39 @@ public class MedicineApiController {
             @RequestBody ReviewRequestDto requestDTO) {
         reviewService.createReview(id, userId, requestDTO);
         return ResponseEntity.ok("후기가 등록되었습니다.");
+    }
+
+    // 약품 후기 수정
+    @Operation(summary = "약품 후기 글 수정",
+            description = "후기 고유 ID(reviewId)를 받아 해당 후기를 수정합니다.")
+    @PutMapping("/medicines/{id}/reviews")
+    public ResponseEntity<String> updateMedicineReview(
+            @PathVariable Long id,
+            @RequestBody ReviewRequestDto request,
+            Principal principal
+    ) {
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        reviewService.updateMedicineReview(id, principal.getName(), request);
+        return ResponseEntity.ok("후기가 수정되었습니다.");
+    }
+
+    // 약품 후기 삭제
+    @Operation(summary = "약품 후기 글 삭제",
+            description = "후기 고유 ID를 받아 해당 후기를 삭제합니다.")
+    @DeleteMapping("/medicines/{id}/reviews")
+    public ResponseEntity<Void> deleteMedicineReview(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        reviewService.deleteMedicineReview(id, principal.getName());
+        return ResponseEntity.ok().build();
     }
 
     // 북마크(찜하기/취소) 토글 API 추가

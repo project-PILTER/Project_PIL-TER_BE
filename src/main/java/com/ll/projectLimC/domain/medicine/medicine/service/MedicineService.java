@@ -1,11 +1,14 @@
 package com.ll.projectLimC.domain.medicine.medicine.service;
 
+import com.ll.projectLimC.domain.comment.entity.Comment;
 import com.ll.projectLimC.domain.medicine.bookmark.repository.BookmarkRepository;
 import com.ll.projectLimC.domain.medicine.medicine.dto.MedicineResponseDTO;
 import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
 import com.ll.projectLimC.domain.medicine.medicine.repository.MedicineRepository;
 import com.ll.projectLimC.domain.medicine.review.entity.Review;
 import com.ll.projectLimC.domain.medicine.review.repository.ReviewRepository;
+import com.ll.projectLimC.domain.user.entity.User;
+import com.ll.projectLimC.domain.user.repository.UserRepository;
 import com.ll.projectLimC.global.Execption.ErrorCode;
 import com.ll.projectLimC.global.Execption.GlobalCustomException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ public class MedicineService {
     private final MedicineRepository medicineRepository;
     private final ReviewRepository reviewRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final UserRepository userRepository;
 
     // 약품 상세 조회용 메서드
     public MedicineResponseDTO getMedicineDetailInfo(Long id) {
