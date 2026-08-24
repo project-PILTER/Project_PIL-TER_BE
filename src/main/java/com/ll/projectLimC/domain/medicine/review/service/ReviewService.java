@@ -42,4 +42,41 @@ public class ReviewService {
 
         reviewRepository.save(review);
     }
+
+    @Transactional
+    public void updateMedicineReview(long Id, String email, ReviewRequestDto request) {
+        // 유저 검증
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
+
+        // 후기 존재 여부 검증
+        Review review = reviewRepository.findById(Id)
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_REVIEW));
+
+        // 3. 작성자 본인 확인
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        // 4. 더티 체킹(Dirty Checking)을 통한 수정
+        review.updateReview(request.getRating(), request.getContent(), request.getEffectType());
+    }
+
+    public void deleteMedicineReview(long id, String email) {
+        // 유저 검증
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
+
+        // 후기 존재 여부 검증
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_REVIEW));
+
+        // 작성자 본인 확인
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        // 삭제 수행
+        reviewRepository.delete(review);
+    }
 }

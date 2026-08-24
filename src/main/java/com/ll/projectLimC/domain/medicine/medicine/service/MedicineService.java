@@ -51,22 +51,4 @@ public class MedicineService {
 
         return newHotStatus;
     }
-
-    public void deleteMedicineReview(long id, String email) {
-        // 1. 유저 검증
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
-
-        // 2. 후기 존재 여부 검증
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_REVIEW));
-
-        // 3. 작성자 본인 확인
-        if (!review.getUser().getId().equals(user.getId())) {
-            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
-        }
-
-        // 4. 삭제 수행
-        reviewRepository.delete(review);
-    }
 }
