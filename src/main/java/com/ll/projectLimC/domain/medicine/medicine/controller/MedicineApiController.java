@@ -75,22 +75,17 @@ public class MedicineApiController {
     }
 
     // 약품 후기 삭제
-    @Operation(summary = "약품 후기 글 삭제",
-            description = "약품 후기 글 ID(id)를 경로에 받아 해당 글을 삭제합니다.")
-    @DeleteMapping("/medicines/{id}/reviews")
+    @Operation(summary = "약품 후기 글 삭제", description = "후기 고유 ID(reviewId)를 받아 해당 후기를 삭제합니다.")
+    @DeleteMapping("/medicines/reviews/{reviewId}")
     public ResponseEntity<Void> deleteMedicineReview(
-            @PathVariable long id,
-            Principal principal // Principal 주입
-    ){
-        // principal null 검증 (로그인 안 한 사용자 방어)
+            @PathVariable Long reviewId,
+            Principal principal
+    ) {
         if (principal == null) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        medicineService.deleteMedicineReview(id, principal.getName());
-
-        Medicine medicine = medicineRepository.findById(id).orElse(null);
-
+        medicineService.deleteMedicineReview(reviewId, principal.getName());
         return ResponseEntity.ok().build();
     }
 
