@@ -62,6 +62,7 @@ public class ReviewService {
         review.updateReview(request.getRating(), request.getContent(), request.getEffectType());
     }
 
+    @Transactional
     public void deleteMedicineReview(long id, String email) {
         // 유저 검증
         User user = userRepository.findByEmail(email)

@@ -56,6 +56,9 @@ public class Medicine {
     @Column(nullable = false)
     private boolean isHot = false;
 
+    @Builder.Default
+    private Long likeCount = 0L; // 좋아요 수
+
     // 기존 객체의 필드 값을 덮어씌우는 용도
     public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,
                            String atpnQesitm, String atpnWarnQesitm, String itemImage,

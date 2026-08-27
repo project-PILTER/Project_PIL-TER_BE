@@ -64,6 +64,8 @@ public class MedicineResponseDTO {
     @Schema(description = "인기 약품 여부")
     private boolean isHot;
 
+    private Long likeCount;
+
     // 목록 조회용 생성자 (Medicine만 받음)
     public MedicineResponseDTO(Medicine medicine) {
         this.id = medicine.getId();
@@ -75,8 +77,8 @@ public class MedicineResponseDTO {
         this.atpnWarnQesitm = medicine.getAtpnWarnQesitm();
         this.itemImage = medicine.getItemImage();
         this.depositMethodQesitm = medicine.getDepositMethodQesitm();
-        this.isHot =  medicine.isHot();
-                //medicine.getViewCount() != null && medicine.getViewCount() >= 1000L;
+        this.isHot =  medicine.getViewCount() != null && medicine.getViewCount() >= 1000L;
+        this.likeCount = medicine.getLikeCount();
 
         // 목록 조회 시 통계값 초기화
         this.averageRating = 0.0;
@@ -99,9 +101,10 @@ public class MedicineResponseDTO {
         this.atpnWarnQesitm = medicine.getAtpnWarnQesitm();
         this.itemImage = medicine.getItemImage();
         this.depositMethodQesitm = medicine.getDepositMethodQesitm();
-        this.isHot = medicine.isHot();
+        this.isHot = medicine.getViewCount() != null && medicine.getViewCount() >= 1000L;
         this.bookmarkCount = bookmarkCount;
         this.totalReviewCount = reviews != null ? reviews.size() : 0;
+        this.likeCount = medicine.getLikeCount();
 
         if (this.totalReviewCount > 0) {
             double sumRating = reviews.stream().mapToInt(Review::getRating).sum();

@@ -63,6 +63,43 @@ public class MedicineApiController {
         return ResponseEntity.ok(response);
     }
 
+    // 약품 후기 삭제
+    @Operation(summary = "약품 후기 글 삭제",
+            description = "후기 고유 ID를 받아 해당 후기를 삭제합니다.")
+    @DeleteMapping("/medicines/{id}/reviews")
+    public ResponseEntity<Void> deleteMedicineReview(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        if (principal == null) {
+            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        reviewService.deleteMedicineReview(id, principal.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    // 북마크(찜하기/취소) 토글 API 추가
+    @Operation(summary = "약품 북마크 토글",
+            description = "특정 약품의 북마크를 설정하거나 해제합니다.")
+    @PostMapping("/medicines/{id}/bookmark")
+    public ResponseEntity<String> toggleBookmark(
+            @PathVariable Long id,
+            @RequestParam Long userId) {
+        boolean isBookmarked = bookmarkService.toggleMedicineBookmark(id, userId);
+        String message = isBookmarked ? "북마크가 설정되었습니다." : "북마크가 해제되었습니다.";
+        return ResponseEntity.ok(message);
+    }
+
+    @Operation(summary = "약품 좋아요 상태 토글",
+            description = "특정 약품의 인기 상품 지정 상태를 변경합니다.")
+    @PostMapping("/medicines/{id}/hot")
+    public ResponseEntity<String> toggleHotStatus(@PathVariable Long id) {
+        boolean isHot = medicineService.updateHotStatus(id);
+        String message = isHot ? "좋아요(Hot) 약품으로 지정되었습니다." : "좋아요(Hot) 지정이 해제되었습니다.";
+        return ResponseEntity.ok(message);
+    }
+
     // 후기 작성 API 추가
     @Operation(summary = "약품 후기 작성",
             description = "특정 약품에 대한 후기와 별점을 등록합니다.")
@@ -92,40 +129,5 @@ public class MedicineApiController {
         return ResponseEntity.ok("후기가 수정되었습니다.");
     }
 
-    // 약품 후기 삭제
-    @Operation(summary = "약품 후기 글 삭제",
-            description = "후기 고유 ID를 받아 해당 후기를 삭제합니다.")
-    @DeleteMapping("/medicines/{id}/reviews")
-    public ResponseEntity<Void> deleteMedicineReview(
-            @PathVariable Long id,
-            Principal principal
-    ) {
-        if (principal == null) {
-            throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
-        }
 
-        reviewService.deleteMedicineReview(id, principal.getName());
-        return ResponseEntity.ok().build();
-    }
-
-    // 북마크(찜하기/취소) 토글 API 추가
-    @Operation(summary = "약품 북마크 토글",
-            description = "특정 약품의 북마크를 설정하거나 해제합니다.")
-    @PostMapping("/medicines/{id}/bookmark")
-    public ResponseEntity<String> toggleBookmark(
-            @PathVariable Long id,
-            @RequestParam Long userId) {
-        boolean isBookmarked = bookmarkService.toggleMedicineBookmark(id, userId);
-        String message = isBookmarked ? "북마크가 설정되었습니다." : "북마크가 해제되었습니다.";
-        return ResponseEntity.ok(message);
-    }
-
-    @Operation(summary = "약품 Hot(인기) 상태 토글",
-            description = "특정 약품의 인기 상품 지정 상태를 변경합니다.")
-    @PostMapping("/medicines/{id}/hot")
-    public ResponseEntity<String> toggleHotStatus(@PathVariable Long id) {
-        boolean isHot = medicineService.updateHotStatus(id);
-        String message = isHot ? "인기(Hot) 약품으로 지정되었습니다." : "인기(Hot) 지정이 해제되었습니다.";
-        return ResponseEntity.ok(message);
-    }
 }
