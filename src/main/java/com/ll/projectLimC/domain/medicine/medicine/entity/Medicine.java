@@ -57,7 +57,7 @@ public class Medicine {
     private boolean isHot = false;
 
     @Builder.Default
-    private Long likeCount = 0L; // 좋아요 수
+    private long likeCount = 0L; // 좋아요 수
 
     @Builder.Default
     @Column(nullable = false)
@@ -65,7 +65,7 @@ public class Medicine {
 
     @Builder.Default
     @Column(nullable = false)
-    private long totalReviewCount = 0L;
+    private double totalReviewCount = 0.0;
 
     // 기존 객체의 필드 값을 덮어씌우는 용도
     public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,

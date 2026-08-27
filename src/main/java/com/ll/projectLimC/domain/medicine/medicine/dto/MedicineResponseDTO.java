@@ -46,7 +46,7 @@ public class MedicineResponseDTO {
     private double averageRating;
 
     @Schema(description = "해당 약품 전체 후기 횟수")
-    private long totalReviewCount;
+    private double totalReviewCount;
 
     @Schema(description = "약품 북마크 횟수")
     private long bookmarkCount;
