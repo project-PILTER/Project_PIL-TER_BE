@@ -1,7 +1,8 @@
 package com.ll.projectLimC.domain.medicine.medicine.controller;
 
 import com.ll.projectLimC.domain.medicine.bookmark.service.BookmarkService;
-import com.ll.projectLimC.domain.medicine.medicine.dto.MedicineResponseDTO;
+import com.ll.projectLimC.domain.medicine.medicine.dto.MedicineDetailResponseDto;
+import com.ll.projectLimC.domain.medicine.medicine.dto.MedicineListResponseDTO;
 import com.ll.projectLimC.domain.medicine.medicine.entity.Medicine;
 import com.ll.projectLimC.domain.medicine.medicine.repository.MedicineRepository;
 import com.ll.projectLimC.domain.medicine.medicine.service.MedicineService;
@@ -47,19 +48,19 @@ public class MedicineApiController {
 
     // 약품 목록 조회 (페이지네이션)
     @GetMapping("/medicines")
-    public ResponseEntity<Page<MedicineResponseDTO>> getMedicines(
+    public ResponseEntity<Page<MedicineListResponseDTO>> getMedicines(
             @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<Medicine> medicinePage = medicineRepository.findAll(pageable);
-        return ResponseEntity.ok(medicinePage.map(MedicineResponseDTO::new));
+        return ResponseEntity.ok(medicinePage.map(MedicineListResponseDTO::new));
     }
 
     // 약품 정보 상세 조회 (리뷰, 통계, 북마크 수 포함)
     @Operation(summary = "약품 정보 상세 조회",
             description = "게시글 고유 ID(id)를 통해 해당 약품 정보의 상세 내용을 조회합니다.")
     @GetMapping("/medicines/{id}")
-    public ResponseEntity<MedicineResponseDTO> getMedicineDetailInfo(@PathVariable Long id) {
+    public ResponseEntity<MedicineDetailResponseDto> getMedicineDetailInfo(@PathVariable Long id) {
         // ✨ 기존의 findByMedicineDetailInfo 대신 확장된 상세 조회 서비스 메서드 호출
-        MedicineResponseDTO response = medicineService.getMedicineDetailInfo(id);
+        MedicineDetailResponseDto response = medicineService.getMedicineDetailInfo(id);
         return ResponseEntity.ok(response);
     }
 

@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@Schema(description = "약품 상세 및 후기 통합 응답 정보")
-public class MedicineResponseDTO {
+@Schema(description = "약품 상세 응답 정보")
+public class MedicineDetailResponseDto {
     private Long id;
 
     @Schema(description = "제품명", example = "타이레놀정500밀리그램")
@@ -66,33 +66,8 @@ public class MedicineResponseDTO {
 
     private Long likeCount;
 
-    // 목록 조회용 생성자 (Medicine만 받음)
-    public MedicineResponseDTO(Medicine medicine) {
-        this.id = medicine.getId();
-        this.medicineName = medicine.getMedicineName();
-        this.manufacturer = medicine.getManufacturer();
-        this.efficiency = medicine.getEfficacy();
-        this.useMethodQesitm = medicine.getUseMethodQesitm();
-        this.atpnQesitm = medicine.getAtpnQesitm();
-        this.atpnWarnQesitm = medicine.getAtpnWarnQesitm();
-        this.itemImage = medicine.getItemImage();
-        this.depositMethodQesitm = medicine.getDepositMethodQesitm();
-        this.isHot = medicine.getViewCount() != null && medicine.getViewCount() >= 1000L;
-        this.likeCount = medicine.getLikeCount();
-
-        // Medicine 필드값 바인딩
-        this.averageRating = medicine.getAverageRating();
-        this.totalReviewCount = medicine.getTotalReviewCount();
-
-        this.bookmarkCount = 0;
-        this.effectivePercent = 0;
-        this.ineffectivePercent = 0;
-        this.sideEffectPercent = 0;
-        this.reviews = List.of();
-    }
-
     // CommunityArticleResponse처럼 생성자 기반 매핑 적용
-    public MedicineResponseDTO(Medicine medicine, List<Review> reviews, long bookmarkCount) {
+    public MedicineDetailResponseDto(Medicine medicine, List<Review> reviews, long bookmarkCount) {
         this.id = medicine.getId();
         this.medicineName = medicine.getMedicineName();
         this.manufacturer = medicine.getManufacturer();
