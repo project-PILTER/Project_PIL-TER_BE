@@ -57,7 +57,8 @@ public class Medicine {
     private boolean isHot = false;
 
     @Builder.Default
-    private long likeCount = 0L; // 좋아요 수
+    @Column(nullable = false)
+    private Long likeCount = 0L; // 좋아요 수
 
     @Builder.Default
     @Column(nullable = false)
