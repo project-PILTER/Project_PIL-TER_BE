@@ -95,7 +95,7 @@ public class MedicineApiController {
             description = "특정 약품의 인기 상품 지정 상태를 변경합니다.")
     @PostMapping("/medicines/{id}/hot")
     public ResponseEntity<String> toggleHotStatus(@PathVariable Long id) {
-        boolean isHot = medicineService.updateHotStatus(id);
+        boolean isHot = medicineService.updateLikeStatus(id);
         String message = isHot ? "좋아요(Hot) 약품으로 지정되었습니다." : "좋아요(Hot) 지정이 해제되었습니다.";
         return ResponseEntity.ok(message);
     }
@@ -107,8 +107,8 @@ public class MedicineApiController {
     public ResponseEntity<String> createMedicineReview(
             @PathVariable Long id,
             @RequestParam Long userId,
-            @RequestBody ReviewRequestDto requestDTO) {
-        reviewService.createReview(id, userId, requestDTO);
+            @RequestBody ReviewRequestDto request) {
+        reviewService.createReview(id, userId, request);
         return ResponseEntity.ok("후기가 등록되었습니다.");
     }
 

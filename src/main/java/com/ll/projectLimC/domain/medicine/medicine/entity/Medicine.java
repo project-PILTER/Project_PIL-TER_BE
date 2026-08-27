@@ -59,6 +59,14 @@ public class Medicine {
     @Builder.Default
     private Long likeCount = 0L; // 좋아요 수
 
+    @Builder.Default
+    @Column(nullable = false)
+    private double averageRating = 0.0;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private long totalReviewCount = 0L;
+
     // 기존 객체의 필드 값을 덮어씌우는 용도
     public void updateInfo(String manufacturer, String efficacy, String useMethodQesitm,
                            String atpnQesitm, String atpnWarnQesitm, String itemImage,
@@ -82,5 +90,10 @@ public class Medicine {
     // 상태 변경 메서드
     public void updateHotStatus(boolean isHot) {
         this.isHot = isHot;
+    }
+
+    public void updateRatingStats(double averageRating, long totalReviewCount) {
+        this.averageRating = averageRating;
+        this.totalReviewCount = totalReviewCount;
     }
 }

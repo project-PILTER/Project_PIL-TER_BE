@@ -22,6 +22,15 @@ public class ReviewService {
     private final MedicineRepository medicineRepository;
     private final UserRepository userRepository;
 
+    // ⭐️ [공통] 약품 평점 및 후기 수 갱신 메서드
+    private void updateMedicineStats(Medicine medicine) {
+        long totalCount = reviewRepository.countByMedicine(medicine);
+        Double avgRating = reviewRepository.findAverageRatingByMedicine(medicine);
+
+        double finalAvg = (avgRating != null) ? Math.round(avgRating * 10.0) / 10.0 : 0.0;
+        medicine.updateRatingStats(finalAvg, totalCount);
+    }
+
     @Transactional
     public void createReview(Long medicineId, Long userId, ReviewRequestDto request){
         Medicine medicine = medicineRepository.findById(medicineId)
@@ -41,43 +50,44 @@ public class ReviewService {
                 .build();
 
         reviewRepository.save(review);
+
+        updateMedicineStats(medicine);
     }
 
     @Transactional
     public void updateMedicineReview(long Id, String email, ReviewRequestDto request) {
-        // 유저 검증
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
-        // 후기 존재 여부 검증
         Review review = reviewRepository.findById(Id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_REVIEW));
 
-        // 3. 작성자 본인 확인
         if (!review.getUser().getId().equals(user.getId())) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        // 4. 더티 체킹(Dirty Checking)을 통한 수정
         review.updateReview(request.getRating(), request.getContent(), request.getEffectType());
+
+        updateMedicineStats(review.getMedicine());
     }
 
     @Transactional
     public void deleteMedicineReview(long id, String email) {
-        // 유저 검증
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_THE_USER));
 
-        // 후기 존재 여부 검증
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NOT_FOUND_REVIEW));
 
-        // 작성자 본인 확인
         if (!review.getUser().getId().equals(user.getId())) {
             throw new GlobalCustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        // 삭제 수행
+        Medicine medicine = review.getMedicine(); // 삭제 전 객체 참조 저장
+
         reviewRepository.delete(review);
+        reviewRepository.flush(); // DB 삭제 연산 반영 확정
+
+        updateMedicineStats(medicine);
     }
 }

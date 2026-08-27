@@ -40,15 +40,16 @@ public class MedicineService {
         return new MedicineResponseDTO(medicine, reviews, bookmarkCount);
     }
 
+    // 좋아요 표시하기
     @Transactional
-    public boolean updateHotStatus(Long id) {
+    public boolean updateLikeStatus(Long id) {
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NO_EXIST_THAT_MEDICINE));
 
         // 현재 상태의 반대값으로 토글
-        boolean newHotStatus = !medicine.isHot();
-        medicine.updateHotStatus(newHotStatus);
+        boolean newLikeStatus = !medicine.isHot();
+        medicine.updateHotStatus(newLikeStatus);
 
-        return newHotStatus;
+        return newLikeStatus;
     }
 }

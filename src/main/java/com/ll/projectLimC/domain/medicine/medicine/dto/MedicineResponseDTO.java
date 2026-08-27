@@ -77,12 +77,13 @@ public class MedicineResponseDTO {
         this.atpnWarnQesitm = medicine.getAtpnWarnQesitm();
         this.itemImage = medicine.getItemImage();
         this.depositMethodQesitm = medicine.getDepositMethodQesitm();
-        this.isHot =  medicine.getViewCount() != null && medicine.getViewCount() >= 1000L;
+        this.isHot = medicine.getViewCount() != null && medicine.getViewCount() >= 1000L;
         this.likeCount = medicine.getLikeCount();
 
-        // 목록 조회 시 통계값 초기화
-        this.averageRating = 0.0;
-        this.totalReviewCount = 0;
+        // Medicine 필드값 바인딩
+        this.averageRating = medicine.getAverageRating();
+        this.totalReviewCount = medicine.getTotalReviewCount();
+
         this.bookmarkCount = 0;
         this.effectivePercent = 0;
         this.ineffectivePercent = 0;
