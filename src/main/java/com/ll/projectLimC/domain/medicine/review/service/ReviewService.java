@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class ReviewService {
     private final MedicineRepository medicineRepository;
     private final UserRepository userRepository;
 
-    // ⭐️ [공통] 약품 평점 및 후기 수 갱신 메서드
+    // 약품 평점 및 후기 수 갱신 메서드
     private void updateMedicineStats(Medicine medicine) {
         long totalCount = reviewRepository.countByMedicine(medicine);
         Double avgRating = reviewRepository.findAverageRatingByMedicine(medicine);
@@ -52,6 +53,9 @@ public class ReviewService {
         reviewRepository.save(review);
 
         updateMedicineStats(medicine);
+
+        // 평점 및 리뷰 수 DB 업데이트
+        updateMedicineRatingStats(medicine);
     }
 
     @Transactional
@@ -89,5 +93,21 @@ public class ReviewService {
         reviewRepository.flush(); // DB 삭제 연산 반영 확정
 
         updateMedicineStats(medicine);
+    }
+
+    @Transactional
+    public void updateMedicineRatingStats(Medicine medicine) {
+        List<Review> reviews = reviewRepository.findByMedicineId(medicine.getId());
+
+        long totalCount = reviews.size();
+        double averageRating = 0.0;
+
+        if (totalCount > 0) {
+            double sum = reviews.stream().mapToInt(Review::getRating).sum();
+            averageRating = Math.round((sum / totalCount) * 10.0) / 10.0;
+        }
+
+        // Medicine 엔티티의 메서드를 호출하여 DB 업데이트 (Dirty Checking 적용)
+        medicine.updateRatingStats(averageRating, totalCount);
     }
 }
