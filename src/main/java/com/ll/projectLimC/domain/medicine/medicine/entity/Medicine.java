@@ -97,4 +97,15 @@ public class Medicine {
         this.averageRating = averageRating;
         this.totalReviewCount = totalReviewCount;
     }
+
+    public Long getLikeCount() {
+        return this.likeCount == null ? 0L : this.likeCount;
+    }
+
+    // 좋아요 토글 시 카운트 증감 처리
+    public void toggleLike(boolean isHot) {
+        this.isHot = isHot;
+        long currentCount = (this.likeCount == null) ? 0L : this.likeCount;
+        this.likeCount = isHot ? currentCount + 1 : Math.max(0L, currentCount - 1);
+    }
 }

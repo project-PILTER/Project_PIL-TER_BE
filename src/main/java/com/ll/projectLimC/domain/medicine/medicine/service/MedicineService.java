@@ -25,14 +25,14 @@ public class MedicineService {
     private final UserRepository userRepository;
 
     // 약품 상세 조회용 메서드
+    @Transactional
     public MedicineDetailResponseDto getMedicineDetailInfo(Long id) {
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NO_EXIST_THAT_MEDICINE));
 
-        // 조회수 증가
+        // 조회수 증가 (Dirty Checking으로 DB 반영)
         medicine.incrementViewCount();
 
-        // 리뷰 목록 및 북마크 개수 조회
         List<Review> reviews = reviewRepository.findByMedicineId(id);
         long bookmarkCount = bookmarkRepository.countByMedicineId(id);
 
@@ -45,9 +45,9 @@ public class MedicineService {
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new GlobalCustomException(ErrorCode.NO_EXIST_THAT_MEDICINE));
 
-        // 현재 상태의 반대값으로 토글
         boolean newLikeStatus = !medicine.isHot();
-        medicine.updateHotStatus(newLikeStatus);
+        // isHot 상태 반전과 함께 likeCount 증감 실행
+        medicine.toggleLike(newLikeStatus);
 
         return newLikeStatus;
     }
