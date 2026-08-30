@@ -39,10 +39,10 @@ public class WebOAuthSecurityConfig {
     private final Environment env;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
+    private final OAuth2UserCustomService oAuth2UserCustomService; // 🟢 필드 주입으로 일관성 유지
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-                                           OAuth2UserCustomService oAuth2UserCustomService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -61,9 +61,9 @@ public class WebOAuthSecurityConfig {
                                 .authorizationRequestRepository(authorizationRequestRepository)
                         )
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
-                                .userService(oAuth2UserCustomService)
+                                .userService(oAuth2UserCustomService) // 🟢 주입받은 필드 바인딩
                         )
-                        .successHandler(oAuth2SuccessHandler) // 🟢 주입받은 객체 사용
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .exceptionHandling(ex -> ex
                         .defaultAuthenticationEntryPointFor(
