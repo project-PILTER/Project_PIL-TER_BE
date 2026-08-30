@@ -34,7 +34,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
-    private final JwtProperties jwtProperties; // 🟢 UserRepository 제거됨
+    private final JwtProperties jwtProperties;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -44,8 +44,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         if (oAuth2User == null) return;
 
-        // CustomService에서 넘어온 id 및 email 추출 (DB 재조회 불필요)
-        Long userId = oAuth2User.getAttribute("id");
+        // ID 캐스팅 보완 및 Null 검증
+        Object idObj = oAuth2User.getAttribute("id");
+        if (idObj == null) {
+            throw new IllegalStateException("OAuth2User attributes에 'id'가 존재하지 않습니다.");
+        }
+        Long userId = ((Number) idObj).longValue();
+
         String email = oAuth2User.getAttribute("email");
         String authority = oAuth2User.getAuthorities().iterator().next().getAuthority();
         String roleName = authority.replace("ROLE_", "");
@@ -54,7 +59,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         try {
             userRole = Role.valueOf(roleName);
         } catch (IllegalArgumentException e) {
-            // OIDC_USER 등 Role Enum에 없는 값이 들어올 경우 기본 USER 권한 부여
             userRole = Role.USER;
         }
 
@@ -63,8 +67,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .email(email)
                 .role(userRole)
                 .build();
-
-
 
         Duration accessTokenDuration = Duration.ofMillis(jwtProperties.getAccessTokenExpiration());
         Duration refreshTokenDuration = Duration.ofMillis(jwtProperties.getRefreshTokenExpiration());
