@@ -13,3 +13,25 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+
+  # Nginx 서비스 설정 수정/추가
+  pilter-nginx:
+    image: nginx:alpine  # 사용 중인 nginx 이미지
+    container_name: pilter-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/www:/var/www/certbot:ro  # Certbot ACME 챌린지 공유 경로 (읽기 전용)
+      - ./certbot/conf:/etc/letsencrypt    # 발급된 SSL 인증서 경로
+    depends_on:
+      - spring-app
+
+  # Certbot 서비스 설정 수정/추가
+  pilter-certbot:
+    image: certbot/certbot
+    container_name: pilter-certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot:rw  # Nginx와 동일한 경로 (쓰기 권한)
+      - ./certbot/conf:/etc/letsencrypt

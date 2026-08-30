@@ -47,13 +47,24 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // CustomService에서 넘어온 id 및 email 추출 (DB 재조회 불필요)
         Long userId = oAuth2User.getAttribute("id");
         String email = oAuth2User.getAttribute("email");
-        String role = oAuth2User.getAuthorities().iterator().next().getAuthority();
+        String authority = oAuth2User.getAuthorities().iterator().next().getAuthority();
+        String roleName = authority.replace("ROLE_", "");
+
+        Role userRole;
+        try {
+            userRole = Role.valueOf(roleName);
+        } catch (IllegalArgumentException e) {
+            // OIDC_USER 등 Role Enum에 없는 값이 들어올 경우 기본 USER 권한 부여
+            userRole = Role.USER;
+        }
 
         User targetUser = User.builder()
                 .id(userId)
                 .email(email)
-                .role(Role.valueOf(role.replace("ROLE_", "")))
+                .role(userRole)
                 .build();
+
+
 
         Duration accessTokenDuration = Duration.ofMillis(jwtProperties.getAccessTokenExpiration());
         Duration refreshTokenDuration = Duration.ofMillis(jwtProperties.getRefreshTokenExpiration());
