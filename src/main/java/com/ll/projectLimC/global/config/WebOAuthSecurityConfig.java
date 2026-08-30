@@ -37,7 +37,8 @@ import java.util.Arrays;
 public class WebOAuthSecurityConfig {
     private final JwtTokenProvider tokenProvider;
     private final Environment env;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler; // 🟢 생성자 주입으로 변경
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
@@ -57,7 +58,7 @@ public class WebOAuthSecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
                                 .baseUri("/oauth2/authorization")
-                                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
+                                .authorizationRequestRepository(authorizationRequestRepository)
                         )
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                 .userService(oAuth2UserCustomService)
@@ -75,11 +76,6 @@ public class WebOAuthSecurityConfig {
     @Bean
     public TokenAuthentiocationFilter tokenAuthentiocationFilter() {
         return new TokenAuthentiocationFilter(tokenProvider);
-    }
-
-    @Bean
-    public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository() {
-        return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 
     @Bean
