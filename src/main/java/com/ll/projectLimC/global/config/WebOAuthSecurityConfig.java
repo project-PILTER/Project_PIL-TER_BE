@@ -37,88 +37,33 @@ import java.util.Arrays;
 public class WebOAuthSecurityConfig {
     private final JwtTokenProvider tokenProvider;
     private final Environment env;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler; // 🟢 생성자 주입으로 변경
 
-    @Bean
-    public WebSecurityCustomizer configure() {
-        return (web) -> {
-            // 1. 기본적으로 무시할 정적 리소스 설정
-            var ignoring = web.ignoring().requestMatchers(
-                    "/images/**",
-                    "/img/**",
-                    "/css/**",
-                    "/js/**"
-            );
-
-            // 2. 현재 활성화된 프로필 중 'prod'가 없을 때만 H2 콘솔 무시 설정 추가
-            boolean isProd = Arrays.asList(env.getActiveProfiles()).contains("prod");
-            if (!isProd) {
-                ignoring.requestMatchers(PathRequest.toH2Console());
-            }
-        };
-    }
-
-    @Value("${cors.allowed-origin:https://pilter.co.kr}")
-    private String allowedOrigin;
-
-    // 토큰 방식으로 인증을 하기에 기존에 사용하던 폼 로그인, 세션 비활성화
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            OAuth2UserCustomService oAuth2UserCustomService) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 연결
-                // CSRF 비활성화 (API 서버이므로 필수)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .sessionManagement(management -> management.sessionCreationPolicy(
-                        SessionCreationPolicy.STATELESS))
-                // 헤더를 확인할 커스텀 필터 추가
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(tokenAuthentiocationFilter(), UsernamePasswordAuthenticationFilter.class)
-                // 토큰 재발급 URL은 인증 없이 접근 가능하도록 설정. 나머지 API URL은 인증 필요
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/token").permitAll()
-                        .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/oauth2/**").permitAll()
-                        .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**",
-                                "/api/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/api/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/api/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/webjars/**").permitAll()
-                        .requestMatchers("/api/login/oauth2/code/**").permitAll()
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/login/**").permitAll()
+                        .requestMatchers("/api/token", "/images/**", "/css/**", "/js/**", "/favicon.ico", "/h2-console/**", "/api/oauth2/**", "/v3/api-docs/**", "/swagger-ui/**", "/").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2Login(oauth2 -> oauth2
-                                .authorizationEndpoint(authorization -> authorization
-                                        .baseUri("/oauth2/authorization")
-                                        // 1. ⭐️ 상단에 선언한 메서드 혹은 빈 주입 객체를 명시합니다.
-                                        .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
-                                )
-                                .redirectionEndpoint(redirection -> redirection
-                                        .baseUri("/login/oauth2/code/**")
-                                )
-                                .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
-                                        .userService(oAuth2UserCustomService)
-                                )
-                                .successHandler(oAuth2SuccessHandler(tokenProvider, null, null, null
-                                ))
-                        // 2. ⭐️ [순환 참조 해결의 핵심] 외부 빈 주입을 받지 않고, 여기서 직접 필요한 의존성을 채워 수동으로 생성해 꽂아버림
-//                        .successHandler(new OAuth2SuccessHandler(
-//                                tokenProvider,
-//                                refreshTokenRepository,
-//                                oAuth2AuthorizationRequestBasedOnCookieRepository(),
-//                                userService,
-//                                userRepository
-//                        ))
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/oauth2/authorization")
+                                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
+                        )
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                .userService(oAuth2UserCustomService)
+                        )
+                        .successHandler(oAuth2SuccessHandler) // 🟢 주입받은 객체 사용
                 )
-                // /api로 시작하는 url인 경우 401 상태 코드를 반환하도록 예외 처리
                 .exceptionHandling(ex -> ex
                         .defaultAuthenticationEntryPointFor(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
@@ -137,12 +82,10 @@ public class WebOAuthSecurityConfig {
         return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 
-    // CORS 세부 설정 빈 추가
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.addAllowedOrigin("http://localhost:3000"); // 프론트엔드 주소
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("https://pilter.co.kr");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
@@ -151,23 +94,5 @@ public class WebOAuthSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public OAuth2SuccessHandler oAuth2SuccessHandler(
-            JwtTokenProvider tokenProvider,
-            RefreshTokenRepository refreshTokenRepository,
-            // @Lazy UserService userService,
-            @Lazy UserRepository userRepository,
-            JwtProperties jwtProperties) { // 🚨 스프링이 이 메서드를 실행할 때 이 부품들을 컨테이너에서 직접 꺼내서 주입해줍니다!
-
-        return new OAuth2SuccessHandler(
-                tokenProvider,
-                refreshTokenRepository,
-                oAuth2AuthorizationRequestBasedOnCookieRepository(), // 클래스 내부의 빈 메서드 호출
-        //        userService,
-                userRepository,
-                jwtProperties
-        );
     }
 }
